@@ -22,6 +22,7 @@ namespace SatisfactoryModdingHelper.ViewModels
         private string pluginName;
         private string engineLocation;
         private string projectLocation;
+        private string gameLocation;
 
         public MainViewModel(IPersistAndRestoreService persistAndRestoreService)
         {
@@ -32,6 +33,7 @@ namespace SatisfactoryModdingHelper.ViewModels
         {
             projectLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Project);
             engineLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_UE);
+            gameLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Satisfactory);
             PopulatePluginList();
         }
 
@@ -62,11 +64,11 @@ namespace SatisfactoryModdingHelper.ViewModels
             {
                 RunProcess(@$"{engineLocation}\Binaries\DotNET\UnrealBuildTool.exe", @$"-projectfiles -project=""{projectLocation}\FactoryGame.uproject"" -game -rocket -progress");
             });
-            
+
             OutputText += "Visual Studio File Generation Complete";
         }
 
-        private void RunProcess(string fileName, string arguments)
+        private void RunProcess(string fileName, string arguments = "")
         {
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             process.StartInfo = new System.Diagnostics.ProcessStartInfo()
@@ -138,10 +140,18 @@ namespace SatisfactoryModdingHelper.ViewModels
         private RelayCommand runAlpakit;
         public ICommand RunAlpakit => runAlpakit ??= new RelayCommand(PerformRunAlpakit);
 
-        private void PerformRunAlpakit()
+        private async void PerformRunAlpakit()
         {
-        //G:\Projects\Satisfactory\SatisfactoryUnrealEngine\Engine\Build\BatchFiles\RunUAT.bat - ScriptsForProject = "$SolutionDir$FactoryGame.uproject" PackagePlugin - Project = "$SolutionDir$FactoryGame.uproject" - PluginName = "FicsItNetworks" - CopyToGameDir - GameDir = "G:\Programs\Epic Games\SatisfactoryEarlyAccess"
+            //
             //Get Engine path\Engine\Build\BatchFiles\RunUAT.bat
+
+            OutputText = "Running Alpakit..." + Environment.NewLine;
+            await Task.Run(() =>
+            {
+                RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@"-ScriptsForProject = ""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project = ""{projectLocation}\FactoryGame.uproject"" -PluginName = ""{pluginName}"" -CopyToGameDir -GameDir = ""{gameLocation}""");
+            });
+
+            OutputText += "Alpakit Complete";
 
             //Alpakit.Automation.FactoryGameParams factoryGameParams = new FactoryGameParams();
             //factoryGameParams.CopyToGameDirectory = (bool)_persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CopyMod_Value);
@@ -150,8 +160,25 @@ namespace SatisfactoryModdingHelper.ViewModels
         private RelayCommand runAlpakitAndLaunch;
         public ICommand RunAlpakitAndLaunch => runAlpakitAndLaunch ??= new RelayCommand(PerformRunAlpakitAndLaunch);
 
-        private void PerformRunAlpakitAndLaunch()
+        private async void PerformRunAlpakitAndLaunch()
         {
+            OutputText = "Running Alpakit..." + Environment.NewLine;
+            await Task.Run(() =>
+            {
+                RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@"-ScriptsForProject = ""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project = ""{projectLocation}\FactoryGame.uproject"" -PluginName = ""{pluginName}""");
+            });
+
+            OutputText += "Alpakit Complete";
+            OutputText += Environment.NewLine + "Launching Satisfactory...";
+        }
+
+        private async void PerformLaunchSatisfactory()
+        {
+            OutputText = "Launching Satisfactory...";
+            await Task.Run(() =>
+            {
+                RunProcess(@$"{gameLocation}\satisfactory.exe");
+            });
         }
 
         private RelayCommand runAllChecked;
@@ -159,31 +186,51 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         private void PerformRunAllChecked()
         {
+            if (AIOGenerateVSFiles)
+            {
+                PerformGenerateVSFiles();
+            }
+            if (AIOBuildDevEditor)
+            {
+                PerformBuildForDevelopmentEditor();
+            }
+            if (AIOBuildShipping)
+            {
+                PerformBuildForShipping();
+            }
+            if (AIOAlpakit)
+            {
+                PerformRunAlpakit();
+            }
+            if (AIOLaunchGame)
+            {
+                PerformLaunchSatisfactory();
+            }
         }
 
         private System.Collections.IEnumerable pluginList;
 
         public System.Collections.IEnumerable PluginList { get => pluginList; set => SetProperty(ref pluginList, value); }
 
-        private bool? aIOGenerateVSFiles;
+        private bool aIOGenerateVSFiles;
 
-        public bool? AIOGenerateVSFiles { get => aIOGenerateVSFiles; set => SetProperty(ref aIOGenerateVSFiles, value); }
+        public bool AIOGenerateVSFiles { get => aIOGenerateVSFiles; set => SetProperty(ref aIOGenerateVSFiles, value); }
 
-        private bool? aIOBuildDevEditor;
+        private bool aIOBuildDevEditor;
 
-        public bool? AIOBuildDevEditor { get => aIOBuildDevEditor; set => SetProperty(ref aIOBuildDevEditor, value); }
+        public bool AIOBuildDevEditor { get => aIOBuildDevEditor; set => SetProperty(ref aIOBuildDevEditor, value); }
 
-        private bool? aIOBuildShipping;
+        private bool aIOBuildShipping;
 
-        public bool? AIOBuildShipping { get => aIOBuildShipping; set => SetProperty(ref aIOBuildShipping, value); }
+        public bool AIOBuildShipping { get => aIOBuildShipping; set => SetProperty(ref aIOBuildShipping, value); }
 
-        private bool? aIOAlpakit;
+        private bool aIOAlpakit;
 
-        public bool? AIOAlpakit { get => aIOAlpakit; set => SetProperty(ref aIOAlpakit, value); }
+        public bool AIOAlpakit { get => aIOAlpakit; set => SetProperty(ref aIOAlpakit, value); }
 
-        private bool? aIOLaunchGame;
+        private bool aIOLaunchGame;
 
-        public bool? AIOLaunchGame { get => aIOLaunchGame; set => SetProperty(ref aIOLaunchGame, value); }
+        public bool AIOLaunchGame { get => aIOLaunchGame; set => SetProperty(ref aIOLaunchGame, value); }
 
         private object selectedPlugin;
 
