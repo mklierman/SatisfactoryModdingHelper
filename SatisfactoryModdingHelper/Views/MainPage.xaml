@@ -1,0 +1,74 @@
+﻿<Page
+    x:Class="SatisfactoryModdingHelper.Views.MainPage"
+    Style="{DynamicResource MahApps.Styles.Page}"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:properties="clr-namespace:SatisfactoryModdingHelper.Properties" xmlns:viewmodels="clr-namespace:SatisfactoryModdingHelper.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
+    mc:Ignorable="d"
+    d:DesignHeight="550" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock
+            Style="{StaticResource PageTitleStyle}"
+            Margin="{StaticResource MediumLeftMargin}"
+            Text="{x:Static properties:Resources.MainPageTitle}" />
+        <Grid
+            Grid.Row="1"
+            Margin="{StaticResource MediumLeftRightMargin}"
+            Background="{DynamicResource MahApps.Brushes.Gray10}">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" Name="CurrentMod" />
+                    <RowDefinition Height="Auto" Name="Buttons" />
+                    <RowDefinition Height="*" Name="Output" />
+                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Height="20" Margin="{StaticResource SmallRightMargin}" Text="{x:Static properties:Resources.ModPlugin}" Grid.Column="0"/>
+                    <ComboBox Grid.Column="1" SelectedValue="{Binding SelectedPlugin}" ItemsSource="{Binding PluginList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+                <StackPanel Grid.Row="1">
+                    <Line Margin="{StaticResource SmallTopBottomMargin}" Stroke="Gray" StrokeThickness="5" X2="99999" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="{StaticResource SmallLeftRightMargin}">
+                            <Button Content="{x:Static properties:Resources.Main_Button_VS}" Command="{Binding GenerateVSFiles}" Margin="{StaticResource XSmallTopMargin}"/>
+                            <Button Content="{x:Static properties:Resources.Main_Button_CPP}" Command="{Binding CreateCPPFiles}" Margin="{StaticResource XSmallTopMargin}"/>
+                            <Button Content="{x:Static properties:Resources.Main_Button_DevEditor}" Command="{Binding BuildForDevelopmentEditor}" Margin="{StaticResource XSmallTopMargin}"/>
+                            <Button Content="{x:Static properties:Resources.Main_Button_Shipping}" Command="{Binding BuildForShipping}" Margin="{StaticResource XSmallTopMargin}"/>
+                            <Button Content="{x:Static properties:Resources.Main_Button_Alpakit}" Command="{Binding RunAlpakit}" Margin="{StaticResource XSmallTopMargin}"/>
+                            <Button Content="{x:Static properties:Resources.Main_Button_Alpakit_Launch}" Command="{Binding RunAlpakitAndLaunch}" Margin="{StaticResource XSmallTopMargin}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <Button Content="{x:Static properties:Resources.Main_Button_AIO}" Command="{Binding RunAllChecked}" Margin="{StaticResource XSmallTopMargin}"/>
+                            <CheckBox IsChecked="{Binding AIOGenerateVSFiles}" Content="{x:Static properties:Resources.Main_Button_VS}" Margin="{StaticResource XSmallTopMargin}" />
+                            <CheckBox IsChecked="{Binding AIOBuildDevEditor}" Content="{x:Static properties:Resources.Main_Button_DevEditor}" Margin="{StaticResource XXSmallTopMargin}" />
+                            <CheckBox IsChecked="{Binding AIOBuildShipping}" Content="{x:Static properties:Resources.Main_Button_Shipping}" Margin="{StaticResource XXSmallTopMargin}" />
+                            <CheckBox IsChecked="{Binding AIOAlpakit}" Content="{x:Static properties:Resources.Main_Button_Alpakit}" Margin="{StaticResource XXSmallTopMargin}" />
+                            <CheckBox IsChecked="{Binding AIOLaunchGame}" Content="{x:Static properties:Resources.Main_Button_Launch}" Margin="{StaticResource XXSmallTopMargin}" />
+                        </StackPanel>
+                    </Grid>
+                    <Line Margin="{StaticResource SmallTopMargin}" Stroke="Red" StrokeThickness="5" />
+                </StackPanel>
+                <Grid Grid.Row="2" Margin="{StaticResource SmallTopBottomMargin}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" CanContentScroll="True" ScrollChanged="ScrollViewer_ScrollChanged" >
+                        <TextBlock Text="{Binding OutputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Margin="{StaticResource XSmallLeftTopRightBottomMargin}"  />
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
+
+        </Grid>
+    </Grid>
+</Page>

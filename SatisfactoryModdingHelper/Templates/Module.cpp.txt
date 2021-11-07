@@ -1,0 +1,8 @@
+﻿#include "[PluginReference]Module.h"
+
+void F[PluginReference]Module::StartupModule() {
+
+}
+
+
+IMPLEMENT_GAME_MODULE(F[PluginReference]Module, [PluginReference]);
