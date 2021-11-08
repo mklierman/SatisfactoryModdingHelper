@@ -40,10 +40,10 @@ namespace SatisfactoryModdingHelper.ViewModels
         // TODO WTS: Change the icons and titles for all HamburgerMenuItems here.
         public ObservableCollection<HamburgerMenuItem> MenuItems { get; } = new ObservableCollection<HamburgerMenuItem>()
         {
-            new HamburgerMenuGlyphItem() { Label = Resources.ShellMainPage, Glyph = "\uE8A5", TargetPageType = typeof(MainViewModel) },
-            new HamburgerMenuGlyphItem() { Label = Resources.ShellUPluginPage, Glyph = "\uE8A5", TargetPageType = typeof(UPluginViewModel) },
-            new HamburgerMenuGlyphItem() { Label = Resources.ShellCPPPage, Glyph = "\uE8A5", TargetPageType = typeof(CPPViewModel) },
-            new HamburgerMenuGlyphItem() { Label = Resources.ShellAccessTransformersPage, Glyph = "\uE8A5", TargetPageType = typeof(AccessTransformersViewModel) },
+            new HamburgerMenuGlyphItem() { Label = Resources.ShellMainPage, Glyph = "\uE1CF", TargetPageType = typeof(MainViewModel) },
+            new HamburgerMenuGlyphItem() { Label = Resources.ShellUPluginPage, Glyph = "\uE95F", TargetPageType = typeof(UPluginViewModel) },
+            new HamburgerMenuGlyphItem() { Label = Resources.ShellCPPPage, Glyph = "\uF133", TargetPageType = typeof(CPPViewModel) },
+            new HamburgerMenuGlyphItem() { Label = Resources.ShellAccessTransformersPage, Glyph = "\uE8B1", TargetPageType = typeof(AccessTransformersViewModel) },
         };
 
         public ObservableCollection<HamburgerMenuItem> OptionMenuItems { get; } = new ObservableCollection<HamburgerMenuItem>()

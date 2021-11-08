@@ -19,6 +19,7 @@ namespace SatisfactoryModdingHelper.ViewModels
     public class MainViewModel : ObservableObject, INavigationAware
     {
         private readonly IPersistAndRestoreService _persistAndRestoreService;
+        private readonly INavigationService _navigationService;
         private string pluginName;
         private string engineLocation;
         private string projectLocation;
@@ -26,9 +27,10 @@ namespace SatisfactoryModdingHelper.ViewModels
         private bool alpakitCopyMod;
         private bool alpakitCloseGame;
 
-        public MainViewModel(IPersistAndRestoreService persistAndRestoreService)
+        public MainViewModel(IPersistAndRestoreService persistAndRestoreService, INavigationService navigationService)
         {
             _persistAndRestoreService = persistAndRestoreService;
+            _navigationService = navigationService;
         }
 
         public void OnNavigatedTo(object parameter)
@@ -36,9 +38,17 @@ namespace SatisfactoryModdingHelper.ViewModels
             projectLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Project);
             engineLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_UE);
             gameLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Satisfactory);
-            alpakitCopyMod = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CopyMod);
-            alpakitCloseGame = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CloseGame);
-            PopulatePluginList();
+            alpakitCopyMod = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CopyMod) == null ? false : _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CopyMod);
+            alpakitCloseGame = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CloseGame) == null ? false : _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CloseGame);
+            if (string.IsNullOrEmpty(projectLocation))
+            {
+                //Navigate to Settings
+                _navigationService.NavigateTo(typeof(SettingsViewModel).FullName);
+            }
+            else
+            {
+                PopulatePluginList();
+            }
         }
 
         public void OnNavigatedFrom()
@@ -49,13 +59,16 @@ namespace SatisfactoryModdingHelper.ViewModels
         private void PopulatePluginList()
         {
             var pluginDirectory = projectLocation + "//Plugins";
-            List<string> pluginDirs = new List<string>();
-            foreach (var directory in Directory.GetDirectories(pluginDirectory))
+            if (Directory.Exists(pluginDirectory))
             {
-                var di = new DirectoryInfo(directory);
-                pluginDirs.Add(di.Name);
+                List<string> pluginDirs = new List<string>();
+                foreach (var directory in Directory.GetDirectories(pluginDirectory))
+                {
+                    var di = new DirectoryInfo(directory);
+                    pluginDirs.Add(di.Name);
+                }
+                PluginList = pluginDirs;
             }
-            PluginList = pluginDirs;
         }
 
         private RelayCommand generateVSFiles;
