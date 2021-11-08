@@ -351,4 +351,7 @@
   <data name="Settings_Alpakit_Launcher_Value" xml:space="preserve">
     <value />
   </data>
+  <data name="JSON_Modules" xml:space="preserve">
+    <value>Modules</value>
+  </data>
 </root>

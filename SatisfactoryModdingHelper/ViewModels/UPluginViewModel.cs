@@ -10,5 +10,9 @@ namespace SatisfactoryModdingHelper.ViewModels
         public UPluginViewModel()
         {
         }
+
+        private string fileVersion;
+
+        public string FileVersion { get => fileVersion; set => SetProperty(ref fileVersion, value); }
     }
 }

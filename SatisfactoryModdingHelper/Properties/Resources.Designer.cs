@@ -241,6 +241,15 @@ namespace SatisfactoryModdingHelper.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Modules.
+        /// </summary>
+        public static string JSON_Modules {
+            get {
+                return ResourceManager.GetString("JSON_Modules", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plugins.
         /// </summary>
         public static string JSON_Plugins {

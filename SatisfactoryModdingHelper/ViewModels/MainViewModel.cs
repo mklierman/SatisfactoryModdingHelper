@@ -23,6 +23,8 @@ namespace SatisfactoryModdingHelper.ViewModels
         private string engineLocation;
         private string projectLocation;
         private string gameLocation;
+        private bool alpakitCopyMod;
+        private bool alpakitCloseGame;
 
         public MainViewModel(IPersistAndRestoreService persistAndRestoreService)
         {
@@ -34,6 +36,8 @@ namespace SatisfactoryModdingHelper.ViewModels
             projectLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Project);
             engineLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_UE);
             gameLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Satisfactory);
+            alpakitCopyMod = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CopyMod);
+            alpakitCloseGame = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CloseGame);
             PopulatePluginList();
         }
 
@@ -148,7 +152,14 @@ namespace SatisfactoryModdingHelper.ViewModels
             OutputText = "Running Alpakit..." + Environment.NewLine;
             await Task.Run(() =>
             {
-                RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@"-ScriptsForProject = ""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project = ""{projectLocation}\FactoryGame.uproject"" -PluginName = ""{pluginName}"" -CopyToGameDir -GameDir = ""{gameLocation}""");
+                if (alpakitCopyMod)
+                {
+                    RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@"-ScriptsForProject = ""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project = ""{projectLocation}\FactoryGame.uproject"" -PluginName = ""{pluginName}"" -CopyToGameDir -GameDir = ""{gameLocation}""");
+                }
+                else
+                {
+                    RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@"-ScriptsForProject = ""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project = ""{projectLocation}\FactoryGame.uproject"" -PluginName = ""{pluginName}""");
+                }
             });
 
             OutputText += "Alpakit Complete";
@@ -165,6 +176,18 @@ namespace SatisfactoryModdingHelper.ViewModels
             OutputText = "Running Alpakit..." + Environment.NewLine;
             await Task.Run(() =>
             {
+                if (alpakitCloseGame)
+                {
+                    //Check for running Satisfactory process
+                    Process[] processlist = Process.GetProcessesByName("Satisfactory.exe");
+                    if (processlist.Length > 0)
+                    {
+                        foreach (var process in processlist)
+                        {
+                            process.Kill();
+                        }
+                    }
+                }
                 RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@"-ScriptsForProject = ""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project = ""{projectLocation}\FactoryGame.uproject"" -PluginName = ""{pluginName}""");
             });
 
