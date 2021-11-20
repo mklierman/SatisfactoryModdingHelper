@@ -167,11 +167,11 @@ namespace SatisfactoryModdingHelper.ViewModels
             {
                 if (alpakitCopyMod)
                 {
-                    RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@"-ScriptsForProject = ""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project = ""{projectLocation}\FactoryGame.uproject"" -PluginName = ""{pluginName}"" -CopyToGameDir -GameDir = ""{gameLocation}""");
+                    RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@" -ScriptsForProject=""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project=""{projectLocation}\FactoryGame.uproject"" -PluginName=""{SelectedPlugin.ToString()}"" -CopyToGameDir -GameDir=""{gameLocation}""");
                 }
                 else
                 {
-                    RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@"-ScriptsForProject = ""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project = ""{projectLocation}\FactoryGame.uproject"" -PluginName = ""{pluginName}""");
+                    RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@" -ScriptsForProject=""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project=""{projectLocation}\FactoryGame.uproject"" -PluginName=""{SelectedPlugin.ToString()}""");
                 }
             });
 
@@ -201,26 +201,27 @@ namespace SatisfactoryModdingHelper.ViewModels
                         }
                     }
                 }
-                RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@"-ScriptsForProject = ""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project = ""{projectLocation}\FactoryGame.uproject"" -PluginName = ""{pluginName}""");
+                RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@" -ScriptsForProject=""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project=""{projectLocation}\FactoryGame.uproject"" -PluginName=""{SelectedPlugin.ToString()}"" -CopyToGameDir -GameDir=""{gameLocation}""");
             });
 
             OutputText += "Alpakit Complete";
             OutputText += Environment.NewLine + "Launching Satisfactory...";
+            PerformLaunchSatisfactory();
         }
 
-        private async void PerformLaunchSatisfactory()
+        private async Task PerformLaunchSatisfactory()
         {
             OutputText = "Launching Satisfactory...";
             await Task.Run(() =>
             {
-                RunProcess(@$"{gameLocation}\satisfactory.exe");
+                RunProcess(@$"{gameLocation}\FactoryGame.exe");
             });
         }
 
         private RelayCommand runAllChecked;
         public ICommand RunAllChecked => runAllChecked ??= new RelayCommand(PerformRunAllChecked);
 
-        private void PerformRunAllChecked()
+        private async void PerformRunAllChecked()
         {
             if (AIOGenerateVSFiles)
             {
@@ -240,7 +241,7 @@ namespace SatisfactoryModdingHelper.ViewModels
             }
             if (AIOLaunchGame)
             {
-                PerformLaunchSatisfactory();
+                await PerformLaunchSatisfactory();
             }
         }
 
