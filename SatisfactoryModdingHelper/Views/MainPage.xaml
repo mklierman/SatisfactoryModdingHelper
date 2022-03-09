@@ -50,6 +50,16 @@
                             <Button Content="{x:Static properties:Resources.Main_Button_Shipping}" Command="{Binding BuildForShipping}" Margin="{StaticResource XSmallTopMargin}"/>
                             <Button Content="{x:Static properties:Resources.Main_Button_Alpakit}" Command="{Binding RunAlpakit}" Margin="{StaticResource XSmallTopMargin}"/>
                             <Button Content="{x:Static properties:Resources.Main_Button_Alpakit_Launch}" Command="{Binding RunAlpakitAndLaunch}" Margin="{StaticResource XSmallTopMargin}"/>
+                            <Grid Margin="{StaticResource XSmallTopMargin}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Content="{x:Static properties:Resources.Main_Button_MP}" Command="{Binding LaunchMPTesting}" Grid.Column="0" />
+                                <Button Content="{x:Static properties:Resources.Main_Button_MP1}" Command="{Binding LaunchMPTestingHost}" Grid.Column="1" />
+                                <Button Content="{x:Static properties:Resources.Main_Button_MP2}" Command="{Binding LaunchMPTestingClient}" Grid.Column="2" />
+                            </Grid>
                         </StackPanel>
                         <StackPanel Grid.Column="1">
                             <Button Content="{x:Static properties:Resources.Main_Button_AIO}" Command="{Binding RunAllChecked}" Margin="{StaticResource XSmallTopMargin}"/>
@@ -58,6 +68,7 @@
                             <CheckBox IsChecked="{Binding AIOBuildShipping}" Content="{x:Static properties:Resources.Main_Button_Shipping}" Margin="{StaticResource XXSmallTopMargin}" />
                             <CheckBox IsChecked="{Binding AIOAlpakit}" Content="{x:Static properties:Resources.Main_Button_Alpakit}" Margin="{StaticResource XXSmallTopMargin}" />
                             <CheckBox IsChecked="{Binding AIOLaunchGame}" Content="{x:Static properties:Resources.Main_Button_Launch}" Margin="{StaticResource XXSmallTopMargin}" />
+                            <CheckBox IsChecked="{Binding AIOLaunchMP}" Content="{x:Static properties:Resources.Main_Button_MP}" Margin="{StaticResource XXSmallTopMargin}" />
                         </StackPanel>
                     </Grid>
                     <Line Margin="{StaticResource SmallTopMargin}" Stroke="Red" StrokeThickness="5" />

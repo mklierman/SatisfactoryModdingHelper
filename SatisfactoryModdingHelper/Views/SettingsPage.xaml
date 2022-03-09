@@ -182,6 +182,19 @@
                 <TextBlock
                     Margin="{StaticResource SmallTopMargin}"
                     Style="{StaticResource SubtitleTextStyle}"
+                    Text="{x:Static properties:Resources.Settings_MP_Text}" />
+                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                    <TextBlock Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}"
+                        Text="{x:Static properties:Resources.Settings_MP_Player1NameText}" />
+                    <TextBox Grid.Column="0"  Text="{Binding MPPlayer1Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Margin="{StaticResource XSmallTopMargin}" Style="{StaticResource BodyTextStyle}"
+                        Text="{x:Static properties:Resources.Settings_MP_Player2NameText}" />
+                    <TextBox Grid.Column="0"  Text="{Binding MPPlayer2Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+                    <TextBlock
+                    Margin="{StaticResource SmallTopMargin}"
+                    Style="{StaticResource SubtitleTextStyle}"
                     Text="{x:Static properties:Resources.SettingsPageAboutTitle}" />
                 <TextBlock
                     Text="{Binding VersionDescription, Mode=OneWay}"

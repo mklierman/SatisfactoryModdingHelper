@@ -354,4 +354,28 @@
   <data name="JSON_Modules" xml:space="preserve">
     <value>Modules</value>
   </data>
+  <data name="Settings_MP_Player1Name" xml:space="preserve">
+    <value>Player1</value>
+  </data>
+  <data name="Settings_MP_Player2Name" xml:space="preserve">
+    <value>Player2</value>
+  </data>
+  <data name="Main_Button_MP" xml:space="preserve">
+    <value>Launch MP Test</value>
+  </data>
+  <data name="Main_Button_MP1" xml:space="preserve">
+    <value>Host Only</value>
+  </data>
+  <data name="Main_Button_MP2" xml:space="preserve">
+    <value>Client Only</value>
+  </data>
+  <data name="Settings_MP_Player1NameText" xml:space="preserve">
+    <value>Player 1 (Host) Name</value>
+  </data>
+  <data name="Settings_MP_Player2NameText" xml:space="preserve">
+    <value>Player 2 (Client) Name</value>
+  </data>
+  <data name="Settings_MP_Text" xml:space="preserve">
+    <value>MP Testing Settings</value>
+  </data>
 </root>

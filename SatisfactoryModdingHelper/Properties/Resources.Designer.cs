@@ -19,7 +19,7 @@ namespace SatisfactoryModdingHelper.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -394,6 +394,33 @@ namespace SatisfactoryModdingHelper.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Launch MP Test.
+        /// </summary>
+        public static string Main_Button_MP {
+            get {
+                return ResourceManager.GetString("Main_Button_MP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Host Only.
+        /// </summary>
+        public static string Main_Button_MP1 {
+            get {
+                return ResourceManager.GetString("Main_Button_MP1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Client Only.
+        /// </summary>
+        public static string Main_Button_MP2 {
+            get {
+                return ResourceManager.GetString("Main_Button_MP2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Build Shipping.
         /// </summary>
         public static string Main_Button_Shipping {
@@ -615,6 +642,51 @@ namespace SatisfactoryModdingHelper.Properties {
         public static string Settings_Locations_VS_Hint {
             get {
                 return ResourceManager.GetString("Settings_Locations_VS_Hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player1.
+        /// </summary>
+        public static string Settings_MP_Player1Name {
+            get {
+                return ResourceManager.GetString("Settings_MP_Player1Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player 1 (Host) Name.
+        /// </summary>
+        public static string Settings_MP_Player1NameText {
+            get {
+                return ResourceManager.GetString("Settings_MP_Player1NameText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player2.
+        /// </summary>
+        public static string Settings_MP_Player2Name {
+            get {
+                return ResourceManager.GetString("Settings_MP_Player2Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player 2 (Client) Name.
+        /// </summary>
+        public static string Settings_MP_Player2NameText {
+            get {
+                return ResourceManager.GetString("Settings_MP_Player2NameText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MP Testing Settings.
+        /// </summary>
+        public static string Settings_MP_Text {
+            get {
+                return ResourceManager.GetString("Settings_MP_Text", resourceCulture);
             }
         }
         

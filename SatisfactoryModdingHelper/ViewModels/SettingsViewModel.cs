@@ -221,8 +221,8 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         private bool? alpakitCopyPlugin;
 
-        public bool? AlpakitCopyPlugin 
-        { 
+        public bool? AlpakitCopyPlugin
+        {
             get => alpakitCopyPlugin;
             set
             {
@@ -238,8 +238,8 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         private bool? alpakitCloseSatisfactory;
 
-        public bool? AlpakitCloseSatisfactory 
-        { 
+        public bool? AlpakitCloseSatisfactory
+        {
             get => alpakitCloseSatisfactory;
             set
             {
@@ -254,8 +254,8 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         private bool? alpakitSteam;
 
-        public bool? AlpakitSteam 
-        { 
+        public bool? AlpakitSteam
+        {
             get => alpakitSteam;
             set
             {
@@ -270,8 +270,8 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         private bool? alpakitEGS;
 
-        public bool? AlpakitEGS 
-        { 
+        public bool? AlpakitEGS
+        {
             get => alpakitEGS;
             set
             {
@@ -286,8 +286,8 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         private bool? alpakitEGSExperimental;
 
-        public bool? AlpakitEGSExperimental 
-        { 
+        public bool? AlpakitEGSExperimental
+        {
             get => alpakitEGSExperimental;
             set
             {
@@ -299,5 +299,29 @@ namespace SatisfactoryModdingHelper.ViewModels
                 _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_Alpakit_EGS_Exp, value);
             }
         }
-    }
+
+        private string mPPlayer1Name;
+
+        public string MPPlayer1Name
+        {
+            get => mPPlayer1Name;
+            set
+            {
+                SetProperty(ref mPPlayer1Name, value);
+                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_MP_Player1Name, value);
+            }
+        }
+
+        private string mPPlayer2Name;
+
+        public string MPPlayer2Name
+        {
+            get => mPPlayer2Name;
+            set
+            {
+                SetProperty(ref mPPlayer2Name, value);
+                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_MP_Player2Name, value);
+            }
+        }
+}
 }
