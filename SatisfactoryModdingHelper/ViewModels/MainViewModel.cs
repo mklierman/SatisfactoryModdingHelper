@@ -49,6 +49,7 @@ namespace SatisfactoryModdingHelper.ViewModels
         {
             _persistAndRestoreService = persistAndRestoreService;
             _navigationService = navigationService;
+            pluginComboBoxEnabled = true;
         }
 
         public void OnNavigatedTo(object parameter)
@@ -58,6 +59,9 @@ namespace SatisfactoryModdingHelper.ViewModels
             gameLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Satisfactory);
             player1Name = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Player1Name);
             player2Name = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Player2Name);
+            args1 = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Args1);
+            args2 = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Args2);
+
             alpakitCopyMod = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CopyMod) == null ? false : _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CopyMod);
             alpakitCloseGame = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CloseGame) == null ? false : _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CloseGame);
             if (string.IsNullOrEmpty(projectLocation))
@@ -388,11 +392,14 @@ namespace SatisfactoryModdingHelper.ViewModels
         private AsyncRelayCommand launchMPTesting;
         public ICommand LaunchMPTesting => launchMPTesting ??= new AsyncRelayCommand(PerformLaunchMPTesting);
 
+        private string args1;
+        private string args2;
+
         private async Task PerformLaunchMPTesting()
         {
             //Build launch strings
-            string launchStringArgs1 = $"-EpicPortal -NoSteamClient -Username=\"{player1Name}\" -WinX=0 -WinY=32 -NOSPLASH -LANPLAY";
-            string launchStringArgs2 = $"-EpicPortal -NoSteamClient -Username=\"{player2Name}\" -WinX=1720 -WinY=32 -NOSPLASH -LANPLAY";
+            string launchStringArgs1 = $"-EpicPortal -NoSteamClient -Username=\"{player1Name}\" {args1}";
+            string launchStringArgs2 = $"-EpicPortal -NoSteamClient -Username=\"{player2Name}\" {args2}";
             RunProcess($"\"{gameLocation}\\FactoryGame.exe\"", launchStringArgs1, false);
             Thread.Sleep(1000);
             RunProcess($"\"{gameLocation}\\FactoryGame.exe\"", launchStringArgs2, false);
@@ -403,7 +410,7 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         private void PerformLaunchMPTestingHost()
         {
-            string launchStringArgs1 = $"-EpicPortal -NoSteamClient -Username=\"{player1Name}\" -WinX=0 -WinY=32 -NOSPLASH -LANPLAY";
+            string launchStringArgs1 = $"-EpicPortal -NoSteamClient -Username=\"{player1Name}\" {args1}";
             RunProcess($"\"{gameLocation}\\FactoryGame.exe\"", launchStringArgs1, false);
         }
 
@@ -412,8 +419,12 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         private void PerformLaunchMPTestingClient()
         {
-            string launchStringArgs2 = $"-EpicPortal -NoSteamClient -Username=\"{player2Name}\" -WinX=1720 -WinY=32 -NOSPLASH -LANPLAY";
+            string launchStringArgs2 = $"-EpicPortal -NoSteamClient -Username=\"{player2Name}\" {args2}";
             RunProcess($"\"{gameLocation}\\FactoryGame.exe\"", launchStringArgs2, false);
         }
+
+        private bool pluginComboBoxEnabled;
+
+        public bool PluginComboBoxEnabled { get => pluginComboBoxEnabled; set => SetProperty(ref pluginComboBoxEnabled, value); }
     }
 }

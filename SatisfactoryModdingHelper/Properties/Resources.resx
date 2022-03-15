@@ -169,7 +169,7 @@
     <value>Main</value>
   </data>
   <data name="MainPageTitle" xml:space="preserve">
-    <value>Main</value>
+    <value>Shortcuts</value>
   </data>
   <data name="ShellGoBackButton" xml:space="preserve">
     <value>Go back</value>
@@ -277,7 +277,7 @@
     <value>Generate VS Files</value>
   </data>
   <data name="ModPlugin" xml:space="preserve">
-    <value>Current Plugin</value>
+    <value>Selected Plugin</value>
   </data>
   <data name="Settings_Alpakit.Text" xml:space="preserve">
     <value>Alpakit Settings</value>
@@ -377,5 +377,17 @@
   </data>
   <data name="Settings_MP_Text" xml:space="preserve">
     <value>MP Testing Settings</value>
+  </data>
+  <data name="Settings_MP_Args1" xml:space="preserve">
+    <value>-NOSPLASH -LANPLAY</value>
+  </data>
+  <data name="Settings_MP_Args1Text" xml:space="preserve">
+    <value>Additional Player 1 Args</value>
+  </data>
+  <data name="Settings_MP_Args2" xml:space="preserve">
+    <value>-NOSPLASH -LANPLAY</value>
+  </data>
+  <data name="Settings_MP_Args2Text" xml:space="preserve">
+    <value>Additional Player 2 Args</value>
   </data>
 </root>

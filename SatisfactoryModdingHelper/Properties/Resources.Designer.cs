@@ -439,7 +439,7 @@ namespace SatisfactoryModdingHelper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Main.
+        ///   Looks up a localized string similar to Shortcuts.
         /// </summary>
         public static string MainPageTitle {
             get {
@@ -448,7 +448,7 @@ namespace SatisfactoryModdingHelper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Current Plugin.
+        ///   Looks up a localized string similar to Selected Plugin.
         /// </summary>
         public static string ModPlugin {
             get {
@@ -642,6 +642,42 @@ namespace SatisfactoryModdingHelper.Properties {
         public static string Settings_Locations_VS_Hint {
             get {
                 return ResourceManager.GetString("Settings_Locations_VS_Hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -NOSPLASH -LANPLAY.
+        /// </summary>
+        public static string Settings_MP_Args1 {
+            get {
+                return ResourceManager.GetString("Settings_MP_Args1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Additional Player 1 Args.
+        /// </summary>
+        public static string Settings_MP_Args1Text {
+            get {
+                return ResourceManager.GetString("Settings_MP_Args1Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -NOSPLASH -LANPLAY.
+        /// </summary>
+        public static string Settings_MP_Args2 {
+            get {
+                return ResourceManager.GetString("Settings_MP_Args2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Additional Player 2 Args.
+        /// </summary>
+        public static string Settings_MP_Args2Text {
+            get {
+                return ResourceManager.GetString("Settings_MP_Args2Text", resourceCulture);
             }
         }
         

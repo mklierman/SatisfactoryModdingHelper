@@ -65,6 +65,10 @@ namespace SatisfactoryModdingHelper.ViewModels
             AlpakitSteam = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_Steam);
             AlpakitEGS = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_EGS);
             AlpakitEGSExperimental = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_EGS_Exp);
+            MPPlayer1Name = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Player1Name);
+            MPPlayer2Name = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Player2Name);
+            MPArgs1 = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Args1);
+            MPArgs2 = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Args2);
 
         }
 
@@ -323,5 +327,30 @@ namespace SatisfactoryModdingHelper.ViewModels
                 _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_MP_Player2Name, value);
             }
         }
-}
+
+        private string mPArgs1;
+
+        public string MPArgs1
+        {
+            get => mPArgs1;
+            set
+            {
+                SetProperty(ref mPArgs1, value);
+                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_MP_Args1, value);
+            }
+        }
+
+        private string mPArgs2;
+
+        public string MPArgs2
+        {
+            get => mPArgs2;
+            set
+            {
+                SetProperty(ref mPArgs2, value);
+                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_MP_Args2, value);
+            }
+        }
+
+    }
 }
