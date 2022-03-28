@@ -390,4 +390,7 @@
   <data name="Settings_MP_Args2Text" xml:space="preserve">
     <value>Additional Player 2 Args</value>
   </data>
+  <data name="SelectedPlugin" xml:space="preserve">
+    <value />
+  </data>
 </root>

@@ -9,8 +9,6 @@ using Microsoft.Extensions.Hosting;
 
 using SatisfactoryModdingHelper.Contracts.Services;
 using SatisfactoryModdingHelper.Contracts.Views;
-using SatisfactoryModdingHelper.Core.Contracts.Services;
-using SatisfactoryModdingHelper.Core.Services;
 using SatisfactoryModdingHelper.Models;
 using SatisfactoryModdingHelper.Services;
 using SatisfactoryModdingHelper.ViewModels;
@@ -70,6 +68,7 @@ namespace SatisfactoryModdingHelper
             services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<IFileService, FileService>();
 
             // Views and ViewModels
             services.AddTransient<IShellWindow, ShellWindow>();
@@ -78,10 +77,13 @@ namespace SatisfactoryModdingHelper
             services.AddTransient<MainViewModel>();
             services.AddTransient<MainPage>();
 
+            services.AddTransient<PluginSelectionViewModel>();
+            services.AddTransient<PluginSelectionControl>();
+
             services.AddTransient<UPluginViewModel>();
             services.AddTransient<UPluginPage>();
 
-            services.AddTransient<CPPViewModel>();
+            services.AddTransient<CppViewModel>();
             services.AddTransient<CPPPage>();
 
             services.AddTransient<SettingsViewModel>();

@@ -5,9 +5,9 @@ using Microsoft.Toolkit.Mvvm.Input;
 
 namespace SatisfactoryModdingHelper.ViewModels
 {
-    public class CPPViewModel : ObservableObject
+    public class CppViewModel : ObservableObject
     {
-        public CPPViewModel()
+        public CppViewModel()
         {
         }
     }

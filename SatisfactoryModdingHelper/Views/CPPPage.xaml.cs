@@ -6,7 +6,7 @@ namespace SatisfactoryModdingHelper.Views
 {
     public partial class CPPPage : Page
     {
-        public CPPPage(CPPViewModel viewModel)
+        public CPPPage(CppViewModel viewModel)
         {
             InitializeComponent();
             DataContext = viewModel;

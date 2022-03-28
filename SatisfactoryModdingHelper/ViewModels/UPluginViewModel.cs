@@ -2,7 +2,6 @@
 using System.IO;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
-using Newtonsoft.Json;
 using SatisfactoryModdingHelper.Contracts.Services;
 using SatisfactoryModdingHelper.Models;
 

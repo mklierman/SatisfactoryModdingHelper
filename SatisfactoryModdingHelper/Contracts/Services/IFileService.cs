@@ -1,4 +1,4 @@
-﻿namespace SatisfactoryModdingHelper.Core.Contracts.Services
+﻿namespace SatisfactoryModdingHelper.Contracts.Services
 {
     public interface IFileService
     {

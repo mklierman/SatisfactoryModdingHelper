@@ -31,19 +31,7 @@ namespace SatisfactoryModdingHelper.ViewModels
         private string player2Name;
         private bool alpakitCopyMod;
         private bool alpakitCloseGame;
-        private int runningProcessID;
-        const short SWP_NOMOVE = 0X2;
-        const short SWP_NOSIZE = 1;
-        const short SWP_NOZORDER = 0X4;
-        const int SWP_SHOWWINDOW = 0x0040;
-
-
-        [DllImport("user32.dll", SetLastError = true)]
-        internal static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
-
-        [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
-        public static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
-
+        private const string asd = "";
 
         public MainViewModel(IPersistAndRestoreService persistAndRestoreService, INavigationService navigationService)
         {
@@ -85,7 +73,7 @@ namespace SatisfactoryModdingHelper.ViewModels
             var pluginDirectory = projectLocation + "//Plugins";
             if (Directory.Exists(pluginDirectory))
             {
-                List<string> pluginDirs = new List<string>();
+                List<string> pluginDirs = new();
                 foreach (var directory in Directory.GetDirectories(pluginDirectory))
                 {
                     var di = new DirectoryInfo(directory);
@@ -105,10 +93,12 @@ namespace SatisfactoryModdingHelper.ViewModels
             SendProcessFinishedMessage(exitCode, "Visual Studio File Generation");
         }
 
-        private Task<int> RunProcess(string fileName, string arguments = "", bool redirectOutput = true, int posX = -1, int posY = -1)
+        [System.CLSCompliant(false)]
+        [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+        private Task<int> RunProcess(string fileName, string arguments = "", bool redirectOutput = true)
         {
             var tcs = new TaskCompletionSource<int>();
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            System.Diagnostics.Process process = new ();
             process.StartInfo = new System.Diagnostics.ProcessStartInfo()
             {
                 UseShellExecute = false,
@@ -123,25 +113,15 @@ namespace SatisfactoryModdingHelper.ViewModels
 {
                 tcs.SetResult(process.ExitCode);
                 process.Dispose();
-                runningProcessID = 0;
             };
             process.EnableRaisingEvents = true;
             process.OutputDataReceived += cmd_DataReceived;
             process.Start();
-            runningProcessID = process.Id;
             if (redirectOutput)
             {
                 process.BeginOutputReadLine();
             }
-            if (posX >= 0 || posY >= 0)
-            {
-                IntPtr handle = process.MainWindowHandle;
-                if (handle != IntPtr.Zero)
-                {
-                    MoveWindow(handle, posX, posY, 0, 0, false);
-                }
-            }
-            //process.WaitForExit();
+
             return tcs.Task;
         }
 
@@ -209,7 +189,6 @@ namespace SatisfactoryModdingHelper.ViewModels
             var exitCode = await RunProcess(@$"{engineLocation}\Build\BatchFiles\Build.bat", @$"FactoryGame Win64 Shipping -Project=""{projectLocation}\FactoryGame.uproject"" -WaitMutex -FromMsBuild");
 
             SendProcessFinishedMessage(exitCode, "Build for Shipping");
-            //OutputText += "Build for Shipping Complete";
         }
 
         private AsyncRelayCommand runAlpakit;
@@ -217,25 +196,20 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         private async Task PerformRunAlpakit()
         {
-            //
             //Get Engine path\Engine\Build\BatchFiles\RunUAT.bat
 
             OutputText = "Running Alpakit..." + Environment.NewLine;
             int exitCode;
             if (alpakitCopyMod)
             {
-                exitCode = await RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@" -ScriptsForProject=""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project=""{projectLocation}\FactoryGame.uproject"" -PluginName=""{SelectedPlugin.ToString()}"" -CopyToGameDir -GameDir=""{gameLocation}""");
+                exitCode = await RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@" -ScriptsForProject=""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project=""{projectLocation}\FactoryGame.uproject"" -PluginName=""{SelectedPlugin}"" -CopyToGameDir -GameDir=""{gameLocation}""");
             }
             else
             {
-                exitCode = await RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@" -ScriptsForProject=""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project=""{projectLocation}\FactoryGame.uproject"" -PluginName=""{SelectedPlugin.ToString()}""");
+                exitCode = await RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@" -ScriptsForProject=""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project=""{projectLocation}\FactoryGame.uproject"" -PluginName=""{SelectedPlugin}""");
             }
 
             SendProcessFinishedMessage(exitCode, "Alpakit");
-            //OutputText += "Alpakit Complete";
-
-            //Alpakit.Automation.FactoryGameParams factoryGameParams = new FactoryGameParams();
-            //factoryGameParams.CopyToGameDirectory = (bool)_persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CopyMod_Value);
         }
 
         private AsyncRelayCommand runAlpakitAndLaunch;
@@ -259,7 +233,7 @@ namespace SatisfactoryModdingHelper.ViewModels
             var exitCode = await RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@" -ScriptsForProject=""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project=""{projectLocation}\FactoryGame.uproject"" -PluginName=""{SelectedPlugin.ToString()}"" -CopyToGameDir -GameDir=""{gameLocation}""");
 
             SendProcessFinishedMessage(exitCode, "Alpakit");
-            //OutputText += "Alpakit Complete";
+
             if (exitCode == 0)
             {
                 OutputText += Environment.NewLine + "Launching Satisfactory...";
@@ -369,7 +343,7 @@ namespace SatisfactoryModdingHelper.ViewModels
 
             if (uPlugin.Modules == null || uPlugin.Modules.Count == 0)
             {
-                Models.Module module = new Models.Module();
+                Models.Module module = new();
                 module.Name = SelectedPlugin.ToString();
                 module.Type = "Runtime";
                 module.LoadingPhase = "Default";
@@ -378,7 +352,6 @@ namespace SatisfactoryModdingHelper.ViewModels
                     uPlugin.Modules = new List<Models.Module>();
                 }
                 uPlugin.Modules.Add(module);
-
                 upluginText = JsonConvert.SerializeObject(uPlugin, Formatting.Indented);
                 File.WriteAllText($"{pluginDirectoryLocation}//{SelectedPlugin}.uplugin", upluginText);
             }

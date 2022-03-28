@@ -79,7 +79,7 @@ namespace SatisfactoryModdingHelper.Services
 
             await Task.CompletedTask;
 
-            if (App.Current.Windows.OfType<IShellWindow>().Count() == 0)
+            if (!App.Current.Windows.OfType<IShellWindow>().Any())
             {
                 // Default activation that navigates to the apps default page
                 _shellWindow = _serviceProvider.GetService(typeof(IShellWindow)) as IShellWindow;

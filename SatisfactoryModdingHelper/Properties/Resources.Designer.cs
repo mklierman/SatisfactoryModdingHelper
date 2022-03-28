@@ -457,6 +457,15 @@ namespace SatisfactoryModdingHelper.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string SelectedPlugin {
+            get {
+                return ResourceManager.GetString("SelectedPlugin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Close Satisfactory Before Packing.
         /// </summary>
         public static string Settings_Alpakit_CloseGame {

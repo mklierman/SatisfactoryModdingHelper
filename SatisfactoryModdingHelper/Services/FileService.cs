@@ -1,11 +1,9 @@
 ﻿using System.IO;
 using System.Text;
-
 using Newtonsoft.Json;
+using SatisfactoryModdingHelper.Contracts.Services;
 
-using SatisfactoryModdingHelper.Core.Contracts.Services;
-
-namespace SatisfactoryModdingHelper.Core.Services
+namespace SatisfactoryModdingHelper.Services
 {
     public class FileService : IFileService
     {

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
-
 using Microsoft.Extensions.Options;
-
 using SatisfactoryModdingHelper.Contracts.Services;
-using SatisfactoryModdingHelper.Core.Contracts.Services;
 using SatisfactoryModdingHelper.Models;
 
 namespace SatisfactoryModdingHelper.Services
