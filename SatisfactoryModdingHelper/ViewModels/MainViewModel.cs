@@ -15,7 +15,6 @@ using Newtonsoft.Json;
 using ControlzEx.Standard;
 using System.Threading;
 using System.Runtime.InteropServices;
-//using Alpakit.Automation;
 
 namespace SatisfactoryModdingHelper.ViewModels
 {
