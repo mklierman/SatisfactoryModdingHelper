@@ -179,7 +179,7 @@
                 <TextBlock
                     Grid.Row="16"
                     Grid.Column="0"
-                    Text="AcceptsAnyVersion" />
+                    Text="AcceptsAnyRemoteVersion" />
                 <CheckBox
                     Grid.Row="16"
                     Grid.Column="1"

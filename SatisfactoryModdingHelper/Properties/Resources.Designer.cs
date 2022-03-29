@@ -220,7 +220,7 @@ namespace SatisfactoryModdingHelper.Properties {
         {
             get
             {
-                return ResourceManager.GetString("JSON_AcceptsAnyVersion", resourceCulture);
+                return ResourceManager.GetString("JSON_AcceptsAnyRemoteVersion", resourceCulture);
             }
         }
 
