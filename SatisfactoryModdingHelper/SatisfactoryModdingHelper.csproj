@@ -2,9 +2,14 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+	  <PublishSingleFile>true</PublishSingleFile>
+	  <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	  <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
     <RootNamespace>SatisfactoryModdingHelper</RootNamespace>
     <UseWPF>true</UseWPF>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Version>$(VersionPrefix)</Version>
+	  <StartupObject>SatisfactoryModdingHelper.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Templates\Buildcs.txt" />
