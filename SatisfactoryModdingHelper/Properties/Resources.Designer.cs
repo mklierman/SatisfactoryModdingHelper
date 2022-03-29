@@ -212,7 +212,18 @@ namespace SatisfactoryModdingHelper.Properties {
                 return ResourceManager.GetString("JSON_Installed", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Installed.
+        /// </summary>
+        public static string JSON_AcceptsAnyVersion
+        {
+            get
+            {
+                return ResourceManager.GetString("JSON_AcceptsAnyVersion", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Is Beta Version.
         /// </summary>

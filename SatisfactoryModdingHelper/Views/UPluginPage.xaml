@@ -5,10 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:properties="clr-namespace:SatisfactoryModdingHelper.Properties" xmlns:viewmodels="clr-namespace:SatisfactoryModdingHelper.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:UPluginViewModel}"
-    d:DesignHeight="450"
     d:DesignWidth="800"
     Style="{DynamicResource MahApps.Styles.Page}"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Height="620">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="48" />
@@ -180,11 +179,28 @@
                 <TextBlock
                     Grid.Row="16"
                     Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_Plugins}" />
+                    Text="AcceptsAnyVersion" />
+                <CheckBox
+                    Grid.Row="16"
+                    Grid.Column="1"
+                    IsChecked="{Binding AcceptsAnyVersion}" />
                 <TextBlock
                     Grid.Row="17"
                     Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_Modules}" />
+                    Text="{x:Static properties:Resources.JSON_Plugins}" Height="16" Grid.RowSpan="3" VerticalAlignment="Top" />
+                <TextBlock
+                    Grid.Row="19"
+                    Grid.Column="0"
+                    Text="{x:Static properties:Resources.JSON_Modules}" Margin="0,8,0,-23" RenderTransformOrigin="0.5,0.5" >
+                    <TextBlock.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform AngleX="-0.911"/>
+                            <RotateTransform/>
+                            <TranslateTransform X="-0.125"/>
+                        </TransformGroup>
+                    </TextBlock.RenderTransform>
+                </TextBlock>
             </Grid>
         </Grid>
     </Grid>

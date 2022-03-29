@@ -26,6 +26,7 @@ namespace SatisfactoryModdingHelper.ViewModels
         private bool isBetaVersion;
         private bool isExperimentalVersion;
         private bool installed;
+        private bool acceptsAnyVersion;
 
 
         public UPluginViewModel(IPersistAndRestoreService persistAndRestoreService)
@@ -54,5 +55,6 @@ namespace SatisfactoryModdingHelper.ViewModels
         public bool IsBetaVersion { get => isBetaVersion; set => SetProperty(ref isBetaVersion, value); }
         public bool IsExperimentalVersion { get => isExperimentalVersion; set => SetProperty(ref isExperimentalVersion, value); }
         public bool Installed { get => installed; set => SetProperty(ref installed, value); }
+        public bool AcceptsAnyVersion { get => acceptsAnyVersion; set => SetProperty(ref acceptsAnyVersion, value); }
     }
 }

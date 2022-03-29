@@ -36,6 +36,7 @@ namespace SatisfactoryModdingHelper.Models
         public bool IsBetaVersion { get; set; }
         public bool IsExperimentalVersion { get; set; }
         public bool Installed { get; set; }
+        public bool AcceptsAnyVersion { get; set; }
         public List<Plugin> Plugins { get; set; }
         public List<Module> Modules { get; set; }
     }
