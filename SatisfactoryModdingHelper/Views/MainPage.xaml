@@ -41,7 +41,7 @@
                     Height="20"
                     IsEnabled="{Binding PluginComboBoxEnabled, UpdateSourceTrigger=PropertyChanged}"
                     ItemsSource="{Binding PluginList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    SelectedValue="{Binding SelectedPlugin}" />
+                    SelectedValue="{Binding SelectedPlugin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
         </Grid>
         <Grid

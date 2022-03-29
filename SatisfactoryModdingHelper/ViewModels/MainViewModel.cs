@@ -50,9 +50,9 @@ namespace SatisfactoryModdingHelper.ViewModels
             player2Name = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Player2Name);
             args1 = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Args1);
             args2 = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Args2);
-
-            alpakitCopyMod = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CopyMod) == null ? false : _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CopyMod);
-            alpakitCloseGame = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CloseGame) == null ? false : _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CloseGame);
+            SelectedPlugin = _persistAndRestoreService.GetSavedProperty(Properties.Resources.SelectedPlugin);
+            alpakitCopyMod = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CopyMod) ?? false;
+            alpakitCloseGame = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CloseGame) ?? false;
             if (string.IsNullOrEmpty(projectLocation))
             {
                 //Navigate to Settings
@@ -292,7 +292,15 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         private object selectedPlugin;
 
-        public object SelectedPlugin { get => selectedPlugin; set => SetProperty(ref selectedPlugin, value); }
+        public object SelectedPlugin
+        {
+            get => selectedPlugin;
+            set
+            {
+                SetProperty(ref selectedPlugin, value);
+                _persistAndRestoreService.SaveProperty(Properties.Resources.SelectedPlugin, value);
+            }
+        }
 
         private RelayCommand createCPPFiles;
         public ICommand CreateCPPFiles => createCPPFiles ??= new RelayCommand(PerformCreateCPPFiles);

@@ -179,15 +179,19 @@
                 <TextBlock
                     Grid.Row="16"
                     Grid.Column="0"
-                    Text="AcceptsAnyRemoteVersion" />
+                    Text="Accepts Any Remote Version" />
                 <CheckBox
                     Grid.Row="16"
                     Grid.Column="1"
-                    IsChecked="{Binding AcceptsAnyVersion}" />
+                    IsChecked="{Binding AcceptsAnyRemoteVersion}" />
                 <TextBlock
                     Grid.Row="17"
                     Grid.Column="0"
                     Text="{x:Static properties:Resources.JSON_Plugins}" Height="16" Grid.RowSpan="3" VerticalAlignment="Top" />
+                <ListBox
+                    Grid.Row="17"
+                    Grid.Column="1"
+                    ItemsSource="{Binding Plugins}" />
                 <TextBlock
                     Grid.Row="19"
                     Grid.Column="0"
@@ -201,6 +205,10 @@
                         </TransformGroup>
                     </TextBlock.RenderTransform>
                 </TextBlock>
+                <ListBox
+                    Grid.Row="19"
+                    Grid.Column="1"
+                    ItemsSource="{Binding Modules}" />
             </Grid>
         </Grid>
     </Grid>
