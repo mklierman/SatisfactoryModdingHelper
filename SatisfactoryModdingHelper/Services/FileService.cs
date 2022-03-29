@@ -37,5 +37,13 @@ namespace SatisfactoryModdingHelper.Services
                 File.Delete(Path.Combine(folderPath, fileName));
             }
         }
+
+        public static void WriteAllTextIfNew(string path, string contents)
+        {
+            if (!File.Exists(path))
+            {
+                File.WriteAllText(path, contents);
+            }
+        }
     }
 }

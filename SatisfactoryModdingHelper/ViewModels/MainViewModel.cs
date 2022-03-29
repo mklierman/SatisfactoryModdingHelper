@@ -15,6 +15,8 @@ using Newtonsoft.Json;
 using ControlzEx.Standard;
 using System.Threading;
 using System.Runtime.InteropServices;
+using SatisfactoryModdingHelper.Extensions;
+using SatisfactoryModdingHelper.Services;
 
 namespace SatisfactoryModdingHelper.ViewModels
 {
@@ -92,12 +94,10 @@ namespace SatisfactoryModdingHelper.ViewModels
             SendProcessFinishedMessage(exitCode, "Visual Studio File Generation");
         }
 
-        [System.CLSCompliant(false)]
-        [System.Runtime.Versioning.SupportedOSPlatform("windows")]
         private Task<int> RunProcess(string fileName, string arguments = "", bool redirectOutput = true)
         {
             var tcs = new TaskCompletionSource<int>();
-            System.Diagnostics.Process process = new ();
+            System.Diagnostics.Process process = new();
             process.StartInfo = new System.Diagnostics.ProcessStartInfo()
             {
                 UseShellExecute = false,
@@ -109,12 +109,12 @@ namespace SatisfactoryModdingHelper.ViewModels
                 RedirectStandardOutput = redirectOutput
             };
             process.Exited += (sender, args) =>
-{
-                tcs.SetResult(process.ExitCode);
-                process.Dispose();
-            };
+                {
+                    tcs.SetResult(process.ExitCode);
+                    process.Dispose();
+                };
             process.EnableRaisingEvents = true;
-            process.OutputDataReceived += cmd_DataReceived;
+            process.OutputDataReceived += Cmd_DataReceived;
             process.Start();
             if (redirectOutput)
             {
@@ -126,27 +126,17 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         private void SendProcessFinishedMessage(int exitCode, string prefix)
         {
-            switch (exitCode)
+            OutputText += exitCode switch
             {
-                case 0:
-                    OutputText += $"{prefix} Successful";
-                    break;
-                case 2:
-                    OutputText += $"{prefix} Failed: Unable to find a needed file. Double check your directory paths";
-                    break;
-                case 3:
-                    OutputText += $"{prefix} Failed: Unable to find a needed path. Double check your directory paths";
-                    break;
-                case 5:
-                    OutputText += $"{prefix} Failed: Access Denied to something";
-                    break;
-                default:
-                    OutputText += $"{prefix} Failed";
-                    break;
-            }
+                0 => $"{prefix} Successful",
+                2 => $"{prefix} Failed: Unable to find a needed file. Double check your directory paths",
+                3 => $"{prefix} Failed: Unable to find a needed path. Double check your directory paths",
+                5 => $"{prefix} Failed: Access Denied to something",
+                _ => $"{prefix} Failed",
+            };
         }
 
-        private void cmd_DataReceived(object sender, DataReceivedEventArgs e)
+        private void Cmd_DataReceived(object sender, DataReceivedEventArgs e)
         {
             OutputText += e.Data + Environment.NewLine;
         }
@@ -166,16 +156,20 @@ namespace SatisfactoryModdingHelper.ViewModels
         private AsyncRelayCommand buildForDevelopmentEditor;
         public ICommand BuildForDevelopmentEditor => buildForDevelopmentEditor ??= new AsyncRelayCommand(PerformBuildForDevelopmentEditor);
 
+        private async Task<int> RunBuild(bool isShipping)
+        {
+            //"C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGame Win64 Shipping -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
+            //"C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGameEditor Win64 Development -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
+
+            string environmentToBuild = isShipping ? "FactoryGame Win64 Shipping" : "FactoryGameEditor Win64 Development";
+            return await RunProcess(@$"{engineLocation}\Build\BatchFiles\Build.bat", @$"{environmentToBuild} - Project=""{projectLocation}\FactoryGame.uproject"" -WaitMutex -FromMsBuild");
+        }
+
         private async Task PerformBuildForDevelopmentEditor()
         {
-            //"C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGameEditor Win64 Development -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
             OutputText = "Building Development Editor..." + Environment.NewLine;
-            var exitCode = await RunProcess(@$"{engineLocation}\Build\BatchFiles\Build.bat", @$"FactoryGameEditor Win64 Development -Project=""{projectLocation}\FactoryGame.uproject"" -WaitMutex -FromMsBuild");
-
+            var exitCode = await RunBuild(false);
             SendProcessFinishedMessage(exitCode, "Build for Development Editor");
-
-            //Dev
-            //"C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGame Win64 Development -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
         }
 
         private AsyncRelayCommand buildForShipping;
@@ -183,32 +177,50 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         private async Task PerformBuildForShipping()
         {
-            //"C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGame Win64 Shipping -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
             OutputText = "Building Shipping..." + Environment.NewLine;
-            var exitCode = await RunProcess(@$"{engineLocation}\Build\BatchFiles\Build.bat", @$"FactoryGame Win64 Shipping -Project=""{projectLocation}\FactoryGame.uproject"" -WaitMutex -FromMsBuild");
-
+            var exitCode = await RunBuild(true);
             SendProcessFinishedMessage(exitCode, "Build for Shipping");
         }
 
         private AsyncRelayCommand runAlpakit;
         public ICommand RunAlpakit => runAlpakit ??= new AsyncRelayCommand(PerformRunAlpakit);
 
-        private async Task PerformRunAlpakit()
+        private async Task Alpakit(bool launchGame)
         {
-            //Get Engine path\Engine\Build\BatchFiles\RunUAT.bat
+            if (alpakitCloseGame)
+            {
+                CloseRunningSatisfactoryProcesses();
+            }
 
             OutputText = "Running Alpakit..." + Environment.NewLine;
-            int exitCode;
-            if (alpakitCopyMod)
+            string alpakitArgs = alpakitCopyMod ? @$" -CopyToGameDir -GameDir=`{gameLocation}`" : "";
+            int exitCode = await RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@" -ScriptsForProject=`{projectLocation}\FactoryGame.uproject` PackagePlugin -Project=`{projectLocation}\FactoryGame.uproject` -PluginName=`{SelectedPlugin}{alpakitArgs}`".SetQuotes());
+            SendProcessFinishedMessage(exitCode, "Alpakit");
+
+            if (exitCode == 0 && launchGame)
             {
-                exitCode = await RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@" -ScriptsForProject=""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project=""{projectLocation}\FactoryGame.uproject"" -PluginName=""{SelectedPlugin}"" -CopyToGameDir -GameDir=""{gameLocation}""");
-            }
-            else
-            {
-                exitCode = await RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@" -ScriptsForProject=""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project=""{projectLocation}\FactoryGame.uproject"" -PluginName=""{SelectedPlugin}""");
+                OutputText += Environment.NewLine + "Launching Satisfactory...";
+                PerformLaunchSatisfactory();
             }
 
-            SendProcessFinishedMessage(exitCode, "Alpakit");
+        }
+
+        private void CloseRunningSatisfactoryProcesses()
+        {
+            Process[] processlist = Process.GetProcessesByName("Satisfactory.exe");
+            if (processlist.Length > 0)
+            {
+                OutputText = "Stopping existing Satisfactory processess..." + Environment.NewLine;
+                foreach (var process in processlist)
+                {
+                    process.Kill();
+                }
+            }
+        }
+
+        private async Task PerformRunAlpakit()
+        {
+            Alpakit(false);
         }
 
         private AsyncRelayCommand runAlpakitAndLaunch;
@@ -216,28 +228,7 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         private async Task PerformRunAlpakitAndLaunch()
         {
-            OutputText = "Running Alpakit..." + Environment.NewLine;
-            if (alpakitCloseGame)
-            {
-                //Check for running Satisfactory process
-                Process[] processlist = Process.GetProcessesByName("Satisfactory.exe");
-                if (processlist.Length > 0)
-                {
-                    foreach (var process in processlist)
-                    {
-                        process.Kill();
-                    }
-                }
-            }
-            var exitCode = await RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@" -ScriptsForProject=""{projectLocation}\FactoryGame.uproject"" PackagePlugin -Project=""{projectLocation}\FactoryGame.uproject"" -PluginName=""{SelectedPlugin.ToString()}"" -CopyToGameDir -GameDir=""{gameLocation}""");
-
-            SendProcessFinishedMessage(exitCode, "Alpakit");
-
-            if (exitCode == 0)
-            {
-                OutputText += Environment.NewLine + "Launching Satisfactory...";
-                PerformLaunchSatisfactory();
-            }
+            Alpakit(true);
         }
 
         private async Task PerformLaunchSatisfactory()
@@ -319,20 +310,9 @@ namespace SatisfactoryModdingHelper.ViewModels
             var moduleH = GetFromResources("SatisfactoryModdingHelper.Templates.Module.h.txt").Replace("[PluginReference]", SelectedPlugin.ToString());
             var moduleCPP = GetFromResources("SatisfactoryModdingHelper.Templates.Module.cpp.txt").Replace("[PluginReference]", SelectedPlugin.ToString());
 
-            if (!File.Exists($"{sourceDir}//{SelectedPlugin}.Build.cs"))
-            {
-                File.WriteAllText($"{sourceDir}//{SelectedPlugin}.Build.cs", buildCS);
-            }
-
-            if (!File.Exists($"{publicDir}//{SelectedPlugin}Module.h"))
-            {
-                File.WriteAllText($"{publicDir}//{SelectedPlugin}Module.h", moduleH);
-            }
-
-            if (!File.Exists($"{privateDir}//{SelectedPlugin}Module.cpp"))
-            {
-                File.WriteAllText($"{privateDir}//{SelectedPlugin}Module.cpp", moduleCPP);
-            }
+            FileService.WriteAllTextIfNew($"{sourceDir}//{SelectedPlugin}.Build.cs", buildCS);
+            FileService.WriteAllTextIfNew($"{publicDir}//{SelectedPlugin}Module.h", moduleH);
+            FileService.WriteAllTextIfNew($"{privateDir}//{SelectedPlugin}Module.cpp", moduleCPP);
 
             OutputText = "Base C++ Directories and Files Created";
 
@@ -354,7 +334,6 @@ namespace SatisfactoryModdingHelper.ViewModels
                 upluginText = JsonConvert.SerializeObject(uPlugin, Formatting.Indented);
                 File.WriteAllText($"{pluginDirectoryLocation}//{SelectedPlugin}.uplugin", upluginText);
             }
-
         }
 
         private string outputText;
@@ -370,11 +349,11 @@ namespace SatisfactoryModdingHelper.ViewModels
         private async Task PerformLaunchMPTesting()
         {
             //Build launch strings
-            string launchStringArgs1 = $"-EpicPortal -NoSteamClient -Username=\"{player1Name}\" {args1}";
-            string launchStringArgs2 = $"-EpicPortal -NoSteamClient -Username=\"{player2Name}\" {args2}";
-            RunProcess($"\"{gameLocation}\\FactoryGame.exe\"", launchStringArgs1, false);
+            string launchStringArgs1 = $"-EpicPortal -NoSteamClient -Username=`{player1Name}` {args1}".SetQuotes();
+            string launchStringArgs2 = $"-EpicPortal -NoSteamClient -Username=`{player2Name}` {args2}".SetQuotes();
+            RunProcess(@$"`{gameLocation}\FactoryGame.exe\`".SetQuotes(), launchStringArgs1, false);
             Thread.Sleep(1000);
-            RunProcess($"\"{gameLocation}\\FactoryGame.exe\"", launchStringArgs2, false);
+            RunProcess(@$"`{gameLocation}\FactoryGame.exe\`".SetQuotes(), launchStringArgs2, false);
         }
 
         private RelayCommand launchMPTestingHost;
@@ -382,8 +361,7 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         private void PerformLaunchMPTestingHost()
         {
-            string launchStringArgs1 = $"-EpicPortal -NoSteamClient -Username=\"{player1Name}\" {args1}";
-            RunProcess($"\"{gameLocation}\\FactoryGame.exe\"", launchStringArgs1, false);
+            LaunchMP(player1Name, args1);
         }
 
         private RelayCommand launchMPTestingClient;
@@ -391,8 +369,13 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         private void PerformLaunchMPTestingClient()
         {
-            string launchStringArgs2 = $"-EpicPortal -NoSteamClient -Username=\"{player2Name}\" {args2}";
-            RunProcess($"\"{gameLocation}\\FactoryGame.exe\"", launchStringArgs2, false);
+            LaunchMP(player2Name, args2);
+        }
+
+        private void LaunchMP(string playerName, string args)
+        {
+            string launchStringArgs = @$"-EpicPortal -NoSteamClient -Username=`{playerName}` {args}";
+            RunProcess(@$"`{gameLocation}\FactoryGame.exe`".SetQuotes(), launchStringArgs.SetQuotes(), false);
         }
 
         private bool pluginComboBoxEnabled;
