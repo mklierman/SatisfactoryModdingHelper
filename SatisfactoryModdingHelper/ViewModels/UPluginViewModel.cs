@@ -5,15 +5,18 @@ using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Newtonsoft.Json;
 using SatisfactoryModdingHelper.Contracts.Services;
+using SatisfactoryModdingHelper.Contracts.ViewModels;
 using SatisfactoryModdingHelper.Models;
+using System.Windows.Input;
 
 namespace SatisfactoryModdingHelper.ViewModels
 {
-    public class UPluginViewModel : ObservableObject
+    public class UPluginViewModel : ObservableObject, INavigationAware
     {
         private readonly IPersistAndRestoreService _persistAndRestoreService;
-        private readonly string projectDirectory;
-        private readonly string selectedPlugin;
+        private readonly IPluginService _pluginService;
+        private readonly IFileService _fileService;
+        private string projectDirectory;
         private string fileVersion;
         private string version;
         private string versionName;
@@ -35,35 +38,54 @@ namespace SatisfactoryModdingHelper.ViewModels
         private List<string> modules;
 
 
-        public UPluginViewModel(IPersistAndRestoreService persistAndRestoreService)
+        public UPluginViewModel(IPersistAndRestoreService persistAndRestoreService, IPluginService pluginService, IFileService fileService)
         {
             _persistAndRestoreService = persistAndRestoreService;
-            projectDirectory = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Project);
-            selectedPlugin = _persistAndRestoreService.GetSavedProperty(Properties.Resources.SelectedPlugin);
-            string upluginText = File.ReadAllText(@$"{projectDirectory}/Plugins/{selectedPlugin}/{selectedPlugin}.uplugin");
-            UPluginModel uPlugin = JsonConvert.DeserializeObject<UPluginModel>(upluginText);
-            PopulateUPluginFields(uPlugin);
+            _pluginService = pluginService;
+            _fileService = fileService;
+            //selectedPlugin = _persistAndRestoreService.GetSavedProperty(Properties.Resources.SelectedPlugin);
+            //PluginSelectorViewModel = new PluginSelectionViewModel(persistAndRestoreService);
         }
 
-        private void PopulateUPluginFields(UPluginModel model)
+        private void PopulateUPluginFields()
         {
-            FileVersion = model.FileVersion.ToString();
-            Version = model.Version.ToString();
-            VersionName = model.VersionName;
-            SemVersion = model.SemVersion;
-            FriendlyName = model.FriendlyName;
-            Description = model.Description;
-            Category = model.Category;
-            CreatedBy = model.CreatedBy;
-            createdByURL = model.CreatedByURL;
-            DocsURL = model.DocsURL;
-            MarketplaceURL = model.MarketplaceURL;
-            SupportURL = model.SupportURL;
-            CanContainContent = model.CanContainContent;
-            IsBetaVersion = model.IsBetaVersion;
-            IsExperimentalVersion = model.IsExperimentalVersion;
-            Installed = model.Installed;
-            AcceptsAnyRemoteVersion = model.AcceptsAnyRemoteVersion;
+            if (string.IsNullOrEmpty(projectDirectory) || SelectedPlugin == null)
+            {
+                return;
+            }
+            string upluginText = File.ReadAllText(@$"{projectDirectory}/Plugins/{SelectedPlugin}/{SelectedPlugin}.uplugin");
+            UPluginModel uPlugin = JsonConvert.DeserializeObject<UPluginModel>(upluginText);
+            FileVersion = uPlugin.FileVersion.ToString();
+            Version = uPlugin.Version.ToString();
+            VersionName = uPlugin.VersionName;
+            SemVersion = uPlugin.SemVersion;
+            FriendlyName = uPlugin.FriendlyName;
+            Description = uPlugin.Description;
+            Category = uPlugin.Category;
+            CreatedBy = uPlugin.CreatedBy;
+            createdByURL = uPlugin.CreatedByURL;
+            DocsURL = uPlugin.DocsURL;
+            MarketplaceURL = uPlugin.MarketplaceURL;
+            SupportURL = uPlugin.SupportURL;
+            CanContainContent = uPlugin.CanContainContent;
+            IsBetaVersion = uPlugin.IsBetaVersion;
+            IsExperimentalVersion = uPlugin.IsExperimentalVersion;
+            Installed = uPlugin.Installed;
+            AcceptsAnyRemoteVersion = uPlugin.AcceptsAnyRemoteVersion;
+        }
+
+        public void OnNavigatedTo(object parameter)
+        {
+            projectDirectory = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Project);
+            SelectedPlugin = _pluginService.SelectedPlugin;
+            PluginList = _pluginService.PluginList;
+            PopulateUPluginFields();
+        }
+
+        public void OnNavigatedFrom()
+        {
+            _pluginService.SelectedPlugin = SelectedPlugin;
+            _persistAndRestoreService.PersistData();
         }
 
         public string FileVersion { get => fileVersion; set => SetProperty(ref fileVersion, value); }
@@ -85,5 +107,87 @@ namespace SatisfactoryModdingHelper.ViewModels
         public bool AcceptsAnyRemoteVersion { get => acceptsAnyRemoteVersion; set => SetProperty(ref acceptsAnyRemoteVersion, value); }
         public List<string> Plugins { get => plugins; set => SetProperty(ref plugins, value); }
         public List<string> Modules { get => modules; set => SetProperty(ref modules, value); }
+
+        private object pluginSelectorViewModel;
+
+        public object PluginSelectorViewModel { get => pluginSelectorViewModel; set => SetProperty(ref pluginSelectorViewModel, value); }
+
+        private object selectedPlugin;
+
+        public object SelectedPlugin {
+            get => selectedPlugin;
+            set
+            {
+                if (SetProperty(ref selectedPlugin, value))
+                {
+                    PopulateUPluginFields();
+                    _persistAndRestoreService.SaveProperty(Properties.Resources.SelectedPlugin, value);
+                }
+            }
+        }
+
+        private System.Collections.IEnumerable pluginList;
+
+        public System.Collections.IEnumerable PluginList { get => pluginList; set => SetProperty(ref pluginList, value); }
+
+        private RelayCommand saveUPlugin;
+        public ICommand SaveUPlugin => saveUPlugin ??= new RelayCommand(PerformSaveUPlugin);
+
+        private void PerformSaveUPlugin()
+        {
+            if (string.IsNullOrEmpty(projectDirectory) || SelectedPlugin == null)
+            {
+                return;
+            }
+            string folderPath = @$"{projectDirectory}/Plugins/{SelectedPlugin}/";
+            string fileName = $@"{SelectedPlugin}.uplugin";
+            UPluginModel uPlugin = new()
+            {
+                FileVersion = int.Parse(FileVersion),
+                Version = int.Parse(Version),
+                VersionName = VersionName,
+                SemVersion = SemVersion,
+                FriendlyName = FriendlyName,
+                Description = Description,
+                Category = Category,
+                CreatedBy = CreatedBy,
+                CreatedByURL = CreatedByURL,
+                DocsURL = DocsURL,
+                MarketplaceURL = MarketplaceURL,
+                SupportURL = SupportURL,
+                CanContainContent = CanContainContent,
+                IsBetaVersion = IsBetaVersion,
+                IsExperimentalVersion = IsExperimentalVersion,
+                Installed = Installed,
+                AcceptsAnyRemoteVersion = AcceptsAnyRemoteVersion
+            };
+            //var serializedJson = JsonConvert.SerializeObject(uPlugin);
+            _fileService.Save(folderPath, fileName, uPlugin);
+            FileVersion = uPlugin.FileVersion.ToString();
+            Version = uPlugin.Version.ToString();
+            VersionName = uPlugin.VersionName;
+            SemVersion = uPlugin.SemVersion;
+            FriendlyName = uPlugin.FriendlyName;
+            Description = uPlugin.Description;
+            Category = uPlugin.Category;
+            CreatedBy = uPlugin.CreatedBy;
+            CreatedByURL = uPlugin.CreatedByURL;
+            DocsURL = uPlugin.DocsURL;
+            MarketplaceURL = uPlugin.MarketplaceURL;
+            SupportURL = uPlugin.SupportURL;
+            CanContainContent = uPlugin.CanContainContent;
+            IsBetaVersion = uPlugin.IsBetaVersion;
+            IsExperimentalVersion = uPlugin.IsExperimentalVersion;
+            Installed = uPlugin.Installed;
+            AcceptsAnyRemoteVersion = uPlugin.AcceptsAnyRemoteVersion;
+        }
+
+        private RelayCommand cancelUPluginChanges;
+        public ICommand CancelUPluginChanges => cancelUPluginChanges ??= new RelayCommand(PerformCancelUPluginChanges);
+
+        private void PerformCancelUPluginChanges()
+        {
+            PopulateUPluginFields();
+        }
     }
 }

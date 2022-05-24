@@ -1,24 +1,27 @@
 ﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
 using SatisfactoryModdingHelper.Contracts.Services;
-using SatisfactoryModdingHelper.Contracts.ViewModels;
+using SatisfactoryModdingHelper.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace SatisfactoryModdingHelper.ViewModels
+namespace SatisfactoryModdingHelper.Services
 {
-    public class PluginSelectionViewModel : ObservableObject, INavigationAware
+    public class PluginService :  ObservableObject, IPluginService
     {
         private readonly IPersistAndRestoreService _persistAndRestoreService;
-        private readonly string projectLocation;
-        public PluginSelectionViewModel(IPersistAndRestoreService persistAndRestoreService)
+        private string projectLocation;
+
+        public PluginService(IPersistAndRestoreService persistAndRestoreService)
         {
             _persistAndRestoreService = persistAndRestoreService;
             projectLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Project);
-            PopulatePluginList();
-            selectedPlugin = _persistAndRestoreService.GetSavedProperty(Properties.Resources.SelectedPlugin);
-            PluginComboBoxEnabled = true;
+            //PopulatePluginList();
+            SelectedPlugin = _persistAndRestoreService.GetSavedProperty(Properties.Resources.SelectedPlugin);
         }
 
         private object selectedPlugin;
@@ -32,14 +35,12 @@ namespace SatisfactoryModdingHelper.ViewModels
             }
         }
 
-        private bool pluginComboBoxEnabled;
-        public bool PluginComboBoxEnabled { get => pluginComboBoxEnabled; set => SetProperty(ref pluginComboBoxEnabled, value); }
-
         private System.Collections.IEnumerable pluginList;
-        public System.Collections.IEnumerable PluginList { get => pluginList; set => SetProperty(ref pluginList, value); }
+        public IEnumerable PluginList { get => GetPluginList(); }
 
-        private void PopulatePluginList()
+        public IEnumerable GetPluginList()
         {
+            projectLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Project);
             var pluginDirectory = projectLocation + "//Plugins";
             if (Directory.Exists(pluginDirectory))
             {
@@ -49,20 +50,9 @@ namespace SatisfactoryModdingHelper.ViewModels
                     var di = new DirectoryInfo(directory);
                     pluginDirs.Add(di.Name);
                 }
-                PluginList = pluginDirs;
+                return pluginDirs;
             }
-        }
-
-        public void OnNavigatedTo(object parameter)
-        {
-            //throw new NotImplementedException();
-        }
-
-        public void OnNavigatedFrom()
-        {
-            //throw new NotImplementedException();
+            return null;
         }
     }
-
-
 }

@@ -4,211 +4,258 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:properties="clr-namespace:SatisfactoryModdingHelper.Properties" xmlns:viewmodels="clr-namespace:SatisfactoryModdingHelper.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:UPluginViewModel}"
+    xmlns:properties="clr-namespace:SatisfactoryModdingHelper.Properties"
+    xmlns:viewmodels="clr-namespace:SatisfactoryModdingHelper.ViewModels"
+    xmlns:views="clr-namespace:SatisfactoryModdingHelper.Views"
+    Height="620"
+    d:DataContext="{d:DesignInstance Type=viewmodels:UPluginViewModel}"
     d:DesignWidth="800"
     Style="{DynamicResource MahApps.Styles.Page}"
-    mc:Ignorable="d" Height="620">
+    mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="48" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="48" />
         </Grid.RowDefinitions>
-        <TextBlock
-            Margin="{StaticResource MediumLeftMargin}"
-            Style="{StaticResource PageTitleStyle}"
-            Text="{x:Static properties:Resources.UPluginPageTitle}" />
-        <Grid
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Grid.Column="0"
+                Margin="{StaticResource MediumLeftMargin}"
+                Style="{StaticResource PageTitleStyle}"
+                Text="{x:Static properties:Resources.UPluginPageTitle}" />
+            <Grid Grid.Column="1" Margin="{StaticResource MediumRightMargin}">
+                <views:PluginSelectionControl />
+            </Grid>
+        </Grid>
+        <ScrollViewer
             Grid.Row="1"
-            Margin="{StaticResource MediumLeftRightMargin}"
-            Background="{DynamicResource MahApps.Brushes.Gray10}">
+            Background="{DynamicResource MahApps.Brushes.Gray10}"
+            VerticalScrollBarVisibility="Auto">
+            <Grid Grid.Row="1" Margin="{StaticResource MediumLeftTopRightBottomMargin}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_FileVersion}" />
+                    <TextBox
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Text="{Binding FileVersion}" />
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_Version}" />
+                    <TextBox
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Text="{Binding Version}" />
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_VersionName}" />
+                    <TextBox
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Text="{Binding VersionName}" />
+                    <TextBlock
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_SemVersion}" />
+                    <TextBox
+                        Grid.Row="3"
+                        Grid.Column="1"
+                        Text="{Binding SemVersion}" />
+                    <TextBlock
+                        Grid.Row="4"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_FriendlyName}" />
+                    <TextBox
+                        Grid.Row="4"
+                        Grid.Column="1"
+                        Text="{Binding FriendlyName}" />
+                    <TextBlock
+                        Grid.Row="5"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_Description}" />
+                    <TextBox
+                        Grid.Row="5"
+                        Grid.Column="1"
+                        Text="{Binding Description}" />
+                    <TextBlock
+                        Grid.Row="6"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_Category}" />
+                    <TextBox
+                        Grid.Row="6"
+                        Grid.Column="1"
+                        Text="{Binding Category}" />
+                    <TextBlock
+                        Grid.Row="7"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_CreatedBy}" />
+                    <TextBox
+                        Grid.Row="7"
+                        Grid.Column="1"
+                        Text="{Binding CreatedBy}" />
+                    <TextBlock
+                        Grid.Row="8"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_CreatedByURL}" />
+                    <TextBox
+                        Grid.Row="8"
+                        Grid.Column="1"
+                        Text="{Binding CreatedByURL}" />
+                    <TextBlock
+                        Grid.Row="9"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_DocsURL}" />
+                    <TextBox
+                        Grid.Row="9"
+                        Grid.Column="1"
+                        Text="{Binding DocsURL}" />
+                    <TextBlock
+                        Grid.Row="10"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_MarketplaceURL}" />
+                    <TextBox
+                        Grid.Row="10"
+                        Grid.Column="1"
+                        Text="{Binding MarketplaceURL}" />
+                    <TextBlock
+                        Grid.Row="11"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_SupportURL}" />
+                    <TextBox
+                        Grid.Row="11"
+                        Grid.Column="1"
+                        Text="{Binding SupportURL}" />
+                    <TextBlock
+                        Grid.Row="12"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_CanContainContent}" />
+                    <CheckBox
+                        Grid.Row="12"
+                        Grid.Column="1"
+                        IsChecked="{Binding CanContainContent}" />
+                    <TextBlock
+                        Grid.Row="13"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_IsBetaVersion}" />
+                    <CheckBox
+                        Grid.Row="13"
+                        Grid.Column="1"
+                        IsChecked="{Binding IsBetaVersion}" />
+                    <TextBlock
+                        Grid.Row="14"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_IsExperimentalVersion}" />
+                    <CheckBox
+                        Grid.Row="14"
+                        Grid.Column="1"
+                        IsChecked="{Binding IsExperimental}" />
+                    <TextBlock
+                        Grid.Row="15"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_Installed}" />
+                    <CheckBox
+                        Grid.Row="15"
+                        Grid.Column="1"
+                        IsChecked="{Binding Installed}" />
+                    <TextBlock
+                        Grid.Row="16"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_AnyRemoteVersion}" />
+                    <CheckBox
+                        Grid.Row="16"
+                        Grid.Column="1"
+                        IsChecked="{Binding AcceptsAnyRemoteVersion}" />
+                    <TextBlock
+                        Grid.Row="17"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        VerticalAlignment="Top"
+                        Text="{x:Static properties:Resources.JSON_Plugins}" />
+                    <ListBox
+                        Grid.Row="17"
+                        Grid.Column="1"
+                        ItemsSource="{Binding Plugins}" />
+                    <TextBlock
+                        Grid.Row="18"
+                        Grid.Column="0"
+                        Margin="{StaticResource SmallRightMargin}"
+                        Text="{x:Static properties:Resources.JSON_Modules}" />
+                    <ListBox
+                        Grid.Row="18"
+                        Grid.Column="1"
+                        ItemsSource="{Binding Modules}" />
+                </Grid>
+            </Grid>
+        </ScrollViewer>
+        <Grid Grid.Row="2">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <TextBlock
-                    Grid.Row="0"
+                <Button
                     Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_FileVersion}" />
-                <TextBox
-                    Grid.Row="0"
+                    Margin="{StaticResource XSmallLeftTopRightBottomMargin}"
+                    Command="{Binding SaveUPlugin}"
+                    Content="Save" />
+                <Button
                     Grid.Column="1"
-                    Text="{Binding FileVersion}" />
-                <TextBlock
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_Version}" />
-                <TextBox
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Text="{Binding Version}" />
-                <TextBlock
-                    Grid.Row="2"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_VersionName}" />
-                <TextBox
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Text="{Binding VersionName}" />
-                <TextBlock
-                    Grid.Row="3"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_SemVersion}" />
-                <TextBox
-                    Grid.Row="3"
-                    Grid.Column="1"
-                    Text="{Binding SemVersion}" />
-                <TextBlock
-                    Grid.Row="4"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_FriendlyName}" />
-                <TextBox
-                    Grid.Row="4"
-                    Grid.Column="1"
-                    Text="{Binding FriendlyName}" />
-                <TextBlock
-                    Grid.Row="5"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_Description}" />
-                <TextBox
-                    Grid.Row="5"
-                    Grid.Column="1"
-                    Text="{Binding Description}" />
-                <TextBlock
-                    Grid.Row="6"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_Category}" />
-                <TextBox
-                    Grid.Row="6"
-                    Grid.Column="1"
-                    Text="{Binding Category}" />
-                <TextBlock
-                    Grid.Row="7"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_CreatedBy}" />
-                <TextBox
-                    Grid.Row="7"
-                    Grid.Column="1"
-                    Text="{Binding CreatedBy}" />
-                <TextBlock
-                    Grid.Row="8"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_CreatedByURL}" />
-                <TextBox
-                    Grid.Row="8"
-                    Grid.Column="1"
-                    Text="{Binding CreatedByURL}" />
-                <TextBlock
-                    Grid.Row="9"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_DocsURL}" />
-                <TextBox
-                    Grid.Row="9"
-                    Grid.Column="1"
-                    Text="{Binding DocsURL}" />
-                <TextBlock
-                    Grid.Row="10"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_MarketplaceURL}" />
-                <TextBox
-                    Grid.Row="10"
-                    Grid.Column="1"
-                    Text="{Binding MarketplaceURL}" />
-                <TextBlock
-                    Grid.Row="11"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_SupportURL}" />
-                <TextBox
-                    Grid.Row="11"
-                    Grid.Column="1"
-                    Text="{Binding SupportURL}" />
-                <TextBlock
-                    Grid.Row="12"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_CanContainContent}" />
-                <CheckBox
-                    Grid.Row="12"
-                    Grid.Column="1"
-                    IsChecked="{Binding CanContainContent}" />
-                <TextBlock
-                    Grid.Row="13"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_IsBetaVersion}" />
-                <CheckBox
-                    Grid.Row="13"
-                    Grid.Column="1"
-                    IsChecked="{Binding IsBetaVersion}" />
-                <TextBlock
-                    Grid.Row="14"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_IsExperimentalVersion}" />
-                <CheckBox
-                    Grid.Row="14"
-                    Grid.Column="1"
-                    IsChecked="{Binding IsExperimental}" />
-                <TextBlock
-                    Grid.Row="15"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_Installed}" />
-                <CheckBox
-                    Grid.Row="15"
-                    Grid.Column="1"
-                    IsChecked="{Binding Installed}" />
-                <TextBlock
-                    Grid.Row="16"
-                    Grid.Column="0"
-                    Text="Accepts Any Remote Version" />
-                <CheckBox
-                    Grid.Row="16"
-                    Grid.Column="1"
-                    IsChecked="{Binding AcceptsAnyRemoteVersion}" />
-                <TextBlock
-                    Grid.Row="17"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_Plugins}" Height="16" Grid.RowSpan="3" VerticalAlignment="Top" />
-                <ListBox
-                    Grid.Row="17"
-                    Grid.Column="1"
-                    ItemsSource="{Binding Plugins}" />
-                <TextBlock
-                    Grid.Row="19"
-                    Grid.Column="0"
-                    Text="{x:Static properties:Resources.JSON_Modules}" Margin="0,8,0,-23" RenderTransformOrigin="0.5,0.5" >
-                    <TextBlock.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform/>
-                            <SkewTransform AngleX="-0.911"/>
-                            <RotateTransform/>
-                            <TranslateTransform X="-0.125"/>
-                        </TransformGroup>
-                    </TextBlock.RenderTransform>
-                </TextBlock>
-                <ListBox
-                    Grid.Row="19"
-                    Grid.Column="1"
-                    ItemsSource="{Binding Modules}" />
+                    Margin="{StaticResource XSmallLeftTopRightBottomMargin}"
+                    Command="{Binding CancelUPluginChanges}"
+                    Content="Cancel" />
             </Grid>
         </Grid>
     </Grid>

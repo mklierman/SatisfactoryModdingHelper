@@ -69,6 +69,7 @@ namespace SatisfactoryModdingHelper
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IFileService, FileService>();
+            services.AddSingleton<IPluginService, PluginService>();
 
             // Views and ViewModels
             services.AddTransient<IShellWindow, ShellWindow>();

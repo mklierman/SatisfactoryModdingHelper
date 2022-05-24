@@ -24,7 +24,7 @@ namespace SatisfactoryModdingHelper.ViewModels
     {
         private readonly IPersistAndRestoreService _persistAndRestoreService;
         private readonly INavigationService _navigationService;
-        private string pluginName;
+        private readonly IPluginService _pluginService;
         private string engineLocation;
         private string projectLocation;
         private string gameLocation;
@@ -32,13 +32,14 @@ namespace SatisfactoryModdingHelper.ViewModels
         private string player2Name;
         private bool alpakitCopyMod;
         private bool alpakitCloseGame;
-        private const string asd = "";
 
-        public MainViewModel(IPersistAndRestoreService persistAndRestoreService, INavigationService navigationService)
+        public MainViewModel(IPersistAndRestoreService persistAndRestoreService, INavigationService navigationService, IPluginService pluginService)
         {
             _persistAndRestoreService = persistAndRestoreService;
             _navigationService = navigationService;
+            _pluginService = pluginService;
             pluginComboBoxEnabled = true;
+            PluginSelectorViewModel = new PluginSelectionViewModel(persistAndRestoreService);
         }
 
         public void OnNavigatedTo(object parameter)
@@ -60,12 +61,16 @@ namespace SatisfactoryModdingHelper.ViewModels
             }
             else
             {
-                PopulatePluginList();
+                //PopulatePluginList();
+                SelectedPlugin = _pluginService.SelectedPlugin;
+                PluginList = _pluginService.PluginList;
+                //SelectedPlugin = _persistAndRestoreService.GetSavedProperty(Properties.Resources.SelectedPlugin);
             }
         }
 
         public void OnNavigatedFrom()
         {
+            _pluginService.SelectedPlugin = SelectedPlugin;
             _persistAndRestoreService.PersistData();
         }
 
@@ -389,5 +394,9 @@ namespace SatisfactoryModdingHelper.ViewModels
         private bool pluginComboBoxEnabled;
 
         public bool PluginComboBoxEnabled { get => pluginComboBoxEnabled; set => SetProperty(ref pluginComboBoxEnabled, value); }
+
+        private object pluginSelectorViewModel;
+
+        public object PluginSelectorViewModel { get => pluginSelectorViewModel; set => SetProperty(ref pluginSelectorViewModel, value); }
     }
 }

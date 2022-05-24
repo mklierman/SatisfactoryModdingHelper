@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:properties="clr-namespace:SatisfactoryModdingHelper.Properties"
+    xmlns:views="clr-namespace:SatisfactoryModdingHelper.Views"
     xmlns:viewmodels="clr-namespace:SatisfactoryModdingHelper.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
     d:DesignHeight="550"
@@ -27,21 +28,9 @@
                 Style="{StaticResource PageTitleStyle}"
                 Text="{x:Static properties:Resources.MainPageTitle}" />
             <Grid Grid.Column="1" Margin="{StaticResource MediumRightMargin}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <TextBlock
-                    Grid.Column="0"
-                    Height="20"
-                    Margin="{StaticResource SmallRightMargin}"
-                    Text="{x:Static properties:Resources.ModPlugin}" />
-                <ComboBox
-                    Grid.Column="1"
-                    Height="20"
-                    IsEnabled="{Binding PluginComboBoxEnabled, UpdateSourceTrigger=PropertyChanged}"
-                    ItemsSource="{Binding PluginList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    SelectedValue="{Binding SelectedPlugin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <!--<views:PluginSelectionControl DataContext="{Binding PluginSelectorViewModel, UpdateSourceTrigger=PropertyChanged}"/>-->
+                <views:PluginSelectionControl
+                    />
             </Grid>
         </Grid>
         <Grid

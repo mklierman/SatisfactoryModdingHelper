@@ -133,6 +133,15 @@ namespace SatisfactoryModdingHelper.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Accepts Any Remote Version.
+        /// </summary>
+        public static string JSON_AnyRemoteVersion {
+            get {
+                return ResourceManager.GetString("JSON_AnyRemoteVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Can Contain Content.
         /// </summary>
         public static string JSON_CanContainContent {
@@ -212,18 +221,7 @@ namespace SatisfactoryModdingHelper.Properties {
                 return ResourceManager.GetString("JSON_Installed", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Installed.
-        /// </summary>
-        public static string JSON_AcceptsAnyVersion
-        {
-            get
-            {
-                return ResourceManager.GetString("JSON_AcceptsAnyRemoteVersion", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Is Beta Version.
         /// </summary>

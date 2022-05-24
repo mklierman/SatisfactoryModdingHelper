@@ -2,21 +2,24 @@
     x:Class="SatisfactoryModdingHelper.Views.PluginSelectionControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:SatisfactoryModdingHelper.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:SatisfactoryModdingHelper.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:SatisfactoryModdingHelper.Models"
     xmlns:properties="clr-namespace:SatisfactoryModdingHelper.Properties"
     xmlns:viewmodels="clr-namespace:SatisfactoryModdingHelper.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:PluginSelectionViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    Style="{DynamicResource MahApps.Styles.Page}"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" EnumType="models:AppTheme" />
+    </UserControl.Resources>
     <Grid Margin="{StaticResource MediumRightMargin}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <TextBlock
             Grid.Column="0"
@@ -26,13 +29,8 @@
         <ComboBox
             Grid.Column="1"
             Height="20"
-            Margin="{StaticResource SmallRightMargin}"
             IsEnabled="{Binding PluginComboBoxEnabled, UpdateSourceTrigger=PropertyChanged}"
             ItemsSource="{Binding PluginList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            SelectedValue="{Binding SelectedPlugin}" />
-        <Button
-            Grid.Column="2"
-            Height="20"
-            Content="Refresh"/>
+            SelectedValue="{Binding SelectedPlugin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
     </Grid>
 </UserControl>

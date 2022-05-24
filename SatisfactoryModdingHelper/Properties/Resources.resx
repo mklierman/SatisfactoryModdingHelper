@@ -393,4 +393,7 @@
   <data name="SelectedPlugin" xml:space="preserve">
     <value />
   </data>
+  <data name="JSON_AnyRemoteVersion" xml:space="preserve">
+    <value>Accepts Any Remote Version</value>
+  </data>
 </root>
