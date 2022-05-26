@@ -5,5 +5,7 @@
         void OnNavigatedTo(object parameter);
 
         void OnNavigatedFrom();
+
+        void OnStartingNavigateFrom();
     }
 }

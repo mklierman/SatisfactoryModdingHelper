@@ -17,6 +17,7 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using SatisfactoryModdingHelper.Extensions;
 using SatisfactoryModdingHelper.Services;
+using System.Collections.ObjectModel;
 
 namespace SatisfactoryModdingHelper.ViewModels
 {
@@ -61,10 +62,7 @@ namespace SatisfactoryModdingHelper.ViewModels
             }
             else
             {
-                //PopulatePluginList();
                 SelectedPlugin = _pluginService.SelectedPlugin;
-                PluginList = _pluginService.PluginList;
-                //SelectedPlugin = _persistAndRestoreService.GetSavedProperty(Properties.Resources.SelectedPlugin);
             }
         }
 
@@ -167,7 +165,8 @@ namespace SatisfactoryModdingHelper.ViewModels
             //"C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGameEditor Win64 Development -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
 
             string environmentToBuild = isShipping ? "FactoryGame Win64 Shipping" : "FactoryGameEditor Win64 Development";
-            return await RunProcess(@$"{engineLocation}\Build\BatchFiles\Build.bat", @$"{environmentToBuild} - Project=""{projectLocation}\FactoryGame.uproject"" -WaitMutex -FromMsBuild");
+            return await RunProcess(@$"`{engineLocation}\Build\BatchFiles\Build.bat`".SetQuotes(), @$"{environmentToBuild} -Project=""{projectLocation}\FactoryGame.uproject"" -WaitMutex -FromMsBuild");
+
         }
 
         private async Task PerformBuildForDevelopmentEditor()
@@ -199,7 +198,7 @@ namespace SatisfactoryModdingHelper.ViewModels
 
             OutputText = "Running Alpakit..." + Environment.NewLine;
             string alpakitArgs = alpakitCopyMod ? @$" -CopyToGameDir -GameDir=`{gameLocation}`" : "";
-            int exitCode = await RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@" -ScriptsForProject=`{projectLocation}\FactoryGame.uproject` PackagePlugin -Project=`{projectLocation}\FactoryGame.uproject` -PluginName=`{SelectedPlugin}{alpakitArgs}`".SetQuotes());
+            int exitCode = await RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@" -ScriptsForProject=`{projectLocation}\FactoryGame.uproject` PackagePlugin -Project=`{projectLocation}\FactoryGame.uproject` -PluginName=`{SelectedPlugin}` {alpakitArgs}".SetQuotes());
             SendProcessFinishedMessage(exitCode, "Alpakit");
 
             if (exitCode == 0 && launchGame)
@@ -335,13 +334,13 @@ namespace SatisfactoryModdingHelper.ViewModels
 
             if (uPlugin.Modules == null || uPlugin.Modules.Count == 0)
             {
-                Models.Module module = new();
+                Models.ModuleModel module = new();
                 module.Name = SelectedPlugin.ToString();
                 module.Type = "Runtime";
                 module.LoadingPhase = "Default";
                 if (uPlugin.Modules == null)
                 {
-                    uPlugin.Modules = new List<Models.Module>();
+                    uPlugin.Modules = new ObservableCollection<Models.ModuleModel>();
                 }
                 uPlugin.Modules.Add(module);
                 upluginText = JsonConvert.SerializeObject(uPlugin, Formatting.Indented);
@@ -364,9 +363,9 @@ namespace SatisfactoryModdingHelper.ViewModels
             //Build launch strings
             string launchStringArgs1 = $"-EpicPortal -NoSteamClient -Username=`{player1Name}` {args1}".SetQuotes();
             string launchStringArgs2 = $"-EpicPortal -NoSteamClient -Username=`{player2Name}` {args2}".SetQuotes();
-            RunProcess(@$"`{gameLocation}\FactoryGame.exe\`".SetQuotes(), launchStringArgs1, false);
+            RunProcess(@$"`{gameLocation}\FactoryGame.exe`".SetQuotes(), launchStringArgs1, false);
             Thread.Sleep(1000);
-            RunProcess(@$"`{gameLocation}\FactoryGame.exe\`".SetQuotes(), launchStringArgs2, false);
+            RunProcess(@$"`{gameLocation}\FactoryGame.exe`".SetQuotes(), launchStringArgs2, false);
         }
 
         private RelayCommand launchMPTestingHost;
@@ -389,6 +388,10 @@ namespace SatisfactoryModdingHelper.ViewModels
         {
             string launchStringArgs = @$"-EpicPortal -NoSteamClient -Username=`{playerName}` {args}";
             RunProcess(@$"`{gameLocation}\FactoryGame.exe`".SetQuotes(), launchStringArgs.SetQuotes(), false);
+        }
+
+        public void OnStartingNavigateFrom()
+        {
         }
 
         private bool pluginComboBoxEnabled;

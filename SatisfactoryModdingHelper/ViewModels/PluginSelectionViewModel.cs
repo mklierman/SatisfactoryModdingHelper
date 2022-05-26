@@ -62,6 +62,10 @@ namespace SatisfactoryModdingHelper.ViewModels
         {
             //throw new NotImplementedException();
         }
+
+        public void OnStartingNavigateFrom()
+        {
+        }
     }
 
 

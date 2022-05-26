@@ -19,11 +19,6 @@
     </Page.Resources>
     <ScrollViewer>
         <Grid Margin="{StaticResource SmallTopBottomMargin}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="48" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="{x:Static properties:Resources.SettingsPageTitle}" />
             <StackPanel
                 x:Name="ContentArea"
                 Grid.Row="1"

@@ -5,151 +5,124 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:properties="clr-namespace:SatisfactoryModdingHelper.Properties"
-    xmlns:views="clr-namespace:SatisfactoryModdingHelper.Views"
     xmlns:viewmodels="clr-namespace:SatisfactoryModdingHelper.ViewModels"
+    xmlns:views="clr-namespace:SatisfactoryModdingHelper.Views"
     d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
     d:DesignHeight="550"
     d:DesignWidth="800"
     Style="{DynamicResource MahApps.Styles.Page}"
     mc:Ignorable="d">
-    <Grid>
+    <Grid Margin="{StaticResource MediumLeftRightBottomMargin}" Background="{DynamicResource MahApps.Brushes.Gray10}">
+
         <Grid.RowDefinitions>
-            <RowDefinition Height="48" />
-            <RowDefinition Height="*" />
+            <RowDefinition Name="CurrentMod" Height="Auto" />
+            <RowDefinition Name="Buttons" Height="Auto" />
+            <RowDefinition Name="Output" Height="*" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="2*" />
-            </Grid.ColumnDefinitions>
-            <TextBlock
-                Grid.Column="0"
-                Margin="{StaticResource MediumLeftMargin}"
-                Style="{StaticResource PageTitleStyle}"
-                Text="{x:Static properties:Resources.MainPageTitle}" />
-            <Grid Grid.Column="1" Margin="{StaticResource MediumRightMargin}">
-                <!--<views:PluginSelectionControl DataContext="{Binding PluginSelectorViewModel, UpdateSourceTrigger=PropertyChanged}"/>-->
-                <views:PluginSelectionControl
-                    />
-            </Grid>
-        </Grid>
-        <Grid
-            Grid.Row="1"
-            Margin="{StaticResource MediumLeftRightMargin}"
-            Background="{DynamicResource MahApps.Brushes.Gray10}">
 
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Name="CurrentMod" Height="Auto" />
-                    <RowDefinition Name="Buttons" Height="Auto" />
-                    <RowDefinition Name="Output" Height="*" />
-                </Grid.RowDefinitions>
-
-                <StackPanel Grid.Row="1">
-                    <!--<Line
+        <StackPanel Grid.Row="1">
+            <!--<Line
                         Margin="{StaticResource SmallTopBottomMargin}"
                         Stroke="Gray"
                         StrokeThickness="1"
                         X2="99999" />-->
-                    <Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="{StaticResource SmallLeftRightMargin}">
+                    <Button
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Command="{Binding GenerateVSFiles}"
+                        Content="{x:Static properties:Resources.Main_Button_VS}" />
+                    <Button
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Command="{Binding CreateCPPFiles}"
+                        Content="{x:Static properties:Resources.Main_Button_CPP}" />
+                    <Button
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Command="{Binding BuildForDevelopmentEditor}"
+                        Content="{x:Static properties:Resources.Main_Button_DevEditor}" />
+                    <Button
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Command="{Binding BuildForShipping}"
+                        Content="{x:Static properties:Resources.Main_Button_Shipping}" />
+                    <Button
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Command="{Binding RunAlpakit}"
+                        Content="{x:Static properties:Resources.Main_Button_Alpakit}" />
+                    <Button
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Command="{Binding RunAlpakitAndLaunch}"
+                        Content="{x:Static properties:Resources.Main_Button_Alpakit_Launch}" />
+                    <Grid Margin="{StaticResource XSmallTopMargin}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" Margin="{StaticResource SmallLeftRightMargin}">
-                            <Button
-                                Margin="{StaticResource XSmallTopMargin}"
-                                Command="{Binding GenerateVSFiles}"
-                                Content="{x:Static properties:Resources.Main_Button_VS}" />
-                            <Button
-                                Margin="{StaticResource XSmallTopMargin}"
-                                Command="{Binding CreateCPPFiles}"
-                                Content="{x:Static properties:Resources.Main_Button_CPP}" />
-                            <Button
-                                Margin="{StaticResource XSmallTopMargin}"
-                                Command="{Binding BuildForDevelopmentEditor}"
-                                Content="{x:Static properties:Resources.Main_Button_DevEditor}" />
-                            <Button
-                                Margin="{StaticResource XSmallTopMargin}"
-                                Command="{Binding BuildForShipping}"
-                                Content="{x:Static properties:Resources.Main_Button_Shipping}" />
-                            <Button
-                                Margin="{StaticResource XSmallTopMargin}"
-                                Command="{Binding RunAlpakit}"
-                                Content="{x:Static properties:Resources.Main_Button_Alpakit}" />
-                            <Button
-                                Margin="{StaticResource XSmallTopMargin}"
-                                Command="{Binding RunAlpakitAndLaunch}"
-                                Content="{x:Static properties:Resources.Main_Button_Alpakit_Launch}" />
-                            <Grid Margin="{StaticResource XSmallTopMargin}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Button
-                                    Grid.Column="0"
-                                    Command="{Binding LaunchMPTesting}"
-                                    Content="{x:Static properties:Resources.Main_Button_MP}" />
-                                <Button
-                                    Grid.Column="1"
-                                    Command="{Binding LaunchMPTestingHost}"
-                                    Content="{x:Static properties:Resources.Main_Button_MP1}" />
-                                <Button
-                                    Grid.Column="2"
-                                    Command="{Binding LaunchMPTestingClient}"
-                                    Content="{x:Static properties:Resources.Main_Button_MP2}" />
-                            </Grid>
-                        </StackPanel>
-                        <StackPanel Grid.Column="1">
-                            <Button
-                                Margin="{StaticResource XSmallTopMargin}"
-                                Command="{Binding RunAllChecked}"
-                                Content="{x:Static properties:Resources.Main_Button_AIO}" />
-                            <CheckBox
-                                Margin="{StaticResource XSmallTopMargin}"
-                                Content="{x:Static properties:Resources.Main_Button_VS}"
-                                IsChecked="{Binding AIOGenerateVSFiles}" />
-                            <CheckBox
-                                Margin="{StaticResource XXSmallTopMargin}"
-                                Content="{x:Static properties:Resources.Main_Button_DevEditor}"
-                                IsChecked="{Binding AIOBuildDevEditor}" />
-                            <CheckBox
-                                Margin="{StaticResource XXSmallTopMargin}"
-                                Content="{x:Static properties:Resources.Main_Button_Shipping}"
-                                IsChecked="{Binding AIOBuildShipping}" />
-                            <CheckBox
-                                Margin="{StaticResource XXSmallTopMargin}"
-                                Content="{x:Static properties:Resources.Main_Button_Alpakit}"
-                                IsChecked="{Binding AIOAlpakit}" />
-                            <CheckBox
-                                Margin="{StaticResource XXSmallTopMargin}"
-                                Content="{x:Static properties:Resources.Main_Button_Launch}"
-                                IsChecked="{Binding AIOLaunchGame}" />
-                            <CheckBox
-                                Margin="{StaticResource XXSmallTopMargin}"
-                                Content="{x:Static properties:Resources.Main_Button_MP}"
-                                IsChecked="{Binding AIOLaunchMP}" />
-                        </StackPanel>
+                        <Button
+                            Grid.Column="0"
+                            Command="{Binding LaunchMPTesting}"
+                            Content="{x:Static properties:Resources.Main_Button_MP}" />
+                        <Button
+                            Grid.Column="1"
+                            Command="{Binding LaunchMPTestingHost}"
+                            Content="{x:Static properties:Resources.Main_Button_MP1}" />
+                        <Button
+                            Grid.Column="2"
+                            Command="{Binding LaunchMPTestingClient}"
+                            Content="{x:Static properties:Resources.Main_Button_MP2}" />
                     </Grid>
-                    <Line
-                        Margin="{StaticResource SmallTopMargin}"
-                        Stroke="Red"
-                        StrokeThickness="5" />
                 </StackPanel>
-                <Grid Grid.Row="2" Margin="{StaticResource SmallTopBottomMargin}">
-                    <ScrollViewer
-                        CanContentScroll="True"
-                        ScrollChanged="ScrollViewer_ScrollChanged"
-                        VerticalScrollBarVisibility="Auto">
-                        <TextBlock
-                            Margin="{StaticResource XSmallLeftTopRightBottomMargin}"
-                            Text="{Binding OutputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            TextWrapping="Wrap" />
-                    </ScrollViewer>
-                </Grid>
+                <StackPanel Grid.Column="1">
+                    <Button
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Command="{Binding RunAllChecked}"
+                        Content="{x:Static properties:Resources.Main_Button_AIO}" />
+                    <CheckBox
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Content="{x:Static properties:Resources.Main_Button_VS}"
+                        IsChecked="{Binding AIOGenerateVSFiles}" />
+                    <CheckBox
+                        Margin="{StaticResource XXSmallTopMargin}"
+                        Content="{x:Static properties:Resources.Main_Button_DevEditor}"
+                        IsChecked="{Binding AIOBuildDevEditor}" />
+                    <CheckBox
+                        Margin="{StaticResource XXSmallTopMargin}"
+                        Content="{x:Static properties:Resources.Main_Button_Shipping}"
+                        IsChecked="{Binding AIOBuildShipping}" />
+                    <CheckBox
+                        Margin="{StaticResource XXSmallTopMargin}"
+                        Content="{x:Static properties:Resources.Main_Button_Alpakit}"
+                        IsChecked="{Binding AIOAlpakit}" />
+                    <CheckBox
+                        Margin="{StaticResource XXSmallTopMargin}"
+                        Content="{x:Static properties:Resources.Main_Button_Launch}"
+                        IsChecked="{Binding AIOLaunchGame}" />
+                    <CheckBox
+                        Margin="{StaticResource XXSmallTopMargin}"
+                        Content="{x:Static properties:Resources.Main_Button_MP}"
+                        IsChecked="{Binding AIOLaunchMP}" />
+                </StackPanel>
             </Grid>
-
+            <Line
+                Margin="{StaticResource SmallTopMargin}"
+                Stroke="Red"
+                StrokeThickness="5" />
+        </StackPanel>
+        <Grid Grid.Row="2" Margin="{StaticResource SmallTopBottomMargin}">
+            <ScrollViewer
+                CanContentScroll="True"
+                ScrollChanged="ScrollViewer_ScrollChanged"
+                VerticalScrollBarVisibility="Auto">
+                <TextBlock
+                    Margin="{StaticResource XSmallLeftTopRightBottomMargin}"
+                    Text="{Binding OutputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    TextWrapping="Wrap" />
+            </ScrollViewer>
         </Grid>
     </Grid>
+
 </Page>

@@ -8,6 +8,10 @@ using SatisfactoryModdingHelper.Contracts.Services;
 using SatisfactoryModdingHelper.Contracts.ViewModels;
 using SatisfactoryModdingHelper.Models;
 using System.Windows.Input;
+using System.Collections.ObjectModel;
+using PeanutButter.TinyEventAggregator;
+using System.Linq;
+using System.Windows;
 
 namespace SatisfactoryModdingHelper.ViewModels
 {
@@ -16,6 +20,9 @@ namespace SatisfactoryModdingHelper.ViewModels
         private readonly IPersistAndRestoreService _persistAndRestoreService;
         private readonly IPluginService _pluginService;
         private readonly IFileService _fileService;
+        private readonly EventAggregator _eventAggregator;
+        private SubscriptionToken pluginSelectedToken;
+        private UPluginModel loadedUPlugin;
         private string projectDirectory;
         private string fileVersion;
         private string version;
@@ -34,8 +41,8 @@ namespace SatisfactoryModdingHelper.ViewModels
         private bool isExperimentalVersion;
         private bool installed;
         private bool acceptsAnyRemoteVersion;
-        private List<string> plugins;
-        private List<string> modules;
+        private ObservableCollection<PluginModel> plugins;
+        private ObservableCollection<ModuleModel> modules;
 
 
         public UPluginViewModel(IPersistAndRestoreService persistAndRestoreService, IPluginService pluginService, IFileService fileService)
@@ -43,76 +50,221 @@ namespace SatisfactoryModdingHelper.ViewModels
             _persistAndRestoreService = persistAndRestoreService;
             _pluginService = pluginService;
             _fileService = fileService;
-            //selectedPlugin = _persistAndRestoreService.GetSavedProperty(Properties.Resources.SelectedPlugin);
-            //PluginSelectorViewModel = new PluginSelectionViewModel(persistAndRestoreService);
+            _eventAggregator = EventAggregator.Instance;
+        }
+
+        private UPluginModel GetSelectedPluginModel()
+        {
+            if (string.IsNullOrEmpty(projectDirectory) || SelectedPlugin == null)
+            {
+                return new UPluginModel();
+            }
+            string upluginText = File.ReadAllText(@$"{projectDirectory}/Plugins/{SelectedPlugin}/{SelectedPlugin}.uplugin");
+            return JsonConvert.DeserializeObject<UPluginModel>(upluginText);
         }
 
         private void PopulateUPluginFields()
         {
-            if (string.IsNullOrEmpty(projectDirectory) || SelectedPlugin == null)
-            {
-                return;
-            }
-            string upluginText = File.ReadAllText(@$"{projectDirectory}/Plugins/{SelectedPlugin}/{SelectedPlugin}.uplugin");
-            UPluginModel uPlugin = JsonConvert.DeserializeObject<UPluginModel>(upluginText);
-            FileVersion = uPlugin.FileVersion.ToString();
-            Version = uPlugin.Version.ToString();
-            VersionName = uPlugin.VersionName;
-            SemVersion = uPlugin.SemVersion;
-            FriendlyName = uPlugin.FriendlyName;
-            Description = uPlugin.Description;
-            Category = uPlugin.Category;
-            CreatedBy = uPlugin.CreatedBy;
-            createdByURL = uPlugin.CreatedByURL;
-            DocsURL = uPlugin.DocsURL;
-            MarketplaceURL = uPlugin.MarketplaceURL;
-            SupportURL = uPlugin.SupportURL;
-            CanContainContent = uPlugin.CanContainContent;
-            IsBetaVersion = uPlugin.IsBetaVersion;
-            IsExperimentalVersion = uPlugin.IsExperimentalVersion;
-            Installed = uPlugin.Installed;
-            AcceptsAnyRemoteVersion = uPlugin.AcceptsAnyRemoteVersion;
+            loadedUPlugin = GetSelectedPluginModel();
+            FileVersion = loadedUPlugin.FileVersion.ToString();
+            Version = loadedUPlugin.Version.ToString();
+            VersionName = loadedUPlugin.VersionName;
+            SemVersion = loadedUPlugin.SemVersion;
+            FriendlyName = loadedUPlugin.FriendlyName;
+            Description = loadedUPlugin.Description;
+            Category = loadedUPlugin.Category;
+            CreatedBy = loadedUPlugin.CreatedBy;
+            createdByURL = loadedUPlugin.CreatedByURL;
+            DocsURL = loadedUPlugin.DocsURL;
+            MarketplaceURL = loadedUPlugin.MarketplaceURL;
+            SupportURL = loadedUPlugin.SupportURL;
+            CanContainContent = loadedUPlugin.CanContainContent;
+            IsBetaVersion = loadedUPlugin.IsBetaVersion;
+            IsExperimentalVersion = loadedUPlugin.IsExperimentalVersion;
+            Installed = loadedUPlugin.Installed;
+            AcceptsAnyRemoteVersion = loadedUPlugin.AcceptsAnyRemoteVersion;
+            Plugins = loadedUPlugin.Plugins;
+            Modules = loadedUPlugin.Modules;
         }
 
         public void OnNavigatedTo(object parameter)
         {
             projectDirectory = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Project);
             SelectedPlugin = _pluginService.SelectedPlugin;
-            PluginList = _pluginService.PluginList;
             PopulateUPluginFields();
+
+            pluginSelectedToken = _eventAggregator.GetEvent<PluginSelectedEvent>().Subscribe(PluginSelected);
         }
 
         public void OnNavigatedFrom()
         {
-            _pluginService.SelectedPlugin = SelectedPlugin;
-            _persistAndRestoreService.PersistData();
+
+            _eventAggregator.GetEvent<PluginSelectedEvent>().Unsubscribe(pluginSelectedToken);
         }
 
-        public string FileVersion { get => fileVersion; set => SetProperty(ref fileVersion, value); }
-        public string Version { get => version; set => SetProperty(ref version, value); }
-        public string VersionName { get => versionName; set => SetProperty(ref versionName, value); }
-        public string SemVersion { get => semVersion; set => SetProperty(ref semVersion, value); }
-        public string FriendlyName { get => friendlyName; set => SetProperty(ref friendlyName, value); }
-        public string Description { get => description; set => SetProperty(ref description, value); }
-        public string Category { get => category; set => SetProperty(ref category, value); }
-        public string CreatedBy { get => createdBy; set => SetProperty(ref createdBy, value); }
-        public string CreatedByURL { get => createdByURL; set => SetProperty(ref createdByURL, value); }
-        public string DocsURL { get => docsURL; set => SetProperty(ref docsURL, value); }
-        public string MarketplaceURL { get => marketplaceURL; set => SetProperty(ref marketplaceURL, value); }
-        public string SupportURL { get => supportURL; set => SetProperty(ref supportURL, value); }
-        public bool CanContainContent { get => canContainContent; set => SetProperty(ref canContainContent, value); }
-        public bool IsBetaVersion { get => isBetaVersion; set => SetProperty(ref isBetaVersion, value); }
-        public bool IsExperimentalVersion { get => isExperimentalVersion; set => SetProperty(ref isExperimentalVersion, value); }
-        public bool Installed { get => installed; set => SetProperty(ref installed, value); }
-        public bool AcceptsAnyRemoteVersion { get => acceptsAnyRemoteVersion; set => SetProperty(ref acceptsAnyRemoteVersion, value); }
-        public List<string> Plugins { get => plugins; set => SetProperty(ref plugins, value); }
-        public List<string> Modules { get => modules; set => SetProperty(ref modules, value); }
+        internal void PluginSelected(object plugin)
+        {
+            SelectedPlugin = _pluginService.SelectedPlugin;
+            PopulateUPluginFields();
+        }
 
-        private object pluginSelectorViewModel;
-
-        public object PluginSelectorViewModel { get => pluginSelectorViewModel; set => SetProperty(ref pluginSelectorViewModel, value); }
+        public string FileVersion
+        {
+            get => fileVersion;
+            set
+            {
+                SetProperty(ref fileVersion, value);
+                loadedUPlugin.FileVersion = int.Parse(value);
+            }
+        }
+        public string Version
+        {
+            get => version;
+            set
+            {
+                SetProperty(ref version, value);
+                loadedUPlugin.Version = int.Parse(value);
+            }
+        }
+        public string VersionName
+        {
+            get => versionName; set
+            {
+                SetProperty(ref versionName, value);
+                loadedUPlugin.VersionName = value;
+            }
+        }
+        public string SemVersion
+        {
+            get => semVersion; set
+            {
+                SetProperty(ref semVersion, value);
+                loadedUPlugin.SemVersion = value;
+            }
+        }
+        public string FriendlyName
+        {
+            get => friendlyName; set
+            {
+                SetProperty(ref friendlyName, value);
+                loadedUPlugin.FriendlyName = value;
+            }
+        }
+        public string Description
+        {
+            get => description; set
+            {
+                SetProperty(ref description, value);
+                loadedUPlugin.Description = value;
+            }
+        }
+        public string Category
+        {
+            get => category; set
+            {
+                SetProperty(ref category, value);
+                loadedUPlugin.Category = value;
+            }
+        }
+        public string CreatedBy
+        {
+            get => createdBy; set
+            {
+                SetProperty(ref createdBy, value);
+                loadedUPlugin.CreatedBy = value;
+            }
+        }
+        public string CreatedByURL
+        {
+            get => createdByURL; set
+            {
+                SetProperty(ref createdByURL, value);
+                loadedUPlugin.CreatedByURL = value;
+            }
+        }
+        public string DocsURL
+        {
+            get => docsURL; set
+            {
+                SetProperty(ref docsURL, value);
+                loadedUPlugin.DocsURL = value;
+            }
+        }
+        public string MarketplaceURL
+        {
+            get => marketplaceURL; set
+            {
+                SetProperty(ref marketplaceURL, value);
+                loadedUPlugin.MarketplaceURL = value;
+            }
+        }
+        public string SupportURL
+        {
+            get => supportURL; set
+            {
+                SetProperty(ref supportURL, value);
+                loadedUPlugin.SupportURL = value;
+            }
+        }
+        public bool CanContainContent
+        {
+            get => canContainContent; set
+            {
+                SetProperty(ref canContainContent, value);
+                loadedUPlugin.CanContainContent = value;
+            }
+        }
+        public bool IsBetaVersion
+        {
+            get => isBetaVersion; set
+            {
+                SetProperty(ref isBetaVersion, value);
+                loadedUPlugin.IsBetaVersion = value;
+            }
+        }
+        public bool IsExperimentalVersion
+        {
+            get => isExperimentalVersion; set
+            {
+                SetProperty(ref isExperimentalVersion, value);
+                loadedUPlugin.IsExperimentalVersion = value;
+            }
+        }
+        public bool Installed
+        {
+            get => installed; set
+            {
+                SetProperty(ref installed, value);
+                loadedUPlugin.Installed = value;
+            }
+        }
+        public bool AcceptsAnyRemoteVersion
+        {
+            get => acceptsAnyRemoteVersion; set
+            {
+                SetProperty(ref acceptsAnyRemoteVersion, value);
+                loadedUPlugin.AcceptsAnyRemoteVersion = value;
+            }
+        }
+        public ObservableCollection<PluginModel> Plugins
+        {
+            get => plugins; set
+            {
+                SetProperty(ref plugins, value);
+                loadedUPlugin.Plugins = value;
+            }
+        }
+        public ObservableCollection<ModuleModel> Modules
+        {
+            get => modules; set
+            {
+                SetProperty(ref modules, value);
+                loadedUPlugin.Modules = value;
+            }
+        }
 
         private object selectedPlugin;
+
 
         public object SelectedPlugin {
             get => selectedPlugin;
@@ -121,14 +273,15 @@ namespace SatisfactoryModdingHelper.ViewModels
                 if (SetProperty(ref selectedPlugin, value))
                 {
                     PopulateUPluginFields();
-                    _persistAndRestoreService.SaveProperty(Properties.Resources.SelectedPlugin, value);
                 }
             }
         }
 
         private System.Collections.IEnumerable pluginList;
 
-        public System.Collections.IEnumerable PluginList { get => pluginList; set => SetProperty(ref pluginList, value); }
+        public System.Collections.IEnumerable PluginList { get => pluginList; set {
+                SetProperty(ref pluginList, value);
+            } }
 
         private RelayCommand saveUPlugin;
         public ICommand SaveUPlugin => saveUPlugin ??= new RelayCommand(PerformSaveUPlugin);
@@ -159,27 +312,12 @@ namespace SatisfactoryModdingHelper.ViewModels
                 IsBetaVersion = IsBetaVersion,
                 IsExperimentalVersion = IsExperimentalVersion,
                 Installed = Installed,
-                AcceptsAnyRemoteVersion = AcceptsAnyRemoteVersion
+                AcceptsAnyRemoteVersion = AcceptsAnyRemoteVersion,
+                Plugins = Plugins,
+                Modules = Modules
             };
-            //var serializedJson = JsonConvert.SerializeObject(uPlugin);
+
             _fileService.Save(folderPath, fileName, uPlugin);
-            FileVersion = uPlugin.FileVersion.ToString();
-            Version = uPlugin.Version.ToString();
-            VersionName = uPlugin.VersionName;
-            SemVersion = uPlugin.SemVersion;
-            FriendlyName = uPlugin.FriendlyName;
-            Description = uPlugin.Description;
-            Category = uPlugin.Category;
-            CreatedBy = uPlugin.CreatedBy;
-            CreatedByURL = uPlugin.CreatedByURL;
-            DocsURL = uPlugin.DocsURL;
-            MarketplaceURL = uPlugin.MarketplaceURL;
-            SupportURL = uPlugin.SupportURL;
-            CanContainContent = uPlugin.CanContainContent;
-            IsBetaVersion = uPlugin.IsBetaVersion;
-            IsExperimentalVersion = uPlugin.IsExperimentalVersion;
-            Installed = uPlugin.Installed;
-            AcceptsAnyRemoteVersion = uPlugin.AcceptsAnyRemoteVersion;
         }
 
         private RelayCommand cancelUPluginChanges;
@@ -188,6 +326,79 @@ namespace SatisfactoryModdingHelper.ViewModels
         private void PerformCancelUPluginChanges()
         {
             PopulateUPluginFields();
+        }
+
+        private RelayCommand addPlugin;
+        public ICommand AddPlugin => addPlugin ??= new RelayCommand(PerformAddPlugin);
+
+        private void PerformAddPlugin()
+        {
+            if (Plugins == null)
+            {
+                Plugins = new ObservableCollection<PluginModel>();
+            }
+            Plugins.Add(new PluginModel());
+        }
+
+        private RelayCommand<string> removePlugin;
+        public ICommand RemovePlugin => removePlugin ??= new RelayCommand<string>(param => this.PerformRemovePlugin(param));
+
+        private void PerformRemovePlugin(string pluginName)
+        {
+            Plugins.Remove(Plugins.FirstOrDefault(p => p.Name == pluginName));
+        }
+
+        private bool PluginModified()
+        {
+            if (!GetSelectedPluginModel().Equals(loadedUPlugin))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private MessageBoxResult DisplaySavePopup()
+        {
+            string messageBoxText = "You have unsaved changes. Do you want to save before navigating away?";
+            string caption = "Unsaved Changes";
+            MessageBoxButton button = MessageBoxButton.YesNo;
+            MessageBoxImage icon = MessageBoxImage.Warning;
+            MessageBoxResult result;
+
+            result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
+            return result;
+        }
+
+        public void OnStartingNavigateFrom()
+        {
+            if (PluginModified())
+            {
+                MessageBoxResult result = DisplaySavePopup();
+                if (result == MessageBoxResult.Yes)
+                {
+                    PerformSaveUPlugin();
+                }
+            }
+        }
+
+        private RelayCommand addModule;
+        public ICommand AddModule => addModule ??= new RelayCommand(PerformAddModule);
+
+        private void PerformAddModule()
+        {
+            if (Modules == null)
+            {
+                Modules = new ObservableCollection<ModuleModel>();
+            }
+            Modules.Add(new ModuleModel());
+        }
+
+        private RelayCommand<string> removeModule;
+        public ICommand RemoveModule => removeModule ??= new RelayCommand<string>(param => this.PerformRemoveModule(param));
+
+        private void PerformRemoveModule(string moduleName)
+        {
+            Modules.Remove(Modules.FirstOrDefault(m => m.Name == moduleName));
         }
     }
 }

@@ -9,14 +9,6 @@
     mc:Ignorable="d"
     d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="48" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <TextBlock
-            Style="{StaticResource PageTitleStyle}"
-            Margin="{StaticResource MediumLeftMargin}"
-            Text="{x:Static properties:Resources.CPPPageTitle}" />
         <Grid
             Grid.Row="1"
             Margin="{StaticResource MediumLeftRightMargin}"

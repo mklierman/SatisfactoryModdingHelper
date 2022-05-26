@@ -88,7 +88,7 @@ namespace SatisfactoryModdingHelper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SatisfactoryModdingHelper.
+        ///   Looks up a localized string similar to Satisfactory Modding Helper.
         /// </summary>
         public static string AppDisplayName {
             get {

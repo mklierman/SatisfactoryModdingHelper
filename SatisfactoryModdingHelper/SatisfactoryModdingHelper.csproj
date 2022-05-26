@@ -10,6 +10,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Version>$(VersionPrefix)</Version>
 	  <StartupObject>SatisfactoryModdingHelper.App</StartupObject>
+	  <ApplicationIcon>1024.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Templates\Buildcs.txt" />
@@ -17,16 +18,23 @@
     <None Remove="Templates\Module.h.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="1024.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="Templates\Buildcs.txt" />
     <EmbeddedResource Include="Templates\Module.cpp.txt" />
     <EmbeddedResource Include="Templates\Module.h.txt" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="ini-parser" Version="2.5.2" />
     <PackageReference Include="MahApps.Metro" Version="2.4.6" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.16" />
     <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.0.2" />
     <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="PeanutButter.TinyEventAggregator" Version="2.0.77" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="8.36.1.44192">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

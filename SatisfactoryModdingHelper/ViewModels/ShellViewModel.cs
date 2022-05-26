@@ -7,9 +7,11 @@ using MahApps.Metro.Controls;
 
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
-
+using PeanutButter.TinyEventAggregator;
 using SatisfactoryModdingHelper.Contracts.Services;
+using SatisfactoryModdingHelper.Models;
 using SatisfactoryModdingHelper.Properties;
+using SatisfactoryModdingHelper.Services;
 
 namespace SatisfactoryModdingHelper.ViewModels
 {
@@ -17,6 +19,9 @@ namespace SatisfactoryModdingHelper.ViewModels
     {
         private readonly INavigationService _navigationService;
         private readonly IPersistAndRestoreService _persistAndRestoreService;
+        private readonly IPluginService _pluginService;
+        private readonly IFileService _fileService;
+        private readonly EventAggregator _eventAggregator;
         private HamburgerMenuItem _selectedMenuItem;
         private HamburgerMenuItem _selectedOptionsMenuItem;
         private RelayCommand _goBackCommand;
@@ -61,10 +66,13 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         public ICommand UnloadedCommand => _unloadedCommand ??= new RelayCommand(OnUnloaded);
 
-        public ShellViewModel(INavigationService navigationService, IPersistAndRestoreService persistAndRestoreService)
+        public ShellViewModel(INavigationService navigationService, IPersistAndRestoreService persistAndRestoreService, IPluginService pluginService, IFileService fileService)
         {
             _navigationService = navigationService;
             _persistAndRestoreService = persistAndRestoreService;
+            _pluginService = pluginService;
+            _fileService = fileService;
+            _eventAggregator = EventAggregator.Instance;
         }
 
         private void OnLoaded()
@@ -78,12 +86,17 @@ namespace SatisfactoryModdingHelper.ViewModels
             {
                 System.Windows.Application.Current.MainWindow.Height = (double)_persistAndRestoreService.GetSavedProperty(Resources.App_Settings_Height);
             }
+
+            SelectedPlugin = _pluginService.SelectedPlugin;
+            PluginList = _pluginService.PluginList;
         }
 
         private void OnUnloaded()
         {
             _navigationService.Navigated -= OnNavigated;
 
+            _pluginService.SelectedPlugin = SelectedPlugin;
+            _persistAndRestoreService.PersistData();
         }
 
         public void SaveNewSize()
@@ -128,7 +141,83 @@ namespace SatisfactoryModdingHelper.ViewModels
                         .FirstOrDefault(i => viewModelName == i.TargetPageType?.FullName);
             }
 
+            SetViewTitle(viewModelName);
+            SetPluginComboBoxVisibility(viewModelName);
             GoBackCommand.NotifyCanExecuteChanged();
         }
+
+        private void SetPluginComboBoxVisibility(string viewModelName)
+        {
+            switch (viewModelName)
+            {
+                case "SatisfactoryModdingHelper.ViewModels.MainViewModel":
+                    PluginSelectorVisibility = System.Windows.Visibility.Visible;
+                    break;
+                case "SatisfactoryModdingHelper.ViewModels.UPluginViewModel":
+                    PluginSelectorVisibility = System.Windows.Visibility.Visible;
+                    break;
+                case "SatisfactoryModdingHelper.ViewModels.CppViewModel":
+                    PluginSelectorVisibility = System.Windows.Visibility.Visible;
+                    break;
+                case "SatisfactoryModdingHelper.ViewModels.AccessTransformersViewModel":
+                    PluginSelectorVisibility = System.Windows.Visibility.Visible;
+                    break;
+                case "SatisfactoryModdingHelper.ViewModels.SettingsViewModel":
+                    PluginSelectorVisibility = System.Windows.Visibility.Collapsed;
+                    break;
+            }
+        }
+
+        private void SetViewTitle(string viewModelName)
+        {
+            switch (viewModelName)
+            {
+                case "SatisfactoryModdingHelper.ViewModels.MainViewModel":
+                    ViewTitle = Resources.MainPageTitle;
+                    break;
+                case "SatisfactoryModdingHelper.ViewModels.UPluginViewModel":
+                    ViewTitle = Resources.UPluginPageTitle;
+                    break;
+                case "SatisfactoryModdingHelper.ViewModels.CppViewModel":
+                    ViewTitle = Resources.CPPPageTitle;
+                    break;
+                case "SatisfactoryModdingHelper.ViewModels.AccessTransformersViewModel":
+                    ViewTitle = Resources.AccessTransformersPageTitle;
+                    break;
+                case "SatisfactoryModdingHelper.ViewModels.SettingsViewModel":
+                    ViewTitle = Resources.SettingsPageTitle;
+                    break;
+            }
+        }
+
+        private string viewTitle;
+
+        public string ViewTitle { get => viewTitle; set => SetProperty(ref viewTitle, value); }
+
+        private bool pluginComboBoxEnabled;
+
+        public bool PluginComboBoxEnabled { get => pluginComboBoxEnabled; set => SetProperty(ref pluginComboBoxEnabled, value); }
+
+        private System.Collections.IEnumerable pluginList;
+
+        public System.Collections.IEnumerable PluginList { get => pluginList; set => SetProperty(ref pluginList, value); }
+
+        private object selectedPlugin;
+
+        public object SelectedPlugin { get => selectedPlugin;
+            set
+            {
+                if (SetProperty(ref selectedPlugin, value))
+                {
+                    _pluginService.SelectedPlugin = value;
+                    _eventAggregator.GetEvent<PluginSelectedEvent>().Publish(SelectedPlugin);
+                    _persistAndRestoreService.SaveProperty(Properties.Resources.SelectedPlugin, value);
+                }
+            }
+        }
+
+        private System.Windows.Visibility pluginSelectorVisibility;
+
+        public System.Windows.Visibility PluginSelectorVisibility { get => pluginSelectorVisibility; set => SetProperty(ref pluginSelectorVisibility, value); }
     }
 }

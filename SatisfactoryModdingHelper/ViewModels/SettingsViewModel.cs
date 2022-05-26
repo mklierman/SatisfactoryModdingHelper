@@ -77,6 +77,10 @@ namespace SatisfactoryModdingHelper.ViewModels
             _persistAndRestoreService.PersistData();
         }
 
+        public void OnStartingNavigateFrom()
+        {
+        }
+
         private void OnSetTheme(string themeName)
         {
             var theme = (AppTheme)Enum.Parse(typeof(AppTheme), themeName);

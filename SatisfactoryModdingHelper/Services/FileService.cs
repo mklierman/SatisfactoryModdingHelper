@@ -2,6 +2,7 @@
 using System.Text;
 using Newtonsoft.Json;
 using SatisfactoryModdingHelper.Contracts.Services;
+using SatisfactoryModdingHelper.Models;
 
 namespace SatisfactoryModdingHelper.Services
 {
@@ -25,10 +26,14 @@ namespace SatisfactoryModdingHelper.Services
             {
                 Directory.CreateDirectory(folderPath);
             }
-
-            var fileContent = JsonConvert.SerializeObject(content);
+            JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented
+            };
+            var fileContent = JsonConvert.SerializeObject(content, jsonSerializerSettings);
             File.WriteAllText(Path.Combine(folderPath, fileName), fileContent, Encoding.UTF8);
         }
+
 
         public void Delete(string folderPath, string fileName)
         {
@@ -44,6 +49,39 @@ namespace SatisfactoryModdingHelper.Services
             {
                 File.WriteAllText(path, contents);
             }
+        }
+
+        public void SaveAccessTransformers(string folderPath, string fileName, AccessTransformersModel content)
+        {
+
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            string fileContent = "[AccessTransformers]";
+            if (content.FriendTransformers != null)
+            {
+                foreach (var friendTransformer in content.FriendTransformers)
+                {
+                    fileContent += $"\nFriend=(Class=\"{friendTransformer.Class}\", FriendClass=\"{friendTransformer.FriendClass}\")";
+                }
+            }
+            if (content.AccessorTransformers != null)
+            {
+                foreach (var accessorTransformer in content.AccessorTransformers)
+                {
+                    fileContent += $"\nAccessor=(Class=\"{accessorTransformer.Class}\", Property=\"{accessorTransformer.Property}\")";
+                }
+            }
+            if (content.BlueprintReadWriteTransformers != null)
+            {
+                foreach (var blueprintReadWriteTransformer in content.BlueprintReadWriteTransformers)
+                {
+                    fileContent += $"\nBlueprintReadWrite=(Class=\"{blueprintReadWriteTransformer.Class}\", Property=\"{blueprintReadWriteTransformer.Property}\")";
+                }
+            }
+
+            File.WriteAllText(Path.Combine(folderPath, fileName), fileContent, Encoding.UTF8);
         }
     }
 }

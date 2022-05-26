@@ -52,6 +52,11 @@ namespace SatisfactoryModdingHelper.Services
 
         public bool NavigateTo(string pageKey, object parameter = null, bool clearNavigation = false)
         {
+            var dataContext = _frame.GetDataContext();
+            if (dataContext is INavigationAware navigationAware)
+            {
+                navigationAware.OnStartingNavigateFrom();
+            }
             var pageType = _pageService.GetPageType(pageKey);
 
             if (_frame.Content?.GetType() != pageType || (parameter != null && !parameter.Equals(_lastParameterUsed)))
@@ -62,10 +67,9 @@ namespace SatisfactoryModdingHelper.Services
                 if (navigated)
                 {
                     _lastParameterUsed = parameter;
-                    var dataContext = _frame.GetDataContext();
-                    if (dataContext is INavigationAware navigationAware)
+                    if (dataContext is INavigationAware navigationAware2)
                     {
-                        navigationAware.OnNavigatedFrom();
+                        navigationAware2.OnNavigatedFrom();
                     }
                 }
 
