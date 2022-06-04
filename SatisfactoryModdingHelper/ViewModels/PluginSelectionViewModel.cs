@@ -1,6 +1,8 @@
 ﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+using PeanutButter.TinyEventAggregator;
 using SatisfactoryModdingHelper.Contracts.Services;
 using SatisfactoryModdingHelper.Contracts.ViewModels;
+using SatisfactoryModdingHelper.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,13 +14,15 @@ namespace SatisfactoryModdingHelper.ViewModels
     {
         private readonly IPersistAndRestoreService _persistAndRestoreService;
         private readonly string projectLocation;
+        private readonly EventAggregator _eventAggregator;
         public PluginSelectionViewModel(IPersistAndRestoreService persistAndRestoreService)
         {
             _persistAndRestoreService = persistAndRestoreService;
-            projectLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Project);
+            projectLocation = _persistAndRestoreService.Settings.ProjectPath;
             PopulatePluginList();
-            selectedPlugin = _persistAndRestoreService.GetSavedProperty(Properties.Resources.SelectedPlugin);
+            selectedPlugin = _persistAndRestoreService.Settings.CurrentPlugin;
             PluginComboBoxEnabled = true;
+            _eventAggregator = EventAggregator.Instance;
         }
 
         private object selectedPlugin;
@@ -28,7 +32,10 @@ namespace SatisfactoryModdingHelper.ViewModels
             set
             {
                 SetProperty(ref selectedPlugin, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.SelectedPlugin, value);
+                _persistAndRestoreService.Settings.CurrentPlugin = value.ToString();
+                _persistAndRestoreService.PersistData();
+
+                _eventAggregator.GetEvent<PluginSelectedEvent>().Publish(value);
             }
         }
 

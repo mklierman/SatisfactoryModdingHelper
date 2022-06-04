@@ -9,6 +9,7 @@ using Microsoft.Toolkit.Mvvm.Input;
 using SatisfactoryModdingHelper.Contracts.Services;
 using SatisfactoryModdingHelper.Contracts.ViewModels;
 using SatisfactoryModdingHelper.Models;
+using SatisfactoryModdingHelper.Services;
 
 
 namespace SatisfactoryModdingHelper.ViewModels
@@ -55,20 +56,18 @@ namespace SatisfactoryModdingHelper.ViewModels
         {
             VersionDescription = $"{Properties.Resources.AppDisplayName} - {_applicationInfoService.GetVersion()}";
             Theme = _themeSelectorService.GetCurrentTheme();
-            UnrealEngineLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_UE);
-            VisualStudioLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_VS);
-            ProjectFolder = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Project);
-            SatisfactoryFolder = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Satisfactory);
-            SMMFolder = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_SMM);
-            AlpakitCopyPlugin = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CopyMod);
-            AlpakitCloseSatisfactory = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CloseGame);
-            AlpakitSteam = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_Steam);
-            AlpakitEGS = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_EGS);
-            AlpakitEGSExperimental = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_EGS_Exp);
-            MPPlayer1Name = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Player1Name);
-            MPPlayer2Name = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Player2Name);
-            MPArgs1 = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Args1);
-            MPArgs2 = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Args2);
+            UnrealEngineLocation = _persistAndRestoreService.Settings.UnrealEnginePath;
+            VisualStudioLocation = _persistAndRestoreService.Settings.VisualStudioPath;
+            ProjectFolder = _persistAndRestoreService.Settings.ProjectPath;
+            SatisfactoryFolder = _persistAndRestoreService.Settings.SatisfactoryPath;
+            SMMFolder = _persistAndRestoreService.Settings.ModManagerPath;
+            AlpakitCopyPlugin = _persistAndRestoreService.Settings.AlpakitCopyModToGame;
+            AlpakitCloseSatisfactory = _persistAndRestoreService.Settings.AlpakitCloseGame;
+            MPPlayer1Name = _persistAndRestoreService.Settings.Player1Name;
+            MPPlayer2Name = _persistAndRestoreService.Settings.Player2Name;
+            MPArgs1 = _persistAndRestoreService.Settings.Player1Args;
+            MPArgs2 = _persistAndRestoreService.Settings.Player2Args;
+            MPGameLocation = _persistAndRestoreService.Settings.Player2SatisfactoryPath;
 
         }
 
@@ -99,7 +98,8 @@ namespace SatisfactoryModdingHelper.ViewModels
             set
             {
                 SetProperty(ref unrealEngineLocation, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_Locations_UE, value);
+                _persistAndRestoreService.Settings.UnrealEnginePath = value;
+                _persistAndRestoreService.PersistData();
             }
         }
 
@@ -111,7 +111,8 @@ namespace SatisfactoryModdingHelper.ViewModels
             set
             {
                 SetProperty(ref visualStudioLocation, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_Locations_VS, value);
+                _persistAndRestoreService.Settings.VisualStudioPath = value;
+                _persistAndRestoreService.PersistData();
             }
         }
 
@@ -123,7 +124,8 @@ namespace SatisfactoryModdingHelper.ViewModels
             set
             {
                 SetProperty(ref projectFolder, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_Locations_Project, value);
+                _persistAndRestoreService.Settings.ProjectPath = value;
+                _persistAndRestoreService.PersistData();
             }
         }
 
@@ -134,7 +136,8 @@ namespace SatisfactoryModdingHelper.ViewModels
             get => satisfactoryFolder; set
             {
                 SetProperty(ref satisfactoryFolder, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_Locations_Satisfactory, value);
+                _persistAndRestoreService.Settings.SatisfactoryPath = value;
+                _persistAndRestoreService.PersistData();
             }
         }
 
@@ -145,7 +148,8 @@ namespace SatisfactoryModdingHelper.ViewModels
             get => sMMFolder; set
             {
                 SetProperty(ref sMMFolder, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_Locations_SMM, value);
+                _persistAndRestoreService.Settings.ModManagerPath = value;
+                _persistAndRestoreService.PersistData();
             }
         }
 
@@ -227,84 +231,29 @@ namespace SatisfactoryModdingHelper.ViewModels
             }
         }
 
-        private bool? alpakitCopyPlugin;
+        private bool alpakitCopyPlugin;
 
-        public bool? AlpakitCopyPlugin
+        public bool AlpakitCopyPlugin
         {
             get => alpakitCopyPlugin;
             set
             {
-                if (value == null)
-                {
-                    value = false;
-                }
-
                 SetProperty(ref alpakitCopyPlugin, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_Alpakit_CopyMod, value);
+                _persistAndRestoreService.Settings.AlpakitCopyModToGame = value;
+                _persistAndRestoreService.PersistData();
             }
         }
 
-        private bool? alpakitCloseSatisfactory;
+        private bool alpakitCloseSatisfactory;
 
-        public bool? AlpakitCloseSatisfactory
+        public bool AlpakitCloseSatisfactory
         {
             get => alpakitCloseSatisfactory;
             set
             {
-                if (value == null)
-                {
-                    value = false;
-                }
                 SetProperty(ref alpakitCloseSatisfactory, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_Alpakit_CloseGame, value);
-            }
-        }
-
-        private bool? alpakitSteam;
-
-        public bool? AlpakitSteam
-        {
-            get => alpakitSteam;
-            set
-            {
-                if (value == null)
-                {
-                    value = false;
-                }
-                SetProperty(ref alpakitSteam, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_Alpakit_Steam, value);
-            }
-        }
-
-        private bool? alpakitEGS;
-
-        public bool? AlpakitEGS
-        {
-            get => alpakitEGS;
-            set
-            {
-                if (value == null)
-                {
-                    value = false;
-                }
-                SetProperty(ref alpakitEGS, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_Alpakit_EGS, value);
-            }
-        }
-
-        private bool? alpakitEGSExperimental;
-
-        public bool? AlpakitEGSExperimental
-        {
-            get => alpakitEGSExperimental;
-            set
-            {
-                if (value == null)
-                {
-                    value = false;
-                }
-                SetProperty(ref alpakitEGSExperimental, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_Alpakit_EGS_Exp, value);
+                _persistAndRestoreService.Settings.AlpakitCloseGame = value;
+                _persistAndRestoreService.PersistData();
             }
         }
 
@@ -316,7 +265,8 @@ namespace SatisfactoryModdingHelper.ViewModels
             set
             {
                 SetProperty(ref mPPlayer1Name, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_MP_Player1Name, value);
+                _persistAndRestoreService.Settings.Player1Name = value;
+                _persistAndRestoreService.PersistData();
             }
         }
 
@@ -328,7 +278,8 @@ namespace SatisfactoryModdingHelper.ViewModels
             set
             {
                 SetProperty(ref mPPlayer2Name, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_MP_Player2Name, value);
+                _persistAndRestoreService.Settings.Player2Name = value;
+                _persistAndRestoreService.PersistData();
             }
         }
 
@@ -340,7 +291,8 @@ namespace SatisfactoryModdingHelper.ViewModels
             set
             {
                 SetProperty(ref mPArgs1, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_MP_Args1, value);
+                _persistAndRestoreService.Settings.Player1Args = value;
+                _persistAndRestoreService.PersistData();
             }
         }
 
@@ -352,9 +304,33 @@ namespace SatisfactoryModdingHelper.ViewModels
             set
             {
                 SetProperty(ref mPArgs2, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.Settings_MP_Args2, value);
+                _persistAndRestoreService.Settings.Player2Args = value;
+                _persistAndRestoreService.PersistData();
             }
         }
 
+        private string mPGameLocation;
+        public string MPGameLocation
+        {
+            get => mPGameLocation;
+            set
+            {
+                SetProperty(ref mPGameLocation, value);
+                _persistAndRestoreService.Settings.Player2SatisfactoryPath = value;
+                _persistAndRestoreService.PersistData();
+            }
+        }
+
+        private RelayCommand browseForSecondaryGameLocation;
+        public ICommand BrowseForSecondaryGameLocation => browseForSecondaryGameLocation ??= new RelayCommand(PerformBrowseForSecondaryGameLocation);
+
+        private void PerformBrowseForSecondaryGameLocation()
+        {
+            var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
+            if (folderBrowser.ShowDialog() == true)
+            {
+                MPGameLocation = folderBrowser.FileName;
+            }
+        }
     }
 }

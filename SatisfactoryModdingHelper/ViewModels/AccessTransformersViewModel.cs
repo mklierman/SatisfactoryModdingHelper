@@ -46,7 +46,7 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         public void OnNavigatedTo(object parameter)
         {
-            projectDirectory = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Project);
+            projectDirectory = _persistAndRestoreService.Settings.ProjectPath;
             SelectedPlugin = _pluginService.SelectedPlugin;
             PopulateAccessTransformerFields();
             pluginSelectedToken = _eventAggregator.GetEvent<PluginSelectedEvent>().Subscribe(PluginSelected);

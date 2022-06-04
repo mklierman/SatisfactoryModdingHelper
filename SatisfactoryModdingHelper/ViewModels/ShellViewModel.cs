@@ -78,13 +78,13 @@ namespace SatisfactoryModdingHelper.ViewModels
         private void OnLoaded()
         {
             _navigationService.Navigated += OnNavigated;
-            if (_persistAndRestoreService.GetSavedProperty(Resources.App_Settings_Width) != null)
+            if (_persistAndRestoreService.Settings.AppWidth != null)
             {
-                System.Windows.Application.Current.MainWindow.Width = (double)_persistAndRestoreService.GetSavedProperty(Resources.App_Settings_Width);
+                System.Windows.Application.Current.MainWindow.Width = (double)_persistAndRestoreService.Settings.AppWidth;
             }
-            if (_persistAndRestoreService.GetSavedProperty(Resources.App_Settings_Height) != null)
+            if (_persistAndRestoreService.Settings.AppHeight != null)
             {
-                System.Windows.Application.Current.MainWindow.Height = (double)_persistAndRestoreService.GetSavedProperty(Resources.App_Settings_Height);
+                System.Windows.Application.Current.MainWindow.Height = (double)_persistAndRestoreService.Settings.AppHeight;
             }
 
             SelectedPlugin = _pluginService.SelectedPlugin;
@@ -101,8 +101,9 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         public void SaveNewSize()
         {
-            _persistAndRestoreService.SaveProperty(Properties.Resources.App_Settings_Width, App.Current.MainWindow.Width);
-            _persistAndRestoreService.SaveProperty(Properties.Resources.App_Settings_Height, App.Current.MainWindow.Height);
+            _persistAndRestoreService.Settings.AppWidth = App.Current.MainWindow.Width;
+            _persistAndRestoreService.Settings.AppHeight = App.Current.MainWindow.Height;
+            _persistAndRestoreService.PersistData();
         }
 
         private bool CanGoBack()
@@ -211,7 +212,8 @@ namespace SatisfactoryModdingHelper.ViewModels
                 {
                     _pluginService.SelectedPlugin = value;
                     _eventAggregator.GetEvent<PluginSelectedEvent>().Publish(SelectedPlugin);
-                    _persistAndRestoreService.SaveProperty(Properties.Resources.SelectedPlugin, value);
+                    _persistAndRestoreService.Settings.CurrentPlugin = value.ToString();
+                    _persistAndRestoreService.PersistData();
                 }
             }
         }

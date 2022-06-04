@@ -193,21 +193,6 @@
                         Margin="{StaticResource XSmallTopMargin}"
                         Content="{x:Static properties:Resources.Settings_Alpakit_CloseGame}"
                         IsChecked="{Binding AlpakitCloseSatisfactory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <RadioButton
-                        Margin="{StaticResource SmallTopMargin}"
-                        Content="{x:Static properties:Resources.Settings_Alpakit_Steam}"
-                        GroupName="GameStore"
-                        IsChecked="{Binding AlpakitSteam, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <RadioButton
-                        Margin="{StaticResource XXSmallTopMargin}"
-                        Content="{x:Static properties:Resources.Settings_Alpakit_EGS}"
-                        GroupName="GameStore"
-                        IsChecked="{Binding AlpakitEGS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <RadioButton
-                        Margin="{StaticResource XXSmallTopMargin}"
-                        Content="{x:Static properties:Resources.Settings_Alpakit_EGS_Exp}"
-                        GroupName="GameStore"
-                        IsChecked="{Binding AlpakitEGSExperimental, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
                 <TextBlock
@@ -237,6 +222,26 @@
                         Style="{StaticResource BodyTextStyle}"
                         Text="{x:Static properties:Resources.Settings_MP_Args2Text}" />
                     <TextBox Grid.Column="0" Text="{Binding MPArgs2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Style="{StaticResource BodyTextStyle}"
+                        Text="Optional Secondary Install Location"
+                        ToolTip="If you want the MP testing client to launch from a different install location, add the path here. If this field is not empty, your main install location will be mirrored prior to launching the client (excluding the Config folder)." />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox
+                            Grid.Column="0"
+                            Text="{Binding MPGameLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            ToolTip="If you want the MP testing client to launch from a different install location, add the path here. If this field is not empty, your main install location will be mirrored prior to launching the client (excluding the Config folder)." />
+                        <Button
+                            Grid.Column="1"
+                            Command="{Binding BrowseForSecondaryGameLocation}"
+                            Content="Browse" />
+                    </Grid>
                 </StackPanel>
 
                 <TextBlock

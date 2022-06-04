@@ -29,6 +29,7 @@ namespace SatisfactoryModdingHelper.ViewModels
         private string engineLocation;
         private string projectLocation;
         private string gameLocation;
+        private string mpGameLocation;
         private string player1Name;
         private string player2Name;
         private bool alpakitCopyMod;
@@ -45,16 +46,17 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         public void OnNavigatedTo(object parameter)
         {
-            projectLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Project);
-            engineLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_UE);
-            gameLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Satisfactory);
-            player1Name = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Player1Name);
-            player2Name = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Player2Name);
-            args1 = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Args1);
-            args2 = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_MP_Args2);
-            SelectedPlugin = _persistAndRestoreService.GetSavedProperty(Properties.Resources.SelectedPlugin);
-            alpakitCopyMod = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CopyMod) ?? false;
-            alpakitCloseGame = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Alpakit_CloseGame) ?? false;
+            projectLocation = _persistAndRestoreService.Settings.ProjectPath;
+            engineLocation = _persistAndRestoreService.Settings.UnrealEnginePath;
+            gameLocation = _persistAndRestoreService.Settings.SatisfactoryPath;
+            player1Name = _persistAndRestoreService.Settings.Player1Name;
+            player2Name = _persistAndRestoreService.Settings.Player2Name;
+            args1 = _persistAndRestoreService.Settings.Player1Args;
+            args2 = _persistAndRestoreService.Settings.Player2Args;
+            mpGameLocation = _persistAndRestoreService.Settings.Player2SatisfactoryPath;
+            SelectedPlugin = _persistAndRestoreService.Settings.CurrentPlugin;
+            alpakitCopyMod = _persistAndRestoreService.Settings.AlpakitCopyModToGame;
+            alpakitCloseGame = _persistAndRestoreService.Settings.AlpakitCloseGame;
             if (string.IsNullOrEmpty(projectLocation))
             {
                 //Navigate to Settings
@@ -68,8 +70,7 @@ namespace SatisfactoryModdingHelper.ViewModels
 
         public void OnNavigatedFrom()
         {
-            _pluginService.SelectedPlugin = SelectedPlugin;
-            _persistAndRestoreService.PersistData();
+
         }
 
         private void PopulatePluginList()
@@ -302,7 +303,8 @@ namespace SatisfactoryModdingHelper.ViewModels
             set
             {
                 SetProperty(ref selectedPlugin, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.SelectedPlugin, value);
+                _persistAndRestoreService.Settings.CurrentPlugin = value.ToString();
+                _persistAndRestoreService.PersistData();
             }
         }
 
@@ -365,7 +367,15 @@ namespace SatisfactoryModdingHelper.ViewModels
             string launchStringArgs2 = $"-EpicPortal -NoSteamClient -Username=`{player2Name}` {args2}".SetQuotes();
             RunProcess(@$"`{gameLocation}\FactoryGame.exe`".SetQuotes(), launchStringArgs1, false);
             Thread.Sleep(1000);
-            RunProcess(@$"`{gameLocation}\FactoryGame.exe`".SetQuotes(), launchStringArgs2, false);
+            if (mpGameLocation.Length > 0)
+            {
+                await MirrorInstallForMPTest();
+                RunProcess(@$"`{mpGameLocation}\FactoryGame.exe`".SetQuotes(), launchStringArgs2, false);
+            }
+            else
+            {
+                RunProcess(@$"`{gameLocation}\FactoryGame.exe`".SetQuotes(), launchStringArgs2, false);
+            }
         }
 
         private RelayCommand launchMPTestingHost;
@@ -401,5 +411,11 @@ namespace SatisfactoryModdingHelper.ViewModels
         private object pluginSelectorViewModel;
 
         public object PluginSelectorViewModel { get => pluginSelectorViewModel; set => SetProperty(ref pluginSelectorViewModel, value); }
+
+        private async Task MirrorInstallForMPTest()
+        {
+            string launchStringArgs = @$"`{gameLocation}` `{mpGameLocation}` /PURGE /MIR /XD Configs /R:2 /W:2 /NS /NDL /NFL /NP";
+            await RunProcess(@$"`ROBOCOPY.EXE`".SetQuotes(), launchStringArgs.SetQuotes(), false);
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace SatisfactoryModdingHelper.Contracts.Services
+﻿using SatisfactoryModdingHelper.Models;
+
+namespace SatisfactoryModdingHelper.Contracts.Services
 {
     public interface IPersistAndRestoreService
     {
@@ -6,8 +8,10 @@
 
         void PersistData();
 
-        dynamic GetSavedProperty(string propertyName);
+        SavedSettings Settings { get; set; }
 
-        void SaveProperty(string propertyName, dynamic value);
+        //dynamic GetSavedProperty(string propertyName);
+
+        //void SaveProperty(string propertyName, dynamic value);
     }
 }

@@ -484,7 +484,7 @@ namespace SatisfactoryModdingHelper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to true.
         /// </summary>
         public static string Settings_Alpakit_CloseGame_Value {
             get {
@@ -502,7 +502,7 @@ namespace SatisfactoryModdingHelper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to true.
         /// </summary>
         public static string Settings_Alpakit_CopyMod_Value {
             get {
@@ -529,7 +529,7 @@ namespace SatisfactoryModdingHelper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to true.
         /// </summary>
         public static string Settings_Alpakit_Launcher_Value {
             get {
@@ -664,7 +664,7 @@ namespace SatisfactoryModdingHelper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -NOSPLASH -LANPLAY.
+        ///   Looks up a localized string similar to -NOSPLASH.
         /// </summary>
         public static string Settings_MP_Args1 {
             get {
@@ -682,7 +682,7 @@ namespace SatisfactoryModdingHelper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -NOSPLASH -LANPLAY.
+        ///   Looks up a localized string similar to -NOSPLASH2.
         /// </summary>
         public static string Settings_MP_Args2 {
             get {
@@ -696,6 +696,15 @@ namespace SatisfactoryModdingHelper.Properties {
         public static string Settings_MP_Args2Text {
             get {
                 return ResourceManager.GetString("Settings_MP_Args2Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings_MP_GameLocation.
+        /// </summary>
+        public static string Settings_MP_GameLocation {
+            get {
+                return ResourceManager.GetString("Settings_MP_GameLocation", resourceCulture);
             }
         }
         
@@ -741,6 +750,15 @@ namespace SatisfactoryModdingHelper.Properties {
         public static string Settings_MP_Text {
             get {
                 return ResourceManager.GetString("Settings_MP_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -NOSPLASH.
+        /// </summary>
+        public static string Settings_SP_Args {
+            get {
+                return ResourceManager.GetString("Settings_SP_Args", resourceCulture);
             }
         }
         

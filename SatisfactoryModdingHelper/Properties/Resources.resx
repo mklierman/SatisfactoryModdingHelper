@@ -343,13 +343,13 @@
     <value>500</value>
   </data>
   <data name="Settings_Alpakit_CloseGame_Value" xml:space="preserve">
-    <value />
+    <value>true</value>
   </data>
   <data name="Settings_Alpakit_CopyMod_Value" xml:space="preserve">
-    <value />
+    <value>true</value>
   </data>
   <data name="Settings_Alpakit_Launcher_Value" xml:space="preserve">
-    <value />
+    <value>true</value>
   </data>
   <data name="JSON_Modules" xml:space="preserve">
     <value>Modules</value>
@@ -379,13 +379,13 @@
     <value>MP Testing Settings</value>
   </data>
   <data name="Settings_MP_Args1" xml:space="preserve">
-    <value>-NOSPLASH -LANPLAY</value>
+    <value>-NOSPLASH</value>
   </data>
   <data name="Settings_MP_Args1Text" xml:space="preserve">
     <value>Additional Player 1 Args</value>
   </data>
   <data name="Settings_MP_Args2" xml:space="preserve">
-    <value>-NOSPLASH -LANPLAY</value>
+    <value>-NOSPLASH2</value>
   </data>
   <data name="Settings_MP_Args2Text" xml:space="preserve">
     <value>Additional Player 2 Args</value>
@@ -395,5 +395,11 @@
   </data>
   <data name="JSON_AnyRemoteVersion" xml:space="preserve">
     <value>Accepts Any Remote Version</value>
+  </data>
+  <data name="Settings_MP_GameLocation" xml:space="preserve">
+    <value>Settings_MP_GameLocation</value>
+  </data>
+  <data name="Settings_SP_Args" xml:space="preserve">
+    <value>-NOSPLASH</value>
   </data>
 </root>

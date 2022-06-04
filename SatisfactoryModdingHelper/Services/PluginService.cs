@@ -19,9 +19,9 @@ namespace SatisfactoryModdingHelper.Services
         public PluginService(IPersistAndRestoreService persistAndRestoreService)
         {
             _persistAndRestoreService = persistAndRestoreService;
-            projectLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Project);
+            projectLocation = _persistAndRestoreService.Settings.ProjectPath;
             //PopulatePluginList();
-            SelectedPlugin = _persistAndRestoreService.GetSavedProperty(Properties.Resources.SelectedPlugin);
+            SelectedPlugin = _persistAndRestoreService.Settings.CurrentPlugin;
         }
 
         private object selectedPlugin;
@@ -31,7 +31,8 @@ namespace SatisfactoryModdingHelper.Services
             set
             {
                 SetProperty(ref selectedPlugin, value);
-                _persistAndRestoreService.SaveProperty(Properties.Resources.SelectedPlugin, value);
+                _persistAndRestoreService.Settings.CurrentPlugin = value.ToString();
+                _persistAndRestoreService.PersistData();
             }
         }
 
@@ -40,7 +41,7 @@ namespace SatisfactoryModdingHelper.Services
 
         public IEnumerable GetPluginList()
         {
-            projectLocation = _persistAndRestoreService.GetSavedProperty(Properties.Resources.Settings_Locations_Project);
+            projectLocation = _persistAndRestoreService.Settings.ProjectPath;
             var pluginDirectory = projectLocation + "//Plugins";
             if (Directory.Exists(pluginDirectory))
             {
