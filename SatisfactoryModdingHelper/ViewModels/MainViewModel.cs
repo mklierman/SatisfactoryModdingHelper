@@ -295,14 +295,12 @@ namespace SatisfactoryModdingHelper.ViewModels
         private bool aIOLaunchMP;
         public bool AIOLaunchMP { get => aIOLaunchMP; set => SetProperty(ref aIOLaunchMP, value); }
 
-        private object selectedPlugin;
-
         public object SelectedPlugin
         {
-            get => selectedPlugin;
+            get => _pluginService.SelectedPlugin;
             set
             {
-                SetProperty(ref selectedPlugin, value);
+                _pluginService.SelectedPlugin = value;
                 _persistAndRestoreService.Settings.CurrentPlugin = value.ToString();
                 _persistAndRestoreService.PersistData();
             }
