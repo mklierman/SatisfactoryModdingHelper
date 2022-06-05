@@ -26,8 +26,11 @@ namespace SatisfactoryModdingHelper.Views
 
         private void MetroWindow_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e)
         {
-            ShellViewModel vm = (ShellViewModel)DataContext;
-            vm.SaveNewSize();
+            if (e.PreviousSize.Width + e.PreviousSize.Height > 0)
+            {
+                ShellViewModel vm = (ShellViewModel)DataContext;
+                vm.SaveNewSize();
+            }
         }
     }
 }

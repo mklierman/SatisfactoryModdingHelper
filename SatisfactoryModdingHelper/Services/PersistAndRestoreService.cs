@@ -17,6 +17,7 @@ namespace SatisfactoryModdingHelper.Services
         {
             _fileService = fileService;
             _appConfig = appConfig.Value;
+            RestoreData();
         }
 
         public SavedSettings Settings { get; set; }

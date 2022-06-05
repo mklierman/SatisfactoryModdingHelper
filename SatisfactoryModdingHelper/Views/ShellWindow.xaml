@@ -14,6 +14,7 @@
     MinWidth="500"
     MinHeight="650"
     d:DataContext="{d:DesignInstance Type=viewmodels:ShellViewModel}"
+    SizeChanged="MetroWindow_SizeChanged"
     Style="{StaticResource CustomMetroWindow}"
     mc:Ignorable="d">
     <i:Interaction.Triggers>
