@@ -36,7 +36,6 @@ namespace SatisfactoryModdingHelper.Services
             }
         }
 
-        private System.Collections.IEnumerable pluginList;
         public IEnumerable PluginList { get => GetPluginList(); }
 
         public IEnumerable GetPluginList()
