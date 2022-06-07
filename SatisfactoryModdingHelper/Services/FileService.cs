@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text;
+using ControlzEx.Standard;
 using Newtonsoft.Json;
 using SatisfactoryModdingHelper.Contracts.Services;
 using SatisfactoryModdingHelper.Models;
@@ -12,8 +13,8 @@ namespace SatisfactoryModdingHelper.Services
         {
             var path = Path.Combine(folderPath, fileName);
             if (File.Exists(path))
-            {
-                var json = File.ReadAllText(path);
+{
+                var json = File.ReadAllText(path, new UTF8Encoding(false));
                 return JsonConvert.DeserializeObject<T>(json);
             }
 
@@ -31,7 +32,7 @@ namespace SatisfactoryModdingHelper.Services
                 Formatting = Formatting.Indented
             };
             var fileContent = JsonConvert.SerializeObject(content, jsonSerializerSettings);
-            File.WriteAllText(Path.Combine(folderPath, fileName), fileContent, Encoding.UTF8);
+            File.WriteAllText(Path.Combine(folderPath, fileName), fileContent, new UTF8Encoding(false));
         }
 
 
