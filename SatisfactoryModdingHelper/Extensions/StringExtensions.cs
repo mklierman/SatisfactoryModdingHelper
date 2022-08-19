@@ -17,5 +17,15 @@ namespace SatisfactoryModdingHelper.Extensions
         {
             return str.Replace("`", "\"");
         }
+
+        public static bool IsNullOrEmpty(this string? str)
+        {
+            return string.IsNullOrEmpty(str);
+        }
+
+        public static string AddQuotes(this string str)
+        {
+            return string.Format("\"{0}\"", str);
+        }
     }
 }

@@ -1,0 +1,6 @@
+﻿#include "[ClassName].h"
+
+bool A[ClassName]::ShouldSave_Implementation() const
+{
+    return true;
+}

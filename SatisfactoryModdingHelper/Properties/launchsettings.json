@@ -1,0 +1,10 @@
+﻿{
+    "profiles": {
+      "SatisfactoryModdingHelper (Package)": {
+        "commandName": "MsixPackage"
+      },
+      "SatisfactoryModdingHelper (Unpackaged)": {
+        "commandName": "Project"
+      }
+    }
+}

@@ -1,0 +1,11 @@
+﻿#include "[ClassName].h"
+
+void U[ClassName]::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME(U[ClassName], bDummy);
+}
+
+// void U[ClassName]::Server_ExampleFunction_Implementation()
+// {
+// }

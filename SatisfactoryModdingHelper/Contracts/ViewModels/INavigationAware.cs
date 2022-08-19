@@ -1,11 +1,8 @@
-﻿namespace SatisfactoryModdingHelper.Contracts.ViewModels
+﻿namespace SatisfactoryModdingHelper.Contracts.ViewModels;
+
+public interface INavigationAware
 {
-    public interface INavigationAware
-    {
-        void OnNavigatedTo(object parameter);
+    void OnNavigatedTo(object parameter);
 
-        void OnNavigatedFrom();
-
-        void OnStartingNavigateFrom();
-    }
+    void OnNavigatedFrom();
 }

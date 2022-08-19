@@ -1,15 +1,19 @@
-﻿using System.Windows.Controls;
+﻿using Microsoft.UI.Xaml.Controls;
 
 using SatisfactoryModdingHelper.ViewModels;
 
-namespace SatisfactoryModdingHelper.Views
+namespace SatisfactoryModdingHelper.Views;
+
+public sealed partial class CPPPage : Page
 {
-    public partial class CPPPage : Page
+    public CPPViewModel ViewModel
     {
-        public CPPPage(CppViewModel viewModel)
-        {
-            InitializeComponent();
-            DataContext = viewModel;
-        }
+        get;
+    }
+
+    public CPPPage()
+    {
+        ViewModel = App.GetService<CPPViewModel>();
+        InitializeComponent();
     }
 }

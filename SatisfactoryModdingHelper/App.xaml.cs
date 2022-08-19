@@ -1,113 +1,113 @@
-﻿using System.IO;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Threading;
-
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Xaml;
 
+using SatisfactoryModdingHelper.Activation;
 using SatisfactoryModdingHelper.Contracts.Services;
-using SatisfactoryModdingHelper.Contracts.Views;
+using SatisfactoryModdingHelper.Core.Contracts.Services;
+using SatisfactoryModdingHelper.Core.Services;
+using SatisfactoryModdingHelper.Helpers;
 using SatisfactoryModdingHelper.Models;
+using SatisfactoryModdingHelper.Notifications;
 using SatisfactoryModdingHelper.Services;
 using SatisfactoryModdingHelper.ViewModels;
 using SatisfactoryModdingHelper.Views;
 
-namespace SatisfactoryModdingHelper
+namespace SatisfactoryModdingHelper;
+
+// To learn more about WinUI 3, see https://docs.microsoft.com/windows/apps/winui/winui3/.
+public partial class App : Application
 {
-    // For more inforation about application lifecyle events see https://docs.microsoft.com/dotnet/framework/wpf/app-development/application-management-overview
-
-    // WPF UI elements use language en-US by default.
-    // If you need to support other cultures make sure you add converters and review dates and numbers in your UI to ensure everything adapts correctly.
-    // Tracking issue for improving this is https://github.com/dotnet/wpf/issues/1946
-    public partial class App : Application
+    // The .NET Generic Host provides dependency injection, configuration, logging, and other services.
+    // https://docs.microsoft.com/dotnet/core/extensions/generic-host
+    // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
+    // https://docs.microsoft.com/dotnet/core/extensions/configuration
+    // https://docs.microsoft.com/dotnet/core/extensions/logging
+    public IHost Host
     {
-        private IHost _host;
+        get;
+    }
 
-        public T GetService<T>()
-            where T : class
-            => _host.Services.GetService(typeof(T)) as T;
-
-        public App()
+    public static T GetService<T>()
+        where T : class
+    {
+        if ((App.Current as App)!.Host.Services.GetService(typeof(T)) is not T service)
         {
+            throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
         }
 
-        private async void OnStartup(object sender, StartupEventArgs e)
+        return service;
+    }
+
+    public static WindowEx MainWindow { get; } = new MainWindow();
+
+    public App()
+    {
+        InitializeComponent();
+
+        Host = Microsoft.Extensions.Hosting.Host.
+        CreateDefaultBuilder().
+        UseContentRoot(AppContext.BaseDirectory).
+        ConfigureServices((context, services) =>
         {
-            var appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            // Default Activation Handler
+            services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
 
-            // For more information about .NET generic host see  https://docs.microsoft.com/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-3.0
-            _host = Host.CreateDefaultBuilder(e.Args)
-                    .ConfigureAppConfiguration(c =>
-                    {
-                        c.SetBasePath(appLocation);
-                    })
-                    .ConfigureServices(ConfigureServices)
-                    .Build();
+            // Other Activation Handlers
+            services.AddTransient<IActivationHandler, AppNotificationActivationHandler>();
 
-            await _host.StartAsync();
-        }
+            // Services
+            services.AddSingleton<IAppNotificationService, AppNotificationService>();
+            services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
+            services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
+            services.AddTransient<INavigationViewService, NavigationViewService>();
 
-        private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
-        {
-            // TODO WTS: Register your services, viewmodels and pages here
+            services.AddSingleton<IActivationService, ActivationService>();
+            services.AddSingleton<IPageService, PageService>();
+            services.AddSingleton<INavigationService, NavigationService>();
 
-            // App Host
-            services.AddHostedService<ApplicationHostService>();
-
-            // Activation Handlers
+            services.AddSingleton<IProcessService, ProcessService>();
+            services.AddSingleton<IPluginService, PluginService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
 
-            // Services
-            services.AddSingleton<IApplicationInfoService, ApplicationInfoService>();
-            services.AddSingleton<ISystemService, SystemService>();
-            services.AddSingleton<IPersistAndRestoreService, PersistAndRestoreService>();
-            services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
-            services.AddSingleton<IPageService, PageService>();
-            services.AddSingleton<INavigationService, NavigationService>();
-            services.AddSingleton<IFileService, FileService>();
-            services.AddSingleton<IPluginService, PluginService>();
-
             // Views and ViewModels
-            services.AddTransient<IShellWindow, ShellWindow>();
-            services.AddTransient<ShellViewModel>();
-
-            services.AddTransient<MainViewModel>();
-            services.AddTransient<MainPage>();
-
-            services.AddTransient<PluginSelectionViewModel>();
-            services.AddTransient<PluginSelectionControl>();
-
-            services.AddTransient<UPluginViewModel>();
-            services.AddTransient<UPluginPage>();
-
-            services.AddTransient<CppViewModel>();
-            services.AddTransient<CPPPage>();
-
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsPage>();
-
             services.AddTransient<AccessTransformersViewModel>();
             services.AddTransient<AccessTransformersPage>();
+            services.AddTransient<UPluginViewModel>();
+            services.AddTransient<UPluginPage>();
+            services.AddTransient<CPPViewModel>();
+            services.AddTransient<CPPPage>();
+            services.AddTransient<MainViewModel>();
+            services.AddTransient<MainPage>();
+            services.AddTransient<ShellPage>();
+            services.AddTransient<ShellViewModel>();
 
             // Configuration
-            services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
-        }
+            services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
+        }).
+        Build();
 
-        private async void OnExit(object sender, ExitEventArgs e)
-        {
-            await _host.StopAsync();
-            _host.Dispose();
-            _host = null;
-        }
+        App.GetService<IAppNotificationService>().Initialize();
 
-        private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-        {
-            // TODO WTS: Please log and handle the exception as appropriate to your scenario
-            // For more info see https://docs.microsoft.com/dotnet/api/system.windows.application.dispatcherunhandledexception?view=netcore-3.0
-        }
+        UnhandledException += App_UnhandledException;
+    }
+
+    private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    {
+        // TODO: Log and handle exceptions as appropriate.
+        // https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception.
+    }
+
+    protected async override void OnLaunched(LaunchActivatedEventArgs args)
+    {
+        base.OnLaunched(args);
+
+        App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(), AppContext.BaseDirectory));
+
+        await App.GetService<IActivationService>().ActivateAsync(args);
     }
 }

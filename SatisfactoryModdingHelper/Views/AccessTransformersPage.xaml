@@ -4,233 +4,192 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:properties="clr-namespace:SatisfactoryModdingHelper.Properties"
-    xmlns:viewmodels="clr-namespace:SatisfactoryModdingHelper.ViewModels"
+    xmlns:viewmodels="using:SatisfactoryModdingHelper.ViewModels"
+    x:Name="Page"
     d:DataContext="{d:DesignInstance Type=viewmodels:AccessTransformersViewModel}"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
-    Style="{DynamicResource MahApps.Styles.Page}"
     mc:Ignorable="d">
-    <Grid Margin="{StaticResource MediumLeftRightMargin}" Background="{DynamicResource MahApps.Brushes.Gray10}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="10" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-            <StackPanel>
-                <TextBlock Style="{StaticResource SubtitleTextStyle}" Text="Friends" />
-                <ItemsControl Margin="{StaticResource MediumLeftMargin}" ItemsSource="{Binding Friends}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.Resources>
-                                    <Style TargetType="{x:Type TextBox}">
-                                        <Setter Property="Margin" Value="{StaticResource XXSmallTopBottomMargin}" />
-                                        <Setter Property="MinHeight" Value="24" />
-                                    </Style>
-                                    <Style TargetType="{x:Type TextBlock}">
-                                        <Setter Property="Margin" Value="{StaticResource SmallRightMarginXXSmallTopBottomMargin}" />
-                                    </Style>
-                                </Grid.Resources>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="8" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Grid Grid.Row="0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="10" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <TextBlock
-                                        Grid.Row="0"
-                                        Grid.Column="0"
-                                        Text="Class" />
-                                    <TextBox
-                                        Grid.Row="0"
-                                        Grid.Column="2"
-                                        Text="{Binding Class}" />
-                                    <TextBlock
-                                        Grid.Row="1"
-                                        Grid.Column="0"
-                                        Text="Friend Class" />
-                                    <TextBox
-                                        Grid.Row="1"
-                                        Grid.Column="2"
-                                        Text="{Binding FriendClass}" />
-                                    <Button
-                                        Grid.Row="2"
-                                        Grid.ColumnSpan="3"
-                                        Command="{Binding Path=DataContext.RemoveFriend, RelativeSource={RelativeSource AncestorType=StackPanel}}"
-                                        CommandParameter="{Binding}"
-                                        Content="Remove Friend" />
-                                </Grid>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                <Button
-                    Grid.Row="19"
-                    Grid.ColumnSpan="3"
-                    Margin="{StaticResource MediumBottomMargin}"
-                    Command="{Binding AddFriend}"
-                    Content="Add New Friend" />
-                <TextBlock Style="{StaticResource SubtitleTextStyle}" Text="Accessors" />
-                <ItemsControl Margin="{StaticResource MediumLeftMargin}" ItemsSource="{Binding Accessors}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.Resources>
-                                    <Style TargetType="{x:Type TextBox}">
-                                        <Setter Property="Margin" Value="{StaticResource XXSmallTopBottomMargin}" />
-                                        <Setter Property="MinHeight" Value="24" />
-                                    </Style>
-                                    <Style TargetType="{x:Type TextBlock}">
-                                        <Setter Property="Margin" Value="{StaticResource SmallRightMarginXXSmallTopBottomMargin}" />
-                                    </Style>
-                                </Grid.Resources>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="8" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Grid Grid.Row="0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="10" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <TextBlock
-                                        Grid.Row="0"
-                                        Grid.Column="0"
-                                        Text="Class" />
-                                    <TextBox
-                                        Grid.Row="0"
-                                        Grid.Column="2"
-                                        Text="{Binding Class}" />
-                                    <TextBlock
-                                        Grid.Row="1"
-                                        Grid.Column="0"
-                                        Text="Friend Class" />
-                                    <TextBox
-                                        Grid.Row="1"
-                                        Grid.Column="2"
-                                        Text="{Binding Property}" />
-                                    <Button
-                                        Grid.Row="2"
-                                        Grid.ColumnSpan="3"
-                                        Command="{Binding Path=DataContext.RemoveAccessor, RelativeSource={RelativeSource AncestorType=StackPanel}}"
-                                        CommandParameter="{Binding}"
-                                        Content="Remove Accessor" />
-                                </Grid>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
 
-                <Button
-                    Grid.Row="19"
-                    Grid.ColumnSpan="3"
-                    Margin="{StaticResource MediumBottomMargin}"
-                    Command="{Binding AddAccessor}"
-                    Content="Add New Accessor" />
-                <Grid />
-                <TextBlock Style="{StaticResource SubtitleTextStyle}" Text="Blueprint Read/Writes" />
-                <ItemsControl Margin="{StaticResource MediumLeftMargin}" ItemsSource="{Binding Blueprints}">
+    <Grid x:Name="ContentArea">
+        <Pivot SelectedItem="{x:Bind ViewModel.SelectedPivotItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            <Pivot.RightHeader>
+                <Button VerticalAlignment="Center" Command="{x:Bind ViewModel.AddTransformer}">
+                    <StackPanel Orientation="Horizontal">
+                        <FontIcon
+                            Margin="0,5,0,0"
+                            VerticalAlignment="Center"
+                            FontFamily="{StaticResource SymbolThemeFontFamily}"
+                            FontSize="24"
+                            Glyph="&#xe710;" />
+                        <TextBlock
+                            Margin="{StaticResource SmallLeftMargin}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="Add Transformer" />
+                    </StackPanel>
+                </Button>
+            </Pivot.RightHeader>
+            <PivotItem Header="Friends">
+                <ListView
+                    Margin="{StaticResource MediumTopMargin}"
+                    ItemsSource="{x:Bind ViewModel.Friends, UpdateSourceTrigger=PropertyChanged}"
+                    ScrollViewer.VerticalScrollBarVisibility="Visible">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid>
-                                <Grid.Resources>
-                                    <Style TargetType="{x:Type TextBox}">
-                                        <Setter Property="Margin" Value="{StaticResource XXSmallTopBottomMargin}" />
-                                        <Setter Property="MinHeight" Value="24" />
-                                    </Style>
-                                    <Style TargetType="{x:Type TextBlock}">
-                                        <Setter Property="Margin" Value="{StaticResource SmallRightMarginXXSmallTopBottomMargin}" />
-                                    </Style>
-                                </Grid.Resources>
+                            <Grid Margin="{StaticResource XSmallTopMargin}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="8" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <Grid Grid.Row="0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="10" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <TextBlock
-                                        Grid.Row="0"
-                                        Grid.Column="0"
-                                        Text="Class" />
-                                    <TextBox
-                                        Grid.Row="0"
-                                        Grid.Column="2"
-                                        Text="{Binding Class}" />
-                                    <TextBlock
-                                        Grid.Row="1"
-                                        Grid.Column="0"
-                                        Text="Friend Class" />
-                                    <TextBox
-                                        Grid.Row="1"
-                                        Grid.Column="2"
-                                        Text="{Binding Property}" />
-                                    <Button
-                                        Grid.Row="2"
-                                        Grid.ColumnSpan="3"
-                                        Command="{Binding Path=DataContext.RemoveBlueprintReadWrite, RelativeSource={RelativeSource AncestorType=StackPanel}}"
-                                        CommandParameter="{Binding}"
-                                        Content="Remove Friend" />
-                                </Grid>
+                                <Border Background="{ThemeResource AcrylicBackgroundFillColorBaseBrush}" CornerRadius="5">
+                                    <Grid Grid.Row="0" Margin="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <TextBox
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Header="Class:"
+                                            Text="{Binding Class}" />
+                                        <TextBox
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Margin="{StaticResource SmallTopMargin}"
+                                            Header="Friend Class:"
+                                            Text="{Binding FriendClass}" />
+                                        <Button
+                                            Grid.RowSpan="2"
+                                            Grid.Column="1"
+                                            MinWidth="75"
+                                            Margin="{StaticResource SmallLeftMargin}"
+                                            VerticalAlignment="Stretch"
+                                            Command="{Binding ElementName=Page, Path=ViewModel.RemoveFriend}"
+                                            CommandParameter="{Binding}">
+                                            <FontIcon
+                                                FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                                FontSize="24"
+                                                Glyph="&#xe74d;" />
+                                        </Button>
+                                    </Grid>
+                                </Border>
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                </ListView>
+            </PivotItem>
+            <PivotItem Header="Blueprint Read/Writes">
+                <ListView
+                    Margin="{StaticResource MediumTopMargin}"
+                    ItemsSource="{x:Bind ViewModel.Blueprints, UpdateSourceTrigger=PropertyChanged}"
+                    ScrollViewer.VerticalScrollBarVisibility="Visible">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="{StaticResource XSmallTopMargin}">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="8" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Border Background="{ThemeResource AcrylicBackgroundFillColorBaseBrush}" CornerRadius="5">
+                                    <Grid Grid.Row="0" Margin="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <TextBox
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Header="Class:"
+                                            Text="{Binding Class}" />
+                                        <TextBox
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Header="Property:"
+                                            Text="{Binding Property}" />
+                                        <Button
+                                            Grid.RowSpan="2"
+                                            Grid.Column="1"
+                                            MinWidth="75"
+                                            Margin="{StaticResource SmallLeftMargin}"
+                                            VerticalAlignment="Stretch"
+                                            Command="{Binding ElementName=Page, Path=ViewModel.RemoveBlueprintReadWrite}"
+                                            CommandParameter="{Binding}">
+                                            <FontIcon
+                                                FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                                FontSize="24"
+                                                Glyph="&#xe74d;" />
+                                        </Button>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ListView>
+            </PivotItem>
+            <PivotItem Header="Accessors">
+                <ListView
+                    Margin="{StaticResource MediumTopMargin}"
+                    ItemsSource="{x:Bind ViewModel.Accessors, UpdateSourceTrigger=PropertyChanged}"
+                    ScrollViewer.VerticalScrollBarVisibility="Visible">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="{StaticResource XSmallTopMargin}">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="8" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Border Background="{ThemeResource AcrylicBackgroundFillColorBaseBrush}" CornerRadius="5">
+                                    <Grid Grid.Row="0" Margin="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <TextBox
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Header="Class:"
+                                            Text="{Binding Class}" />
+                                        <TextBox
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Margin="{StaticResource SmallTopMargin}"
+                                            Header="Property:"
+                                            Text="{Binding Property}" />
+                                        <Button
+                                            Grid.RowSpan="2"
+                                            Grid.Column="1"
+                                            MinWidth="75"
+                                            Margin="{StaticResource SmallLeftMargin}"
+                                            VerticalAlignment="Stretch"
+                                            Command="{Binding ElementName=Page, Path=ViewModel.RemoveAccessor}"
+                                            CommandParameter="{Binding}">
+                                            <FontIcon
+                                                FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                                FontSize="24"
+                                                Glyph="&#xe74d;" />
+                                        </Button>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ListView>
+            </PivotItem>
+        </Pivot>
 
-                <Button
-                    Grid.Row="19"
-                    Grid.ColumnSpan="3"
-                    Margin="{StaticResource MediumBottomMargin}"
-                    Command="{Binding AddBlueprintReadWrite}"
-                    Content="Add New Blueprint Read/Write" />
-                <Grid />
-            </StackPanel>
-        </ScrollViewer>
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="10" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Button
-                Grid.Column="0"
-                Command="{Binding SaveChanges}"
-                Content="Save" />
-            <Button
-                Grid.Column="2"
-                Command="{Binding CancelChanges}"
-                Content="Cancel" />
-        </Grid>
     </Grid>
 </Page>

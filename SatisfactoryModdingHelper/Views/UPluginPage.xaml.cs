@@ -1,15 +1,19 @@
-﻿using System.Windows.Controls;
+﻿using Microsoft.UI.Xaml.Controls;
 
 using SatisfactoryModdingHelper.ViewModels;
 
-namespace SatisfactoryModdingHelper.Views
+namespace SatisfactoryModdingHelper.Views;
+
+public sealed partial class UPluginPage : Page
 {
-    public partial class UPluginPage : Page
+    public UPluginViewModel ViewModel
     {
-        public UPluginPage(UPluginViewModel viewModel)
-        {
-            InitializeComponent();
-            DataContext = viewModel;
-        }
+        get;
+    }
+
+    public UPluginPage()
+    {
+        ViewModel = App.GetService<UPluginViewModel>();
+        InitializeComponent();
     }
 }

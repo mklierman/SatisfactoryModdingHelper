@@ -1,0 +1,15 @@
+﻿#pragma once
+
+#include "CoreMinimal.h"
+#include "Subsystem/ModSubsystem.h"
+
+#include "[ClassName].generated.h"
+
+UCLASS()
+class [PluginReferenceUC]_API A[ClassName] : public AModSubsystem, public IFGSaveInterface
+{
+	GENERATED_BODY()
+public:
+
+	virtual bool ShouldSave_Implementation() const override;
+};

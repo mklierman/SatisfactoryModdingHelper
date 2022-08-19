@@ -6,13 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SatisfactoryModdingHelper.Contracts.Services
-{
-    public interface IPluginService
-    {
-        object SelectedPlugin { get; set; }
-        System.Collections.IEnumerable PluginList { get; }
+namespace SatisfactoryModdingHelper.Contracts.Services;
 
-        IEnumerable GetPluginList();
-    }
+public interface IPluginService
+{
+    object SelectedPlugin { get; set; }
+    IEnumerable? PluginList { get; }
+
+    IEnumerable? GetPluginList();
+
+    event EventHandler<object> PluginChangedEvent;
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using SatisfactoryModdingHelper.Contracts.Services;
 using SatisfactoryModdingHelper.Models;
 using System;
@@ -9,50 +9,57 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SatisfactoryModdingHelper.Services
+namespace SatisfactoryModdingHelper.Services;
+
+public class PluginService : ObservableRecipient, IPluginService
 {
-    public class PluginService :  ObservableObject, IPluginService
+    private readonly ILocalSettingsService _settingsService;
+    private string projectLocation;
+
+    public PluginService(ILocalSettingsService settingsService)
     {
-        private readonly IPersistAndRestoreService _persistAndRestoreService;
-        private string projectLocation;
+        selectedPlugin = new object();
+        _settingsService = settingsService;
+        projectLocation = _settingsService.Settings.ProjectPath;
+        SelectedPlugin = _settingsService.Settings.CurrentPlugin;
+    }
 
-        public PluginService(IPersistAndRestoreService persistAndRestoreService)
-        {
-            _persistAndRestoreService = persistAndRestoreService;
-            projectLocation = _persistAndRestoreService.Settings.ProjectPath;
-            //PopulatePluginList();
-            SelectedPlugin = _persistAndRestoreService.Settings.CurrentPlugin;
-        }
+    private object selectedPlugin;
 
-        private object selectedPlugin;
-        public object SelectedPlugin
+    public event EventHandler<object> PluginChangedEvent;
+
+    public object SelectedPlugin
+    {
+        get => selectedPlugin;
+        set
         {
-            get => selectedPlugin;
-            set
+            SetProperty(ref selectedPlugin, value);
+            if (value != null)
             {
-                SetProperty(ref selectedPlugin, value);
-                _persistAndRestoreService.Settings.CurrentPlugin = value.ToString();
-                _persistAndRestoreService.PersistData();
+
+                _settingsService.Settings.CurrentPlugin = value.ToString() ?? "";
+                _settingsService.PersistData();
+                PluginChangedEvent?.Invoke(this, value);
             }
         }
+    }
 
-        public IEnumerable PluginList { get => GetPluginList(); }
+    public IEnumerable? PluginList => GetPluginList();
 
-        public IEnumerable GetPluginList()
+    public IEnumerable? GetPluginList()
+    {
+        projectLocation = _settingsService.Settings.ProjectPath;
+        var pluginDirectory = projectLocation + "//Plugins";
+        if (Directory.Exists(pluginDirectory))
         {
-            projectLocation = _persistAndRestoreService.Settings.ProjectPath;
-            var pluginDirectory = projectLocation + "//Plugins";
-            if (Directory.Exists(pluginDirectory))
+            List<string> pluginDirs = new();
+            foreach (var directory in Directory.GetDirectories(pluginDirectory))
             {
-                List<string> pluginDirs = new();
-                foreach (var directory in Directory.GetDirectories(pluginDirectory))
-                {
-                    var di = new DirectoryInfo(directory);
-                    pluginDirs.Add(di.Name);
-                }
-                return pluginDirs;
+                var di = new DirectoryInfo(directory);
+                pluginDirs.Add(di.Name);
             }
-            return null;
+            return pluginDirs;
         }
+        return null;
     }
 }

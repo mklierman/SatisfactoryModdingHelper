@@ -1,336 +1,378 @@
-﻿using System;
-using System.IO;
+﻿using System.Reflection;
 using System.Windows.Input;
 
-using Microsoft.Extensions.Options;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+
+using Microsoft.UI.Xaml;
 
 using SatisfactoryModdingHelper.Contracts.Services;
 using SatisfactoryModdingHelper.Contracts.ViewModels;
-using SatisfactoryModdingHelper.Models;
+using SatisfactoryModdingHelper.Helpers;
 using SatisfactoryModdingHelper.Services;
+using Windows.ApplicationModel;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 
+namespace SatisfactoryModdingHelper.ViewModels;
 
-namespace SatisfactoryModdingHelper.ViewModels
+public class SettingsViewModel : ObservableRecipient, INavigationAware
 {
-    // TODO WTS: Change the URL for your privacy policy in the appsettings.json file, currently set to https://YourPrivacyUrlGoesHere
-    public class SettingsViewModel : ObservableObject, INavigationAware
+    private readonly IThemeSelectorService _themeSelectorService;
+    private readonly ILocalSettingsService _localSettingsService;
+    private ElementTheme _elementTheme;
+    private string _versionDescription;
+    private FolderPicker folderPicker = new();
+
+    public ElementTheme ElementTheme
     {
-        private readonly AppConfig _appConfig;
-        private readonly IThemeSelectorService _themeSelectorService;
-        private readonly ISystemService _systemService;
-        private readonly IApplicationInfoService _applicationInfoService;
-        private readonly IPersistAndRestoreService _persistAndRestoreService;
-        private AppTheme _theme;
-        private string _versionDescription;
-        private ICommand _setThemeCommand;
-        private ICommand _privacyStatementCommand;
+        get => _elementTheme;
+        set => SetProperty(ref _elementTheme, value);
+    }
 
-        public AppTheme Theme
-        {
-            get { return _theme; }
-            set { SetProperty(ref _theme, value); }
-        }
+    public string VersionDescription
+    {
+        get => _versionDescription;
+        set => SetProperty(ref _versionDescription, value);
+    }
 
-        public string VersionDescription
-        {
-            get { return _versionDescription; }
-            set { SetProperty(ref _versionDescription, value); }
-        }
+    public ICommand SwitchThemeCommand
+    {
+        get;
+    }
 
-        public ICommand SetThemeCommand => _setThemeCommand ??= new RelayCommand<string>(OnSetTheme);
+    public SettingsViewModel(IThemeSelectorService themeSelectorService, ILocalSettingsService localSettingsService)
+    {
+        _themeSelectorService = themeSelectorService;
+        _localSettingsService=localSettingsService;
+        _elementTheme = _themeSelectorService.Theme;
+        _versionDescription = GetVersionDescription();
 
-        public ICommand PrivacyStatementCommand => _privacyStatementCommand ??= new RelayCommand(OnPrivacyStatement);
-
-        public SettingsViewModel(IOptions<AppConfig> appConfig, IThemeSelectorService themeSelectorService, ISystemService systemService, IApplicationInfoService applicationInfoService, IPersistAndRestoreService persistAndRestoreService)
-        {
-            _appConfig = appConfig.Value;
-            _themeSelectorService = themeSelectorService;
-            _systemService = systemService;
-            _applicationInfoService = applicationInfoService;
-            _persistAndRestoreService = persistAndRestoreService;
-        }
-
-        public void OnNavigatedTo(object parameter)
-        {
-            VersionDescription = $"{Properties.Resources.AppDisplayName} - {_applicationInfoService.GetVersion()}";
-            Theme = _themeSelectorService.GetCurrentTheme();
-            UnrealEngineLocation = _persistAndRestoreService.Settings.UnrealEnginePath;
-            VisualStudioLocation = _persistAndRestoreService.Settings.VisualStudioPath;
-            ProjectFolder = _persistAndRestoreService.Settings.ProjectPath;
-            SatisfactoryFolder = _persistAndRestoreService.Settings.SatisfactoryPath;
-            SMMFolder = _persistAndRestoreService.Settings.ModManagerPath;
-            AlpakitCopyPlugin = _persistAndRestoreService.Settings.AlpakitCopyModToGame;
-            AlpakitCloseSatisfactory = _persistAndRestoreService.Settings.AlpakitCloseGame;
-            MPPlayer1Name = _persistAndRestoreService.Settings.Player1Name;
-            MPPlayer2Name = _persistAndRestoreService.Settings.Player2Name;
-            MPArgs1 = _persistAndRestoreService.Settings.Player1Args;
-            MPArgs2 = _persistAndRestoreService.Settings.Player2Args;
-            MPGameLocation = _persistAndRestoreService.Settings.Player2SatisfactoryPath;
-
-        }
-
-        public void OnNavigatedFrom()
-        {
-            _persistAndRestoreService.PersistData();
-        }
-
-        public void OnStartingNavigateFrom()
-        {
-        }
-
-        private void OnSetTheme(string themeName)
-        {
-            var theme = (AppTheme)Enum.Parse(typeof(AppTheme), themeName);
-            _themeSelectorService.SetTheme(theme);
-        }
-
-        private void OnPrivacyStatement()
-            => _systemService.OpenInWebBrowser(_appConfig.PrivacyStatement);
-
-        private string unrealEngineLocation;
-
-        public string UnrealEngineLocation
-        {
-            get => unrealEngineLocation;
-
-            set
+        SwitchThemeCommand = new RelayCommand<ElementTheme>(
+            async (param) =>
             {
-                SetProperty(ref unrealEngineLocation, value);
-                _persistAndRestoreService.Settings.UnrealEnginePath = value;
-                _persistAndRestoreService.PersistData();
-            }
+                if (ElementTheme != param)
+                {
+                    ElementTheme = param;
+                    await _themeSelectorService.SetThemeAsync(param);
+                }
+            });
+
+        folderPicker.FileTypeFilter.Add("*");
+        folderPicker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
+    }
+
+    private static string GetVersionDescription()
+    {
+        Version version;
+
+        if (RuntimeHelper.IsMSIX)
+        {
+            var packageVersion = Package.Current.Id.Version;
+
+            version = new(packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision);
+        }
+        else
+        {
+            version = Assembly.GetExecutingAssembly().GetName().Version!;
         }
 
-        private string visualStudioLocation;
+        return $"{"AppDisplayName".GetLocalized()} - {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+    }
 
-        public string VisualStudioLocation
+    public void OnNavigatedTo(object parameter)
+    {
+        _localSettingsService.RestoreData();
+        UnrealEngineLocation = _localSettingsService.Settings.UnrealEnginePath;
+        VisualStudioLocation = _localSettingsService.Settings.VisualStudioPath;
+        ProjectFolder = _localSettingsService.Settings.ProjectPath;
+        SatisfactoryFolder = _localSettingsService.Settings.SatisfactoryPath;
+        SMMFolder = _localSettingsService.Settings.ModManagerPath;
+        AlpakitCopyPlugin = _localSettingsService.Settings.AlpakitCopyModToGame;
+        AlpakitCloseSatisfactory = _localSettingsService.Settings.AlpakitCloseGame;
+        MPPlayer1Name = _localSettingsService.Settings.Player1Name;
+        MPPlayer2Name = _localSettingsService.Settings.Player2Name;
+        MPPlayer1Args = _localSettingsService.Settings.Player1Args;
+        MPPlayer2Args = _localSettingsService.Settings.Player2Args;
+        MPGameLocation = _localSettingsService.Settings.Player2SatisfactoryPath;
+    }
+    public void OnNavigatedFrom()  => _localSettingsService.PersistData();
+
+    private string unrealEngineLocation;
+
+    public string UnrealEngineLocation
+    {
+        get => unrealEngineLocation;
+
+        set
         {
-            get => visualStudioLocation;
-            set
-            {
-                SetProperty(ref visualStudioLocation, value);
-                _persistAndRestoreService.Settings.VisualStudioPath = value;
-                _persistAndRestoreService.PersistData();
-            }
+            SetProperty(ref unrealEngineLocation, value);
+            _localSettingsService.Settings.UnrealEnginePath = value;
+            _localSettingsService.PersistData();
         }
+    }
 
-        private string projectFolder;
+    private string visualStudioLocation;
 
-        public string ProjectFolder
+    public string VisualStudioLocation
+    {
+        get => visualStudioLocation;
+        set
         {
-            get => projectFolder;
-            set
-            {
-                SetProperty(ref projectFolder, value);
-                _persistAndRestoreService.Settings.ProjectPath = value;
-                _persistAndRestoreService.PersistData();
-            }
+            SetProperty(ref visualStudioLocation, value);
+            _localSettingsService.Settings.VisualStudioPath = value;
+            _localSettingsService.PersistData();
         }
+    }
 
-        private string satisfactoryFolder;
+    private string projectFolder;
 
-        public string SatisfactoryFolder
+    public string ProjectFolder
+    {
+        get => projectFolder;
+        set
         {
-            get => satisfactoryFolder; set
-            {
-                SetProperty(ref satisfactoryFolder, value);
-                _persistAndRestoreService.Settings.SatisfactoryPath = value;
-                _persistAndRestoreService.PersistData();
-            }
+            SetProperty(ref projectFolder, value);
+            _localSettingsService.Settings.ProjectPath = value;
+            _localSettingsService.PersistData();
         }
+    }
 
-        private string sMMFolder;
+    private string satisfactoryFolder;
 
-        public string SMMFolder
+    public string SatisfactoryFolder
+    {
+        get => satisfactoryFolder; set
         {
-            get => sMMFolder; set
-            {
-                SetProperty(ref sMMFolder, value);
-                _persistAndRestoreService.Settings.ModManagerPath = value;
-                _persistAndRestoreService.PersistData();
-            }
+            SetProperty(ref satisfactoryFolder, value);
+            _localSettingsService.Settings.SatisfactoryPath = value;
+            _localSettingsService.PersistData();
         }
+    }
 
-        private RelayCommand browseForUELocation;
-        public ICommand BrowseForUELocation => browseForUELocation ??= new RelayCommand(PerformBrowseForUELocation);
+    private string sMMFolder;
 
-        private void PerformBrowseForUELocation()
+    public string SMMFolder
+    {
+        get => sMMFolder; set
         {
-            var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
-            folderBrowser.InitialDirectory = Properties.Resources.Settings_Locations_UE_Hint.ToString();
-            if (folderBrowser.ShowDialog() == true)
-            {
-                UnrealEngineLocation = folderBrowser.FileName;
-            }
+            SetProperty(ref sMMFolder, value);
+            _localSettingsService.Settings.ModManagerPath = value;
+            _localSettingsService.PersistData();
         }
+    }
 
-        private RelayCommand browseForVSLocation;
-        public ICommand BrowseForVSLocation => browseForVSLocation ??= new RelayCommand(PerformBrowseForVSLocation);
+    private AsyncRelayCommand browseForUELocation;
+    public ICommand BrowseForUELocation => browseForUELocation ??= new AsyncRelayCommand(PerformBrowseForUELocation);
 
-        private void PerformBrowseForVSLocation()
+    private async Task PerformBrowseForUELocation()
+    {
+        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
+        var folder = await folderPicker.PickSingleFolderAsync();
+
+        if (folder != null)
         {
-            var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
-            var vs2019 = @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE";
-            var vs2017 = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE";
-            var vs2015 = @"C:\Program Files (x86)\Microsoft Visual Studio\2015\Community\Common7\IDE";
-            if (Directory.Exists(vs2019))
-            {
-                folderBrowser.InitialDirectory = vs2019;
-            }
-            else if (Directory.Exists(vs2017))
-            {
-                folderBrowser.InitialDirectory = vs2017;
-            }
-            else
-            {
-                folderBrowser.InitialDirectory = vs2015;
-            }
-            if (folderBrowser.ShowDialog() == true)
-            {
-                VisualStudioLocation = folderBrowser.FileName;
-            }
+            UnrealEngineLocation = folder.Path;
         }
+    }
 
-        private RelayCommand browseForProjectLocation;
-        public ICommand BrowseForProjectLocation => browseForProjectLocation ??= new RelayCommand(PerformBrowseForProjectLocation);
+    private AsyncRelayCommand browseForVSLocation;
+    public ICommand BrowseForVSLocation => browseForVSLocation ??= new AsyncRelayCommand(PerformBrowseForVSLocation);
 
-        private void PerformBrowseForProjectLocation()
+    private async Task PerformBrowseForVSLocation()
+    {
+        //var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
+        //var vs2019 = @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE";
+        //var vs2017 = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE";
+        //var vs2015 = @"C:\Program Files (x86)\Microsoft Visual Studio\2015\Community\Common7\IDE";
+        //if (Directory.Exists(vs2019))
+        //{
+        //    folderBrowser.InitialDirectory = vs2019;
+        //}
+        //else if (Directory.Exists(vs2017))
+        //{
+        //    folderBrowser.InitialDirectory = vs2017;
+        //}
+        //else
+        //{
+        //    folderBrowser.InitialDirectory = vs2015;
+        //}
+        //if (folderBrowser.ShowDialog() == true)
+        //{
+        //    VisualStudioLocation = folderBrowser.FileName;
+        //}
+
+
+        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
+        var folder = await folderPicker.PickSingleFolderAsync();
+
+        if (folder != null)
         {
-            var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
-            folderBrowser.InitialDirectory = "C:\\";
-            if (folderBrowser.ShowDialog() == true)
-            {
-                ProjectFolder = folderBrowser.FileName;
-            }
+            VisualStudioLocation = folder.Path;
         }
+    }
 
-        private RelayCommand browseForGameLocation;
-        public ICommand BrowseForGameLocation => browseForGameLocation ??= new RelayCommand(PerformBrowseForGameLocation);
+    private AsyncRelayCommand browseForProjectLocation;
+    public ICommand BrowseForProjectLocation => browseForProjectLocation ??= new AsyncRelayCommand(PerformBrowseForProjectLocation);
 
-        private void PerformBrowseForGameLocation()
+    private async Task PerformBrowseForProjectLocation()
+    {
+        //var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
+        //folderBrowser.InitialDirectory = "C:\\";
+        //if (folderBrowser.ShowDialog() == true)
+        //{
+        //    ProjectFolder = folderBrowser.FileName;
+        //}
+
+        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
+        var folder = await folderPicker.PickSingleFolderAsync();
+
+        if (folder != null)
         {
-            var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
-            if (folderBrowser.ShowDialog() == true)
-            {
-                SatisfactoryFolder = folderBrowser.FileName;
-            }
+            ProjectFolder = folder.Path;
         }
+    }
 
-        private RelayCommand browseForSMMLocation;
-        public ICommand BrowseForSMMLocation => browseForSMMLocation ??= new RelayCommand(PerformBrowseForSMMLocation);
+    private AsyncRelayCommand browseForGameLocation;
+    public ICommand BrowseForGameLocation => browseForGameLocation ??= new AsyncRelayCommand(PerformBrowseForGameLocation);
 
-        private void PerformBrowseForSMMLocation()
+    private async Task PerformBrowseForGameLocation()
+    {
+        //var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
+        //if (folderBrowser.ShowDialog() == true)
+        //{
+        //    SatisfactoryFolder = folderBrowser.FileName;
+        //}
+
+        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
+        var folder = await folderPicker.PickSingleFolderAsync();
+
+        if (folder != null)
         {
-            var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
-            folderBrowser.InitialDirectory = $"{Environment.GetEnvironmentVariable("LocalAppData")}\\Programs\\Satisfactory Mod Manager";
-            if (folderBrowser.ShowDialog() == true)
-            {
-                SMMFolder = folderBrowser.FileName;
-            }
+            SatisfactoryFolder = folder.Path;
         }
+    }
 
-        private bool alpakitCopyPlugin;
+    private AsyncRelayCommand browseForSMMLocation;
+    public ICommand BrowseForSMMLocation => browseForSMMLocation ??= new AsyncRelayCommand(PerformBrowseForSMMLocation);
 
-        public bool AlpakitCopyPlugin
+    private async Task PerformBrowseForSMMLocation()
+    {
+        //var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
+        //folderBrowser.InitialDirectory = $"{Environment.GetEnvironmentVariable("LocalAppData")}\\Programs\\Satisfactory Mod Manager";
+        //if (folderBrowser.ShowDialog() == true)
+        //{
+        //    SMMFolder = folderBrowser.FileName;
+        //}
+
+        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
+        var folder = await folderPicker.PickSingleFolderAsync();
+
+        if (folder != null)
         {
-            get => alpakitCopyPlugin;
-            set
-            {
-                SetProperty(ref alpakitCopyPlugin, value);
-                _persistAndRestoreService.Settings.AlpakitCopyModToGame = value;
-                _persistAndRestoreService.PersistData();
-            }
+            SMMFolder = folder.Path;
         }
+    }
 
-        private bool alpakitCloseSatisfactory;
+    private bool alpakitCopyPlugin;
 
-        public bool AlpakitCloseSatisfactory
+    public bool AlpakitCopyPlugin
+    {
+        get => alpakitCopyPlugin;
+        set
         {
-            get => alpakitCloseSatisfactory;
-            set
-            {
-                SetProperty(ref alpakitCloseSatisfactory, value);
-                _persistAndRestoreService.Settings.AlpakitCloseGame = value;
-                _persistAndRestoreService.PersistData();
-            }
+            SetProperty(ref alpakitCopyPlugin, value);
+            _localSettingsService.Settings.AlpakitCopyModToGame = value;
+            _localSettingsService.PersistData();
         }
+    }
 
-        private string mPPlayer1Name;
+    private bool alpakitCloseSatisfactory;
 
-        public string MPPlayer1Name
+    public bool AlpakitCloseSatisfactory
+    {
+        get => alpakitCloseSatisfactory;
+        set
         {
-            get => mPPlayer1Name;
-            set
-            {
-                SetProperty(ref mPPlayer1Name, value);
-                _persistAndRestoreService.Settings.Player1Name = value;
-                _persistAndRestoreService.PersistData();
-            }
+            SetProperty(ref alpakitCloseSatisfactory, value);
+            _localSettingsService.Settings.AlpakitCloseGame = value;
+            _localSettingsService.PersistData();
         }
+    }
 
-        private string mPPlayer2Name;
+    private string mPPlayer1Name;
 
-        public string MPPlayer2Name
+    public string MPPlayer1Name
+    {
+        get => mPPlayer1Name;
+        set
         {
-            get => mPPlayer2Name;
-            set
-            {
-                SetProperty(ref mPPlayer2Name, value);
-                _persistAndRestoreService.Settings.Player2Name = value;
-                _persistAndRestoreService.PersistData();
-            }
+            SetProperty(ref mPPlayer1Name, value);
+            _localSettingsService.Settings.Player1Name = value;
+            _localSettingsService.PersistData();
         }
+    }
 
-        private string mPArgs1;
+    private string mPPlayer2Name;
 
-        public string MPArgs1
+    public string MPPlayer2Name
+    {
+        get => mPPlayer2Name;
+        set
         {
-            get => mPArgs1;
-            set
-            {
-                SetProperty(ref mPArgs1, value);
-                _persistAndRestoreService.Settings.Player1Args = value;
-                _persistAndRestoreService.PersistData();
-            }
+            SetProperty(ref mPPlayer2Name, value);
+            _localSettingsService.Settings.Player2Name = value;
+            _localSettingsService.PersistData();
         }
+    }
 
-        private string mPArgs2;
+    private string mPArgs1;
 
-        public string MPArgs2
+    public string MPPlayer1Args
+    {
+        get => mPArgs1;
+        set
         {
-            get => mPArgs2;
-            set
-            {
-                SetProperty(ref mPArgs2, value);
-                _persistAndRestoreService.Settings.Player2Args = value;
-                _persistAndRestoreService.PersistData();
-            }
+            SetProperty(ref mPArgs1, value);
+            _localSettingsService.Settings.Player1Args = value;
+            _localSettingsService.PersistData();
         }
+    }
 
-        private string mPGameLocation;
-        public string MPGameLocation
+    private string mPArgs2;
+
+    public string MPPlayer2Args
+    {
+        get => mPArgs2;
+        set
         {
-            get => mPGameLocation;
-            set
-            {
-                SetProperty(ref mPGameLocation, value);
-                _persistAndRestoreService.Settings.Player2SatisfactoryPath = value;
-                _persistAndRestoreService.PersistData();
-            }
+            SetProperty(ref mPArgs2, value);
+            _localSettingsService.Settings.Player2Args = value;
+            _localSettingsService.PersistData();
         }
+    }
 
-        private RelayCommand browseForSecondaryGameLocation;
-        public ICommand BrowseForSecondaryGameLocation => browseForSecondaryGameLocation ??= new RelayCommand(PerformBrowseForSecondaryGameLocation);
-
-        private void PerformBrowseForSecondaryGameLocation()
+    private string mPGameLocation;
+    public string MPGameLocation
+    {
+        get => mPGameLocation;
+        set
         {
-            var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
-            if (folderBrowser.ShowDialog() == true)
-            {
-                MPGameLocation = folderBrowser.FileName;
-            }
+            SetProperty(ref mPGameLocation, value);
+            _localSettingsService.Settings.Player2SatisfactoryPath = value;
+            _localSettingsService.PersistData();
+        }
+    }
+
+    private RelayCommand browseForSecondaryGameLocation;
+    public ICommand BrowseForSecondaryGameLocation => browseForSecondaryGameLocation ??= new RelayCommand(PerformBrowseForSecondaryGameLocation);
+
+    private void PerformBrowseForSecondaryGameLocation()
+    {
+        var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
+        if (folderBrowser.ShowDialog() == true)
+        {
+            MPGameLocation = folderBrowser.FileName;
         }
     }
 }

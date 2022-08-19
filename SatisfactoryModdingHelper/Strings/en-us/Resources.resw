@@ -1,0 +1,434 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>Satisfactory Modding Helper</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>SatisfactoryModdingHelper</value>
+  </data>
+  <data name="Shell_Main.Content" xml:space="preserve">
+    <value>Main</value>
+  </data>
+  <data name="Shell_CPP.Content" xml:space="preserve">
+    <value>CPP</value>
+  </data>
+  <data name="Shell_UPlugin.Content" xml:space="preserve">
+    <value>UPlugin</value>
+  </data>
+  <data name="AccessTransformers_NoSelection.Text" xml:space="preserve">
+    <value>Select an item from the list.</value>
+  </data>
+  <data name="Shell_AccessTransformers.Content" xml:space="preserve">
+    <value>Access Transformers</value>
+  </data>
+  <data name="Settings_Personalization.Text" xml:space="preserve">
+    <value>Personalization</value>
+  </data>
+  <data name="Settings_Theme.Text" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="Settings_Theme_Light.Content" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Settings_Theme_Dark.Content" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Settings_Theme_Default.Content" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="Settings_About.Text" xml:space="preserve">
+    <value>About this application</value>
+  </data>
+  <data name="Settings_AboutDescription.Text" xml:space="preserve">
+    <value>TODO: Replace with your app description.</value>
+  </data>
+  <data name="SettingsPage_PrivacyTermsLink.Content" xml:space="preserve">
+    <value>Privacy Statement</value>
+  </data>
+  <data name="SettingsPage_PrivacyTermsLink.NavigateUri" xml:space="preserve">
+    <value>https://YourPrivacyUrlGoesHere/</value>
+  </data>
+  <data name="AppNotificationSamplePayload" xml:space="preserve">
+    <value>&lt;toast launch="action=ToastClick"&gt;
+  &lt;visual&gt;
+    &lt;binding template="ToastGeneric"&gt;
+      &lt;text&gt;App Notification&lt;/text&gt;
+      &lt;text&gt;&lt;/text&gt;
+      &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/WindowIcon.ico"/&gt;
+    &lt;/binding&gt;
+  &lt;/visual&gt;
+  &lt;actions&gt;
+    &lt;action content="Settings" arguments="action=Settings"/&gt;
+  &lt;/actions&gt;
+&lt;/toast&gt;</value>
+  </data>
+  <data name="AccessTransformersPageTitle" xml:space="preserve">
+    <value>Access Transformers</value>
+  </data>
+  <data name="CPPPageTitle" xml:space="preserve">
+    <value>CPP</value>
+  </data>
+  <data name="CPP_Buttons_GenerateAsync" xml:space="preserve">
+    <value>Generate Async Library</value>
+  </data>
+  <data name="CPP_Buttons_GenerateDefault.Content" xml:space="preserve">
+    <value>Generate Default C++ Files</value>
+  </data>
+  <data name="CPP_Title" xml:space="preserve">
+    <value>C++ Tools</value>
+  </data>
+  <data name="JSON_AnyRemoteVersion" xml:space="preserve">
+    <value>Accepts Any Remote Version</value>
+  </data>
+  <data name="JSON_CanContainContent" xml:space="preserve">
+    <value>Can Contain Content</value>
+  </data>
+  <data name="JSON_Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="JSON_CreatedBy" xml:space="preserve">
+    <value>Created By</value>
+  </data>
+  <data name="JSON_CreatedByURL" xml:space="preserve">
+    <value>Created By URL</value>
+  </data>
+  <data name="JSON_Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="JSON_DocsURL" xml:space="preserve">
+    <value>Docs URL</value>
+  </data>
+  <data name="JSON_FileVersion" xml:space="preserve">
+    <value>File Version</value>
+  </data>
+  <data name="JSON_FriendlyName" xml:space="preserve">
+    <value>Friendly Name</value>
+  </data>
+  <data name="JSON_Installed" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="JSON_IsBetaVersion" xml:space="preserve">
+    <value>Is Beta Version</value>
+  </data>
+  <data name="JSON_IsExperimentalVersion" xml:space="preserve">
+    <value>Is Experimental Version</value>
+  </data>
+  <data name="JSON_MarketplaceURL" xml:space="preserve">
+    <value>Marketplace URL</value>
+  </data>
+  <data name="JSON_Modules" xml:space="preserve">
+    <value>Modules</value>
+  </data>
+  <data name="JSON_Plugins" xml:space="preserve">
+    <value>Plugins</value>
+  </data>
+  <data name="JSON_Plugins_Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="JSON_Plugins_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="JSON_Plugins_SemVersion" xml:space="preserve">
+    <value>Sem Version</value>
+  </data>
+  <data name="JSON_SemVersion" xml:space="preserve">
+    <value>Sem Version</value>
+  </data>
+  <data name="JSON_SupportURL" xml:space="preserve">
+    <value>Support URL</value>
+  </data>
+  <data name="JSON_Title" xml:space="preserve">
+    <value>UPlugin Editor</value>
+  </data>
+  <data name="JSON_Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="JSON_VersionName" xml:space="preserve">
+    <value>Version Name</value>
+  </data>
+  <data name="MainPageTitle.Content" xml:space="preserve">
+    <value>Shortcuts</value>
+  </data>
+  <data name="Main_Button_AIO.Content" xml:space="preserve">
+    <value>All In One</value>
+  </data>
+  <data name="Main_Button_Alpakit.Content" xml:space="preserve">
+    <value>Alpakit</value>
+  </data>
+  <data name="Main_Button_Alpakit_Launch.Content" xml:space="preserve">
+    <value>Alpakit &amp; Launch</value>
+  </data>
+  <data name="Main_Button_CPP.Content" xml:space="preserve">
+    <value>Create Base C++ Files</value>
+  </data>
+  <data name="Main_Button_DevEditor.Content" xml:space="preserve">
+    <value>Build Development Editor</value>
+  </data>
+  <data name="Main_Button_Launch_Game.Content" xml:space="preserve">
+    <value>Launch Satisfactory</value>
+  </data>
+  <data name="Main_Button_Launch_SMM.Content" xml:space="preserve">
+    <value>Launch SMM</value>
+  </data>
+  <data name="Main_Button_MP.Content" xml:space="preserve">
+    <value>Launch MP Test</value>
+  </data>
+  <data name="Main_Button_MP1.Content" xml:space="preserve">
+    <value>Host Only</value>
+  </data>
+  <data name="Main_Button_MP2.Content" xml:space="preserve">
+    <value>Client Only</value>
+  </data>
+  <data name="Main_Button_Shipping.Content" xml:space="preserve">
+    <value>Build Shipping</value>
+  </data>
+  <data name="Main_Button_VS.Content" xml:space="preserve">
+    <value>Generate VS Files</value>
+  </data>
+  <data name="ModPlugin.Content" xml:space="preserve">
+    <value>Selected Plugin</value>
+  </data>
+  <data name="SettingsPageAboutText" xml:space="preserve">
+    <value>Settings page placeholder text.  Your app description goes here.</value>
+  </data>
+  <data name="SettingsPageAboutTitle" xml:space="preserve">
+    <value>About this application</value>
+  </data>
+  <data name="SettingsPageChooseThemeText" xml:space="preserve">
+    <value>Choose Theme</value>
+  </data>
+  <data name="SettingsPagePersonalizationTitle" xml:space="preserve">
+    <value>Personalization</value>
+  </data>
+  <data name="SettingsPagePrivacyStatementText" xml:space="preserve">
+    <value>Privacy Statement</value>
+  </data>
+  <data name="SettingsPageRadioButtonDarkTheme" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="SettingsPageRadioButtonLightTheme" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="SettingsPageRadioButtonWindowsDefaultTheme" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="SettingsPageTitle" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Settings_Alpakit.Text" xml:space="preserve">
+    <value>Alpakit Settings</value>
+  </data>
+  <data name="Settings_Alpakit_CloseGame.Text" xml:space="preserve">
+    <value>Close Satisfactory Before Packing</value>
+  </data>
+  <data name="Settings_Alpakit_CopyMod.Text" xml:space="preserve">
+    <value>Copy Mod to Folder</value>
+  </data>
+  <data name="Settings_Alpakit_EGS.Text" xml:space="preserve">
+    <value>EGS</value>
+  </data>
+  <data name="Settings_Alpakit_EGS_Exp.Text" xml:space="preserve">
+    <value>EGS Experimental</value>
+  </data>
+  <data name="Settings_Alpakit_Steam.Content" xml:space="preserve">
+    <value>Steam</value>
+  </data>
+  <data name="Settings_Button_Browse.Content" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="Settings_Locations_Project.Text" xml:space="preserve">
+    <value>Unreal Project Folder</value>
+  </data>
+  <data name="Settings_Locations_Project_Hint.Text" xml:space="preserve">
+    <value>C:\code\SML-master</value>
+  </data>
+  <data name="Settings_Locations_Satisfactory.Text" xml:space="preserve">
+    <value>Satisfactory Game Folder</value>
+  </data>
+  <data name="Settings_Locations_Satisfactory_Hint.Text" xml:space="preserve">
+    <value>C:\Program Files (x86)\Steam\steamapps\common\Satisfactory</value>
+  </data>
+  <data name="Settings_Locations_SMM.Text" xml:space="preserve">
+    <value>SMM Folder</value>
+  </data>
+  <data name="Settings_Locations_SMM_Hint.Text" xml:space="preserve">
+    <value>%LOCALAPPDATA%\Programs\Satisfactory Mod Manager</value>
+  </data>
+  <data name="Settings_Locations.Text" xml:space="preserve">
+    <value>Commonly Used Locations</value>
+  </data>
+  <data name="Settings_Locations_UE.Text" xml:space="preserve">
+    <value>CSS Unreal Engine Folder</value>
+  </data>
+  <data name="Settings_Locations_UE_Hint.Text" xml:space="preserve">
+    <value>C:\Program Files\Unreal Engine - CSS</value>
+  </data>
+  <data name="Settings_Locations_VS.Text" xml:space="preserve">
+    <value>Visual Studio Folder</value>
+  </data>
+  <data name="Settings_Locations_VS_Hint.Text" xml:space="preserve">
+    <value>C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE</value>
+  </data>
+  <data name="Settings_MP_Args1.Text" xml:space="preserve">
+    <value>Additional Player 1 Args</value>
+  </data>
+  <data name="Settings_MP_Args2.Text" xml:space="preserve">
+    <value>Additional Player 2 Args</value>
+  </data>
+  <data name="Settings_MP_GameLocation.Text" xml:space="preserve">
+    <value>Secondary Game Location</value>
+  </data>
+  <data name="Settings_MP_Player1Name.Text" xml:space="preserve">
+    <value>Player 1 (Host) Name</value>
+  </data>
+  <data name="Settings_MP_Player2Name.Text" xml:space="preserve">
+    <value>Player 2 (Client) Name</value>
+  </data>
+  <data name="Settings_MP.Text" xml:space="preserve">
+    <value>MP Testing Settings</value>
+  </data>
+  <data name="ShellAccessTransformersPage" xml:space="preserve">
+    <value>Access Transformers</value>
+  </data>
+  <data name="ShellCPPPage" xml:space="preserve">
+    <value>CPP</value>
+  </data>
+  <data name="ShellGoBackButton" xml:space="preserve">
+    <value>Go back</value>
+  </data>
+  <data name="ShellHamburgerButtonName" xml:space="preserve">
+    <value>Open or close navigation</value>
+  </data>
+  <data name="ShellMainPage" xml:space="preserve">
+    <value>Main</value>
+  </data>
+  <data name="ShellSettingsPage" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="ShellUPluginPage" xml:space="preserve">
+    <value>UPlugin</value>
+  </data>
+  <data name="UPluginPageTitle" xml:space="preserve">
+    <value>UPlugin</value>
+  </data>
+  <data name="Example_Ex.Text" xml:space="preserve">
+    <value>ex: </value>
+  </data>
+</root>

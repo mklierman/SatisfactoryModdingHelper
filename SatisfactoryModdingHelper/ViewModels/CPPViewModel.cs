@@ -1,14 +1,10 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
+namespace SatisfactoryModdingHelper.ViewModels;
 
-namespace SatisfactoryModdingHelper.ViewModels
+public class CPPViewModel : ObservableRecipient
 {
-    public class CppViewModel : ObservableObject
+    public CPPViewModel()
     {
-        public CppViewModel()
-        {
-        }
     }
 }

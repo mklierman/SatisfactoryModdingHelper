@@ -1,271 +1,180 @@
 ﻿<Page
     x:Class="SatisfactoryModdingHelper.Views.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:converters="clr-namespace:SatisfactoryModdingHelper.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:SatisfactoryModdingHelper.Models"
-    xmlns:properties="clr-namespace:SatisfactoryModdingHelper.Properties"
-    xmlns:viewmodels="clr-namespace:SatisfactoryModdingHelper.ViewModels"
+    xmlns:xaml="using:Microsoft.UI.Xaml"
+    xmlns:helpers="using:SatisfactoryModdingHelper.Helpers"
+    xmlns:viewmodels="using:SatisfactoryModdingHelper.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
-    d:DesignHeight="2450"
-    d:DesignWidth="800"
-    Style="{DynamicResource MahApps.Styles.Page}"
     mc:Ignorable="d">
     <Page.Resources>
-        <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" EnumType="models:AppTheme" />
+        <helpers:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
     </Page.Resources>
-    <ScrollViewer>
-        <Grid Margin="{StaticResource SmallTopBottomMargin}">
-            <StackPanel
-                x:Name="ContentArea"
-                Grid.Row="1"
-                Margin="{StaticResource MediumLeftRightMargin}">
+    <Grid>
+        <StackPanel
+            x:Name="ContentArea">
+            <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
+            <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                <TextBlock x:Uid="Settings_Theme" />
 
-                <TextBlock
-                    Margin="{StaticResource SmallTopMargin}"
-                    Style="{StaticResource SubtitleTextStyle}"
-                    Text="{x:Static properties:Resources.SettingsPagePersonalizationTitle}" />
-                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                    <TextBlock Style="{StaticResource BodyTextStyle}" Text="{x:Static properties:Resources.SettingsPageChooseThemeText}" />
-                    <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                        <RadioButton
-                            Content="{x:Static properties:Resources.SettingsPageRadioButtonLightTheme}"
-                            FontSize="{StaticResource MediumFontSize}"
-                            GroupName="AppTheme"
-                            IsChecked="{Binding Theme, Mode=OneWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light}">
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="Checked">
-                                    <i:InvokeCommandAction Command="{Binding SetThemeCommand}" CommandParameter="Light" />
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </RadioButton>
-                        <RadioButton
-                            Margin="{StaticResource XSmallTopMargin}"
-                            Content="{x:Static properties:Resources.SettingsPageRadioButtonDarkTheme}"
-                            FontSize="{StaticResource MediumFontSize}"
-                            GroupName="AppTheme"
-                            IsChecked="{Binding Theme, Mode=OneWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark}">
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="Checked">
-                                    <i:InvokeCommandAction Command="{Binding SetThemeCommand}" CommandParameter="Dark" />
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </RadioButton>
-                        <RadioButton
-                            Margin="{StaticResource XSmallTopMargin}"
-                            Content="{x:Static properties:Resources.SettingsPageRadioButtonWindowsDefaultTheme}"
-                            FontSize="{StaticResource MediumFontSize}"
-                            GroupName="AppTheme"
-                            IsChecked="{Binding Theme, Mode=OneWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default}">
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="Checked">
-                                    <i:InvokeCommandAction Command="{Binding SetThemeCommand}" CommandParameter="Default" />
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </RadioButton>
-                    </StackPanel>
+                <StackPanel Margin="{StaticResource XSmallTopMargin}">
+                    <RadioButton
+                        x:Uid="Settings_Theme_Light"
+                        Command="{x:Bind ViewModel.SwitchThemeCommand}"
+                        IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}"
+                        FontSize="15"
+                        GroupName="AppTheme">
+                        <RadioButton.CommandParameter>
+                            <xaml:ElementTheme>Light</xaml:ElementTheme>
+                        </RadioButton.CommandParameter>
+                    </RadioButton>
+                    <RadioButton
+                        x:Uid="Settings_Theme_Dark"
+                        Command="{x:Bind ViewModel.SwitchThemeCommand}"
+                        IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}"
+                        FontSize="15"
+                        GroupName="AppTheme">
+                        <RadioButton.CommandParameter>
+                            <xaml:ElementTheme>Dark</xaml:ElementTheme>
+                        </RadioButton.CommandParameter>
+                    </RadioButton>
+                    <RadioButton
+                        x:Uid="Settings_Theme_Default"
+                        Command="{x:Bind ViewModel.SwitchThemeCommand}"
+                        IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=OneWay}"
+                        FontSize="15"
+                        GroupName="AppTheme">
+                        <RadioButton.CommandParameter>
+                            <xaml:ElementTheme>Default</xaml:ElementTheme>
+                        </RadioButton.CommandParameter>
+                    </RadioButton>
                 </StackPanel>
-
-                <TextBlock
-                    Margin="{StaticResource SmallTopMargin}"
-                    Style="{StaticResource SubtitleTextStyle}"
-                    Text="{x:Static properties:Resources.Settings_Locations_Text}" />
-                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                    <TextBlock Style="{StaticResource BodyTextStyle}" Text="{x:Static properties:Resources.Settings_Locations_UE}" />
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" Text="{Binding UnrealEngineLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                            <TextBox.ToolTip>
-                                <TextBlock>
-                                    <Run Text="ex: " />
-                                    <Run Text="{x:Static properties:Resources.Settings_Locations_UE_Hint}" />
-                                </TextBlock>
-                            </TextBox.ToolTip>
-                        </TextBox>
-                        <Button
-                            Grid.Column="1"
-                            Command="{Binding BrowseForUELocation}"
-                            Content="Browse" />
-                    </Grid>
-                    <TextBlock
-                        Margin="{StaticResource XSmallTopMargin}"
-                        Style="{StaticResource BodyTextStyle}"
-                        Text="{x:Static properties:Resources.Settings_Locations_VS}" />
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" Text="{Binding VisualStudioLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                            <TextBox.ToolTip>
-                                <TextBlock>
-                                    <Run Text="ex: " />
-                                    <Run Text="{x:Static properties:Resources.Settings_Locations_VS_Hint}" />
-                                </TextBlock>
-                            </TextBox.ToolTip>
-                        </TextBox>
-                        <Button
-                            Grid.Column="1"
-                            Command="{Binding BrowseForVSLocation}"
-                            Content="Browse" />
-                    </Grid>
-                    <TextBlock
-                        Margin="{StaticResource XSmallTopMargin}"
-                        Style="{StaticResource BodyTextStyle}"
-                        Text="{x:Static properties:Resources.Settings_Locations_Project}" />
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" Text="{Binding ProjectFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                            <TextBox.ToolTip>
-                                <TextBlock>
-                                    <Run Text="ex: " />
-                                    <Run Text="{x:Static properties:Resources.Settings_Locations_Project_Hint}" />
-                                </TextBlock>
-                            </TextBox.ToolTip>
-                        </TextBox>
-                        <Button
-                            Grid.Column="1"
-                            Command="{Binding BrowseForProjectLocation}"
-                            Content="Browse" />
-                    </Grid>
-                    <TextBlock
-                        Margin="{StaticResource XSmallTopMargin}"
-                        Style="{StaticResource BodyTextStyle}"
-                        Text="{x:Static properties:Resources.Settings_Locations_Satisfactory}" />
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" Text="{Binding SatisfactoryFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                            <TextBox.ToolTip>
-                                <TextBlock>
-                                    <Run Text="ex: " />
-                                    <Run Text="{x:Static properties:Resources.Settings_Locations_Satisfactory_Hint}" />
-                                </TextBlock>
-                            </TextBox.ToolTip>
-                        </TextBox>
-                        <Button
-                            Grid.Column="1"
-                            Command="{Binding BrowseForGameLocation}"
-                            Content="Browse" />
-                    </Grid>
-                    <TextBlock
-                        Margin="{StaticResource XSmallTopMargin}"
-                        Style="{StaticResource BodyTextStyle}"
-                        Text="{x:Static properties:Resources.Settings_Locations_SMM}" />
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" Text="{Binding SMMFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                            <TextBox.ToolTip>
-                                <TextBlock>
-                                    <Run Text="ex: " />
-                                    <Run Text="{x:Static properties:Resources.Settings_Locations_SMM_Hint}" />
-                                </TextBlock>
-                            </TextBox.ToolTip>
-                        </TextBox>
-                        <Button
-                            Grid.Column="1"
-                            Command="{Binding BrowseForSMMLocation}"
-                            Content="Browse" />
-                    </Grid>
-                </StackPanel>
-
-                <TextBlock
-                    Margin="{StaticResource SmallTopMargin}"
-                    Style="{StaticResource SubtitleTextStyle}"
-                    Text="{x:Static properties:Resources.Settings_Alpakit_Text}" />
-                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                    <CheckBox Content="{x:Static properties:Resources.Settings_Alpakit_CopyMod}" IsChecked="{Binding AlpakitCopyPlugin}" />
-                    <CheckBox
-                        Margin="{StaticResource XSmallTopMargin}"
-                        Content="{x:Static properties:Resources.Settings_Alpakit_CloseGame}"
-                        IsChecked="{Binding AlpakitCloseSatisfactory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                </StackPanel>
-
-                <TextBlock
-                    Margin="{StaticResource SmallTopMargin}"
-                    Style="{StaticResource SubtitleTextStyle}"
-                    Text="{x:Static properties:Resources.Settings_MP_Text}" />
-                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                    <TextBlock
-                        Margin="{StaticResource XSmallTopMargin}"
-                        Style="{StaticResource BodyTextStyle}"
-                        Text="{x:Static properties:Resources.Settings_MP_Player1NameText}" />
-                    <TextBox Grid.Column="0" Text="{Binding MPPlayer1Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBlock
-                        Margin="{StaticResource XSmallTopMargin}"
-                        Style="{StaticResource BodyTextStyle}"
-                        Text="{x:Static properties:Resources.Settings_MP_Player2NameText}" />
-                    <TextBox Grid.Column="0" Text="{Binding MPPlayer2Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-
-                    <TextBlock
-                        Margin="{StaticResource XSmallTopMargin}"
-                        Style="{StaticResource BodyTextStyle}"
-                        Text="{x:Static properties:Resources.Settings_MP_Args1Text}" />
-                    <TextBox Grid.Column="0" Text="{Binding MPArgs1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBlock
-                        Margin="{StaticResource XSmallTopMargin}"
-                        Style="{StaticResource BodyTextStyle}"
-                        Text="{x:Static properties:Resources.Settings_MP_Args2Text}" />
-                    <TextBox Grid.Column="0" Text="{Binding MPArgs2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBlock
-                        Margin="{StaticResource XSmallTopMargin}"
-                        Style="{StaticResource BodyTextStyle}"
-                        Text="Optional Secondary Install Location"
-                        ToolTip="If you want the MP testing client to launch from a different install location, add the path here. If this field is not empty, your main install location will be mirrored prior to launching the client (excluding the Config folder)." />
-
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox
-                            Grid.Column="0"
-                            Text="{Binding MPGameLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            ToolTip="If you want the MP testing client to launch from a different install location, add the path here. If this field is not empty, your main install location will be mirrored prior to launching the client (excluding the Config folder)." />
-                        <Button
-                            Grid.Column="1"
-                            Command="{Binding BrowseForSecondaryGameLocation}"
-                            Content="Browse" />
-                    </Grid>
-                </StackPanel>
-
-                <TextBlock
-                    Margin="{StaticResource SmallTopMargin}"
-                    Style="{StaticResource SubtitleTextStyle}"
-                    Text="{x:Static properties:Resources.SettingsPageAboutTitle}" />
-                <TextBlock
-                    Margin="{StaticResource XSmallTopMargin}"
-                    Style="{StaticResource BodyTextStyle}"
-                    Text="{Binding VersionDescription, Mode=OneWay}" />
-                <TextBlock
-                    Margin="{StaticResource XSmallTopMargin}"
-                    Style="{StaticResource BodyTextStyle}"
-                    Text="{x:Static properties:Resources.SettingsPageAboutText}" />
-
-                <TextBlock Margin="{StaticResource SmallTopMargin}" AutomationProperties.Name="{Binding Text, ElementName=settingsPrivacyStatement}">
-                    <Hyperlink AutomationProperties.Name="{Binding Text, ElementName=settingsPrivacyStatement}" Command="{Binding PrivacyStatementCommand}">
-                        <TextBlock
-                            x:Name="settingsPrivacyStatement"
-                            Style="{StaticResource BodyTextStyle}"
-                            Text="{x:Static properties:Resources.SettingsPagePrivacyStatementText}" />
-                    </Hyperlink>
-                </TextBlock>
             </StackPanel>
-        </Grid>
-    </ScrollViewer>
+
+            <TextBlock x:Uid="Settings_Locations" Style="{ThemeResource SubtitleTextBlockStyle}" />
+            <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                <TextBlock x:Uid="Settings_Locations_UE" Style="{StaticResource BodyTextStyle}" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.UnrealEngineLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <ToolTipService.ToolTip>
+                            <TextBlock>
+                                    <Run x:Uid="Example_Ex" />
+                                    <Run x:Uid="Settings_Locations_UE_Hint" />
+                            </TextBlock>
+                        </ToolTipService.ToolTip>
+                    </TextBox>
+                    <Button
+                            x:Uid="Settings_Button_Browse"
+                            Grid.Column="1"
+                        Margin="{StaticResource SmallLeftMargin}"
+                            Command="{x:Bind ViewModel.BrowseForUELocation}" />
+                </Grid>
+                <TextBlock x:Uid="Settings_Locations_VS"
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Style="{StaticResource BodyTextStyle}" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.VisualStudioLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <ToolTipService.ToolTip>
+                            <TextBlock>
+                                    <Run x:Uid="Example_Ex" />
+                                    <Run x:Uid="Settings_Locations_VS_Hint" />
+                            </TextBlock>
+                        </ToolTipService.ToolTip>
+                    </TextBox>
+                    <Button x:Uid="Settings_Button_Browse"
+                            Grid.Column="1"
+                        Margin="{StaticResource SmallLeftMargin}"
+                            Command="{x:Bind ViewModel.BrowseForVSLocation}" />
+                </Grid>
+                <TextBlock x:Uid="Settings_Locations_Project"
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Style="{StaticResource BodyTextStyle}" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.ProjectFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <ToolTipService.ToolTip>
+                            <TextBlock>
+                                    <Run x:Uid="Example_Ex" />
+                                    <Run x:Uid="Settings_Locations_Project_Hint" />
+                            </TextBlock>
+                        </ToolTipService.ToolTip>
+                    </TextBox>
+                    <Button
+                            Grid.Column="1"
+                            Command="{x:Bind ViewModel.BrowseForProjectLocation}"
+                        Margin="{StaticResource SmallLeftMargin}"
+                            x:Uid="Settings_Button_Browse" />
+                </Grid>
+                <TextBlock x:Uid="Settings_Locations_Satisfactory"
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Style="{StaticResource BodyTextStyle}" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.SatisfactoryFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <ToolTipService.ToolTip>
+                            <TextBlock>
+                                    <Run x:Uid="Example_Ex" />
+                                    <Run x:Uid="Settings_Locations_Satisfactory_Hint" />
+                            </TextBlock>
+                        </ToolTipService.ToolTip>
+                    </TextBox>
+                    <Button
+                            Grid.Column="1"
+                        Margin="{StaticResource SmallLeftMargin}"
+                            Command="{x:Bind ViewModel.BrowseForGameLocation}"
+                            x:Uid="Settings_Button_Browse" />
+                </Grid>
+                <TextBlock x:Uid="Settings_Locations_SMM"
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Style="{StaticResource BodyTextStyle}" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.SMMFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <ToolTipService.ToolTip>
+                            <TextBlock>
+                                    <Run x:Uid="Example_Ex" />
+                                    <Run x:Uid="Settings_Locations_SMM_Hint" />
+                            </TextBlock>
+                        </ToolTipService.ToolTip>
+                    </TextBox>
+                    <Button
+                            Grid.Column="1"
+                            Command="{x:Bind ViewModel.BrowseForSMMLocation}"
+                        Margin="{StaticResource SmallLeftMargin}"
+                            x:Uid="Settings_Button_Browse" />
+                </Grid>
+            </StackPanel>
+
+            <TextBlock x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" />
+
+            <StackPanel Margin="{StaticResource XSmallTopMargin}">
+                <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" />
+
+                <TextBlock
+                    x:Uid="Settings_AboutDescription"
+                    Margin="{StaticResource XSmallTopMargin}"
+                    Style="{ThemeResource BodyTextBlockStyle}" />
+                <HyperlinkButton x:Uid="SettingsPage_PrivacyTermsLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
 </Page>

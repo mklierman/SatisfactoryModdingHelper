@@ -1,15 +1,19 @@
-﻿using System.Windows.Controls;
+﻿using Microsoft.UI.Xaml.Controls;
 
 using SatisfactoryModdingHelper.ViewModels;
 
-namespace SatisfactoryModdingHelper.Views
+namespace SatisfactoryModdingHelper.Views;
+
+public sealed partial class AccessTransformersPage : Page
 {
-    public partial class AccessTransformersPage : Page
+    public AccessTransformersViewModel ViewModel
     {
-        public AccessTransformersPage(AccessTransformersViewModel viewModel)
-        {
-            InitializeComponent();
-            DataContext = viewModel;
-        }
+        get;
+    }
+
+    public AccessTransformersPage()
+    {
+        ViewModel = App.GetService<AccessTransformersViewModel>();
+        InitializeComponent();
     }
 }

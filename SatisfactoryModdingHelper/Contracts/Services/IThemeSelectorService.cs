@@ -1,15 +1,17 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml;
 
-using SatisfactoryModdingHelper.Models;
+namespace SatisfactoryModdingHelper.Contracts.Services;
 
-namespace SatisfactoryModdingHelper.Contracts.Services
+public interface IThemeSelectorService
 {
-    public interface IThemeSelectorService
+    ElementTheme Theme
     {
-        void InitializeTheme();
-
-        void SetTheme(AppTheme theme);
-
-        AppTheme GetCurrentTheme();
+        get;
     }
+
+    Task InitializeAsync();
+
+    Task SetThemeAsync(ElementTheme theme);
+
+    Task SetRequestedThemeAsync();
 }

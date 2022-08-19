@@ -1,15 +1,20 @@
-﻿using System.Windows.Controls;
+﻿using Microsoft.UI.Xaml.Controls;
 
 using SatisfactoryModdingHelper.ViewModels;
 
-namespace SatisfactoryModdingHelper.Views
+namespace SatisfactoryModdingHelper.Views;
+
+// TODO: Set the URL for your privacy policy by updating SettingsPage_PrivacyTermsLink.NavigateUri in Resources.resw.
+public sealed partial class SettingsPage : Page
 {
-    public partial class SettingsPage : Page
+    public SettingsViewModel ViewModel
     {
-        public SettingsPage(SettingsViewModel viewModel)
-        {
-            InitializeComponent();
-            DataContext = viewModel;
-        }
+        get;
+    }
+
+    public SettingsPage()
+    {
+        ViewModel = App.GetService<SettingsViewModel>();
+        InitializeComponent();
     }
 }
