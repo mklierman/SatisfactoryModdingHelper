@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using SatisfactoryModdingHelper.Contracts.Services;
 using SatisfactoryModdingHelper.Contracts.ViewModels;
@@ -45,6 +46,24 @@ public class AccessTransformersViewModel : ObservableRecipient, INavigationAware
     private void OnPluginChanged(object? sender, object e)
     {
         SelectedPlugin = e;
+    }
+
+    private bool unsavedChanges = false;
+    public bool UnsavedChanges
+    {
+        get => unsavedChanges;
+        set
+        {
+            SetProperty(ref unsavedChanges, value);
+            SaveCancelVisibility =value ? Visibility.Visible : Visibility.Collapsed;
+        }
+    }
+
+    private Visibility saveCancelVisibility = Visibility.Collapsed;
+    public Visibility SaveCancelVisibility
+    {
+        get => saveCancelVisibility;
+        set => SetProperty(ref saveCancelVisibility, value);
     }
 
 
@@ -170,14 +189,7 @@ public class AccessTransformersViewModel : ObservableRecipient, INavigationAware
                 Accessors.Add(new AccessorModel());
                 break;
         }
-    }
-
-    private RelayCommand addFriend;
-    public ICommand AddFriend => addFriend ??= new RelayCommand(PerformAddFriend);
-
-    private void PerformAddFriend()
-    {
-        Friends.Add(new FriendModel());
+        UnsavedChanges = true;
     }
 
     private RelayCommand<FriendModel> removeFriend;
@@ -186,35 +198,24 @@ public class AccessTransformersViewModel : ObservableRecipient, INavigationAware
     private void PerformRemoveFriend(FriendModel friendModel)
     {
         Friends.Remove(friendModel);
+        UnsavedChanges = true;
     }
 
-    private RelayCommand addAccessor;
-    public ICommand AddAccessor => addAccessor ??= new RelayCommand(PerformAddAccessor);
-
-    private void PerformAddAccessor()
-    {
-        Accessors.Add(new AccessorModel());
-    }
     private RelayCommand<AccessorModel> removeAccessor;
     public ICommand RemoveAccessor => removeAccessor ??= new RelayCommand<AccessorModel>(param => this.PerformRemoveAccessor(param));
     private void PerformRemoveAccessor(AccessorModel accessorModel)
     {
         Accessors.Remove(accessorModel);
+        UnsavedChanges = true;
     }
 
-    private RelayCommand addBlueprintReadWrite;
-    public ICommand AddBlueprintReadWrite => addBlueprintReadWrite ??= new RelayCommand(PerformAddBlueprintReadWrite);
-
-    private void PerformAddBlueprintReadWrite()
-    {
-        Blueprints.Add(new BlueprintReadWriteModel());
-    }
     private RelayCommand<BlueprintReadWriteModel> removeBlueprintReadWrite;
     public ICommand RemoveBlueprintReadWrite => removeBlueprintReadWrite ??= new RelayCommand<BlueprintReadWriteModel>(param => this.PerformRemoveBlueprintReadWrite(param));
 
     private void PerformRemoveBlueprintReadWrite(BlueprintReadWriteModel blueprintReadWriteModel)
     {
         Blueprints.Remove(blueprintReadWriteModel);
+        UnsavedChanges = true;
     }
 
     private RelayCommand saveChanges;
@@ -238,6 +239,7 @@ public class AccessTransformersViewModel : ObservableRecipient, INavigationAware
         };
 
         _fileService.SaveAccessTransformers(folderPath, fileName, accessTransformers);
+        UnsavedChanges = false;
     }
 
     private RelayCommand cancelChanges;
@@ -246,5 +248,6 @@ public class AccessTransformersViewModel : ObservableRecipient, INavigationAware
     private void PerformCancelChanges()
     {
         PopulateAccessTransformerFields();
+        UnsavedChanges = false;
     }
 }

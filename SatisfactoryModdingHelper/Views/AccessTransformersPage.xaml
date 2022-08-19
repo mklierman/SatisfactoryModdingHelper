@@ -10,7 +10,11 @@
     mc:Ignorable="d">
 
     <Grid x:Name="ContentArea">
-        <Pivot SelectedItem="{x:Bind ViewModel.SelectedPivotItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Pivot Grid.Row="0" SelectedItem="{x:Bind ViewModel.SelectedPivotItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             <Pivot.RightHeader>
                 <Button VerticalAlignment="Center" Command="{x:Bind ViewModel.AddTransformer}">
                     <StackPanel Orientation="Horizontal">
@@ -31,7 +35,7 @@
             <PivotItem Header="Friends">
                 <ListView
                     Margin="{StaticResource MediumTopMargin}"
-                    ItemsSource="{x:Bind ViewModel.Friends, UpdateSourceTrigger=PropertyChanged}"
+                    ItemsSource="{x:Bind ViewModel.Friends, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     ScrollViewer.VerticalScrollBarVisibility="Visible">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -85,7 +89,7 @@
             <PivotItem Header="Blueprint Read/Writes">
                 <ListView
                     Margin="{StaticResource MediumTopMargin}"
-                    ItemsSource="{x:Bind ViewModel.Blueprints, UpdateSourceTrigger=PropertyChanged}"
+                    ItemsSource="{x:Bind ViewModel.Blueprints, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     ScrollViewer.VerticalScrollBarVisibility="Visible">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -138,7 +142,7 @@
             <PivotItem Header="Accessors">
                 <ListView
                     Margin="{StaticResource MediumTopMargin}"
-                    ItemsSource="{x:Bind ViewModel.Accessors, UpdateSourceTrigger=PropertyChanged}"
+                    ItemsSource="{x:Bind ViewModel.Accessors, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     ScrollViewer.VerticalScrollBarVisibility="Visible">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -190,6 +194,52 @@
                 </ListView>
             </PivotItem>
         </Pivot>
-
+        <StackPanel
+            Grid.Row="1"
+            Margin="{StaticResource SmallTopBottomMargin}"
+            HorizontalAlignment="Center"
+            Orientation="Horizontal"
+            Visibility="{x:Bind ViewModel.SaveCancelVisibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            <Button
+                x:Name="SaveChangesButton"
+                Margin="{StaticResource SmallLeftRightMargin}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Command="{x:Bind ViewModel.SaveChanges}"
+                Style="{StaticResource AccentButtonStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource SymbolThemeFontFamily}"
+                        FontSize="24"
+                        Glyph="&#xe74e;" />
+                    <TextBlock
+                        Margin="{StaticResource SmallLeftMargin}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Text="Save Changes" />
+                </StackPanel>
+            </Button>
+            <Button
+                x:Name="CancelChangesButton"
+                Margin="{StaticResource SmallLeftRightMargin}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Command="{x:Bind ViewModel.CancelChanges}"
+                Style="{StaticResource AccentButtonStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource SymbolThemeFontFamily}"
+                        FontSize="24"
+                        Glyph="&#xe711;" />
+                    <TextBlock
+                        Margin="{StaticResource SmallLeftMargin}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Text="Cancel Changes" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
     </Grid>
 </Page>
