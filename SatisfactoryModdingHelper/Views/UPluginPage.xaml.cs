@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 
 using SatisfactoryModdingHelper.ViewModels;
+using Windows.Globalization.NumberFormatting;
 
 namespace SatisfactoryModdingHelper.Views;
 

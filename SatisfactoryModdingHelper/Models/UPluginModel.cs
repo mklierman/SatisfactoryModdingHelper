@@ -15,6 +15,12 @@ namespace SatisfactoryModdingHelper.Models
             SemVersion = "";
             Enabled = false;
         }
+        public PluginModel(string name, string semVer, bool enabled)
+        {
+            Name = name;
+            SemVersion = semVer;
+            Enabled = enabled;
+        }
         public string Name { get; set; }
         public string SemVersion { get; set; }
         public bool Enabled { get; set; }
