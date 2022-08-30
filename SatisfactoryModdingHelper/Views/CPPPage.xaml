@@ -17,8 +17,8 @@
                 <Button
                     Margin="{StaticResource XSmallTopMargin}"
                     Command="{x:Bind ViewModel.GenerateModuleFiles}"
-                    Content="Generate Module Files"
-                    IsEnabledChanged="Button_IsEnabledChanged" />
+                    CommandParameter="True"
+                    Content="Generate Module Files" />
                 <Button
                     x:Name="BPFLButton"
                     Margin="{StaticResource XSmallTopMargin}"

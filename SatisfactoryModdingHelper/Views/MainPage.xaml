@@ -31,19 +31,20 @@
                         x:Uid="Main_Button_Shipping"
                         Margin="{StaticResource XSmallTopMargin}"
                         HorizontalAlignment="Stretch"
-                        Command="{x:Bind ViewModel.BuildForShipping}"
-                        IsEnabled="{x:Bind ViewModel.InputsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        Command="{x:Bind ViewModel.BuildForShipping}" />
                     <Button
                         x:Uid="Main_Button_Alpakit"
                         Margin="{StaticResource XSmallTopMargin}"
                         HorizontalAlignment="Stretch"
                         Command="{x:Bind ViewModel.RunAlpakit}"
-                        IsEnabled="True" />
+                        CommandParameter="False"
+                        IsEnabled="{x:Bind ViewModel.InputsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <Button
                         x:Uid="Main_Button_Alpakit_Launch"
                         Margin="{StaticResource XSmallTopMargin}"
                         HorizontalAlignment="Stretch"
                         Command="{x:Bind ViewModel.RunAlpakit}"
+                        CommandParameter="True"
                         IsEnabled="{x:Bind ViewModel.InputsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <Grid Margin="{StaticResource XSmallTopMargin}">
                         <Grid.ColumnDefinitions>

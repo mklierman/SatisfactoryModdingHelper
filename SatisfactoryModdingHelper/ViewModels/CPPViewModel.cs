@@ -105,10 +105,10 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         _appNotificationService.SendNotification($"CPP Module Files have been created and UPlugin has been updated");
     }
 
-    private AsyncRelayCommand<bool> generateModuleFiles;
-    public ICommand GenerateModuleFiles => generateModuleFiles ??= new AsyncRelayCommand<bool>(PerformGenerateModuleFiles);
+    private AsyncRelayCommand<string> generateModuleFiles;
+    public ICommand GenerateModuleFiles => generateModuleFiles ??= new AsyncRelayCommand<string>(PerformGenerateModuleFiles);
 
-    public async Task PerformGenerateModuleFiles(bool showNotification = true)
+    public async Task PerformGenerateModuleFiles(string showNotification = "True")
     {
         //Make Directory Structure
         var pluginDirectoryLocation = $"{projectLocation}//Plugins//{SelectedPlugin}";
@@ -144,7 +144,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
 
         }
 
-        if (showNotification)
+        if (showNotification == "True")
         {
             _appNotificationService.SendNotification($"CPP Module Files have been created and UPlugin has been updated");
         }
@@ -153,7 +153,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     public async void PerformAddBPFL(string className)
     {
 
-        await PerformGenerateModuleFiles(false); //Should probably do some sort of checks
+        await PerformGenerateModuleFiles("False"); //Should probably do some sort of checks
 
         var hFile = await GetFromResources("BPFL.h.txt", "[ClassName]", className);
         var cppFile = await GetFromResources("BPFL.cpp.txt", "[ClassName]", className);
@@ -175,7 +175,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
 
     public async void PerformAddSubsystem(string className)
     {
-        await PerformGenerateModuleFiles(false); //Should probably do some sort of checks
+        await PerformGenerateModuleFiles("False"); //Should probably do some sort of checks
 
         var hFile = await GetFromResources("Subsystem.h.txt", "[ClassName]", className);
         var cppFile = await GetFromResources("Subsystem.cpp.txt", "[ClassName]", className);
@@ -197,7 +197,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
 
     public async void PerformAddRCO(string className)
     {
-        await PerformGenerateModuleFiles(false); //Should probably do some sort of checks
+        await PerformGenerateModuleFiles("False"); //Should probably do some sort of checks
 
         var hFile = await GetFromResources("RCO.h.txt", "[ClassName]", className);
         var cppFile = await GetFromResources("RCO.cpp.txt", "[ClassName]", className);

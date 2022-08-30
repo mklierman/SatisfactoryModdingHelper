@@ -170,9 +170,9 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         return Task.CompletedTask;
     }
 
-    private AsyncRelayCommand<bool> runAlpakit;
-    public ICommand RunAlpakit => runAlpakit ??= new AsyncRelayCommand<bool>(PerformRunAlpakit);
-    private async Task PerformRunAlpakit(bool launchGame)
+    private AsyncRelayCommand<string> runAlpakit;
+    public ICommand RunAlpakit => runAlpakit ??= new AsyncRelayCommand<string>(PerformRunAlpakit);
+    private async Task PerformRunAlpakit(string launchGame)
     {
         if (alpakitCloseGame)
         {
@@ -184,7 +184,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         var exitCode = await _processService.RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@" -ScriptsForProject=`{projectLocation}\FactoryGame.uproject` PackagePlugin -Project=`{projectLocation}\FactoryGame.uproject` -PluginName=`{SelectedPlugin}` {alpakitArgs}".SetQuotes());
         _processService.SendProcessFinishedMessage(exitCode, "Alpakit");
 
-        if (exitCode == 0 && launchGame)
+        if (exitCode == 0 && launchGame == "True")
         {
             _=PerformLaunchSatisfactory();
         }
@@ -264,7 +264,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         }
         if (AIOAlpakit)
         {
-            await PerformRunAlpakit(false);
+            await PerformRunAlpakit("False");
         }
         if (!AIOLaunchMP && AIOLaunchGame)
         {

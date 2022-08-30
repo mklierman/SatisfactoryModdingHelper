@@ -69,9 +69,4 @@ public sealed partial class CPPPage : Page
             ViewModel.PerformAddRCO(((SingleInputRequestDialog)dialog.Content).InputResult);
         }
     }
-
-    private void Button_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
-    {
-        Console.WriteLine("");
-    }
 }
