@@ -8,6 +8,10 @@ namespace SatisfactoryModdingHelper.Contracts.Services;
 public interface IProcessService
 {
     public string OutputText { get; set; }
+    public bool ProcessRunning
+    {
+        get; set;
+    }
     public Task<int> RunProcess(string fileName, string arguments = "", bool redirectOutput = true);
     public void SendProcessFinishedMessage(int exitCode, string prefix);
     public void CloseRunningSatisfactoryProcesses();

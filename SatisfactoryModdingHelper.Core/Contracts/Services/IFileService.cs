@@ -10,7 +10,7 @@ public interface IFileService
 
     void Delete(string folderPath, string fileName);
 
-    void WriteAllTextIfNew(string path, string contents);
+    bool WriteAllTextIfNew(string path, string contents);
 
     void SaveAccessTransformers(string folderPath, string fileName, AccessTransformersModel content);
 }

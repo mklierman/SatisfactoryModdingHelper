@@ -7,6 +7,34 @@
     mc:Ignorable="d">
 
     <Grid x:Name="ContentArea">
-        
+
+        <Grid Margin="{StaticResource MediumLeftRightMargin}">
+            <StackPanel>
+                <Button
+                    Margin="{StaticResource XSmallTopMargin}"
+                    Command="{x:Bind ViewModel.GenerateVSFiles}"
+                    Content="Generate VS Files" />
+                <Button
+                    Margin="{StaticResource XSmallTopMargin}"
+                    Command="{x:Bind ViewModel.GenerateModuleFiles}"
+                    Content="Generate Module Files"
+                    IsEnabledChanged="Button_IsEnabledChanged" />
+                <Button
+                    x:Name="BPFLButton"
+                    Margin="{StaticResource XSmallTopMargin}"
+                    Click="BPFLButton_Click"
+                    Content="Add BPFL" />
+                <Button
+                    x:Name="SubsystemButton"
+                    Margin="{StaticResource XSmallTopMargin}"
+                    Click="SubsystemButton_Click"
+                    Content="Add Subsystem" />
+                <Button
+                    x:Name="RcoButton"
+                    Margin="{StaticResource XSmallTopMargin}"
+                    Click="RcoButton_Click"
+                    Content="Add RCO" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>

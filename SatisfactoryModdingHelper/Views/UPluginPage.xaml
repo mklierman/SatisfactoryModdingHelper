@@ -66,7 +66,7 @@
                         x:Uid="JSON_FileVersion"
                         Grid.Row="0"
                         Grid.Column="1"
-                        Text="{x:Bind ViewModel.FileVersion}" />
+                        Text="{x:Bind ViewModel.FileVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBlock
                         x:Uid="JSON_Version"
                         Grid.Row="1"
@@ -77,7 +77,7 @@
                         LargeChange="1"
                         SmallChange="1"
                         SpinButtonPlacementMode="Inline"
-                        Text="{x:Bind ViewModel.Version}" />
+                        Text="{x:Bind ViewModel.Version, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBlock
                         x:Uid="JSON_VersionName"
                         Grid.Row="2"
@@ -85,7 +85,7 @@
                     <TextBox
                         Grid.Row="2"
                         Grid.Column="1"
-                        Text="{x:Bind ViewModel.VersionName}" />
+                        Text="{x:Bind ViewModel.VersionName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBlock
                         x:Uid="JSON_SemVersion"
                         Grid.Row="3"
@@ -93,7 +93,7 @@
                     <TextBox
                         Grid.Row="3"
                         Grid.Column="1"
-                        Text="{x:Bind ViewModel.SemVersion}" />
+                        Text="{x:Bind ViewModel.SemVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBlock
                         x:Uid="JSON_FriendlyName"
                         Grid.Row="4"
@@ -101,7 +101,7 @@
                     <TextBox
                         Grid.Row="4"
                         Grid.Column="1"
-                        Text="{x:Bind ViewModel.FriendlyName}" />
+                        Text="{x:Bind ViewModel.FriendlyName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBlock
                         x:Uid="JSON_Description"
                         Grid.Row="5"
@@ -109,7 +109,7 @@
                     <TextBox
                         Grid.Row="5"
                         Grid.Column="1"
-                        Text="{x:Bind ViewModel.Description}" />
+                        Text="{x:Bind ViewModel.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBlock
                         x:Uid="JSON_Category"
                         Grid.Row="6"
@@ -117,7 +117,7 @@
                     <TextBox
                         Grid.Row="6"
                         Grid.Column="1"
-                        Text="{x:Bind ViewModel.Category}" />
+                        Text="{x:Bind ViewModel.Category, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBlock
                         x:Uid="JSON_CreatedBy"
                         Grid.Row="7"
@@ -125,7 +125,7 @@
                     <TextBox
                         Grid.Row="7"
                         Grid.Column="1"
-                        Text="{x:Bind ViewModel.CreatedBy}" />
+                        Text="{x:Bind ViewModel.CreatedBy, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBlock
                         x:Uid="JSON_CreatedByURL"
                         Grid.Row="8"
@@ -133,7 +133,7 @@
                     <TextBox
                         Grid.Row="8"
                         Grid.Column="1"
-                        Text="{x:Bind ViewModel.CreatedByURL}" />
+                        Text="{x:Bind ViewModel.CreatedByURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBlock
                         x:Uid="JSON_DocsURL"
                         Grid.Row="9"
@@ -141,7 +141,7 @@
                     <TextBox
                         Grid.Row="9"
                         Grid.Column="1"
-                        Text="{x:Bind ViewModel.DocsURL}" />
+                        Text="{x:Bind ViewModel.DocsURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBlock
                         x:Uid="JSON_MarketplaceURL"
                         Grid.Row="10"
@@ -149,7 +149,7 @@
                     <TextBox
                         Grid.Row="10"
                         Grid.Column="1"
-                        Text="{x:Bind ViewModel.MarketplaceURL}" />
+                        Text="{x:Bind ViewModel.MarketplaceURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBlock
                         x:Uid="JSON_SupportURL"
                         Grid.Row="11"
@@ -157,32 +157,32 @@
                     <TextBox
                         Grid.Row="11"
                         Grid.Column="1"
-                        Text="{x:Bind ViewModel.SupportURL}" />
+                        Text="{x:Bind ViewModel.SupportURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <CheckBox
                         x:Uid="JSON_CanContainContent"
                         Grid.Row="12"
                         Grid.Column="1"
-                        IsChecked="{x:Bind ViewModel.CanContainContent}" />
+                        IsChecked="{x:Bind ViewModel.CanContainContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <CheckBox
                         x:Uid="JSON_IsBetaVersion"
                         Grid.Row="13"
                         Grid.Column="1"
-                        IsChecked="{x:Bind ViewModel.IsBetaVersion}" />
+                        IsChecked="{x:Bind ViewModel.IsBetaVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <CheckBox
                         x:Uid="JSON_IsExperimentalVersion"
                         Grid.Row="14"
                         Grid.Column="1"
-                        IsChecked="{x:Bind ViewModel.IsExperimentalVersion}" />
+                        IsChecked="{x:Bind ViewModel.IsExperimentalVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <CheckBox
                         x:Uid="JSON_Installed"
                         Grid.Row="15"
                         Grid.Column="1"
-                        IsChecked="{x:Bind ViewModel.Installed}" />
+                        IsChecked="{x:Bind ViewModel.Installed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <CheckBox
                         x:Uid="JSON_AnyRemoteVersion"
                         Grid.Row="16"
                         Grid.Column="1"
-                        IsChecked="{x:Bind ViewModel.AcceptsAnyRemoteVersion}" />
+                        IsChecked="{x:Bind ViewModel.AcceptsAnyRemoteVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBlock
                         x:Uid="JSON_Plugins"
                         Grid.Row="17"
@@ -197,7 +197,7 @@
                         BorderBrush="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                         BorderThickness="5"
                         CornerRadius="4">
-                        <controls:ListDetailsView ItemsSource="{x:Bind ViewModel.Plugins}" SelectedItem="{x:Bind ViewModel.SelectedDepPlugin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <controls:ListDetailsView ItemsSource="{x:Bind ViewModel.Plugins, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{x:Bind ViewModel.SelectedDepPlugin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                             <controls:ListDetailsView.ListCommandBar>
                                 <CommandBar>
                                     <AppBarButton
@@ -284,17 +284,10 @@
                             </controls:ListDetailsView.DetailsCommandBar>
                         </controls:ListDetailsView>
                     </Border>
-                    <Button
-                        Grid.Row="19"
-                        Grid.ColumnSpan="3"
-                        Margin="{StaticResource MediumBottomMargin}"
-                        Command="{x:Bind ViewModel.AddPlugin}"
-                        Content="Add New Plugin Dependency" />
                     <TextBlock
                         x:Uid="JSON_Modules"
                         Grid.Row="20"
-                        Grid.Column="0"
-                        Margin="{StaticResource SmallRightMargin}" />
+                        Grid.Column="0" />
                     <ItemsControl
                         Grid.Row="21"
                         Grid.Column="1"
@@ -367,12 +360,6 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                    <Button
-                        Grid.Row="22"
-                        Grid.ColumnSpan="3"
-                        Margin="{StaticResource MediumBottomMargin}"
-                        Command="{x:Bind ViewModel.AddModule}"
-                        Content="Add New Module" />
                 </Grid>
             </Grid>
         </ScrollViewer>
@@ -383,15 +370,45 @@
             Orientation="Horizontal"
             Visibility="{x:Bind ViewModel.SaveCancelVisibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             <Button
-                Grid.Column="0"
-                Margin="{StaticResource XSmallLeftTopRightBottomMargin}"
+                x:Name="SaveChangesButton"
+                Margin="{StaticResource SmallLeftRightMargin}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
                 Command="{x:Bind ViewModel.SaveUPlugin}"
-                Content="Save" />
+                Style="{StaticResource AccentButtonStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource SymbolThemeFontFamily}"
+                        FontSize="24"
+                        Glyph="&#xe74e;" />
+                    <TextBlock
+                        Margin="{StaticResource SmallLeftMargin}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Text="Save Changes" />
+                </StackPanel>
+            </Button>
             <Button
-                Grid.Column="1"
-                Margin="{StaticResource XSmallLeftTopRightBottomMargin}"
+                x:Name="CancelChangesButton"
+                Margin="{StaticResource SmallLeftRightMargin}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
                 Command="{x:Bind ViewModel.CancelUPluginChanges}"
-                Content="Cancel" />
+                Style="{StaticResource AccentButtonStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource SymbolThemeFontFamily}"
+                        FontSize="24"
+                        Glyph="&#xe711;" />
+                    <TextBlock
+                        Margin="{StaticResource SmallLeftMargin}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Text="Cancel Changes" />
+                </StackPanel>
+            </Button>
         </StackPanel>
     </Grid>
 </Page>

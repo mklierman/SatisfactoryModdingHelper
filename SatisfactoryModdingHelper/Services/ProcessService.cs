@@ -13,6 +13,7 @@ public class ProcessService : ObservableRecipient, IProcessService
     public ProcessService()
     {
         outputText = "";
+        processRunning = false;
     }
 
     private string outputText;
@@ -21,6 +22,13 @@ public class ProcessService : ObservableRecipient, IProcessService
     {
         get => outputText;
         set => SetProperty(ref outputText, value);
+    }
+
+    private bool processRunning;
+    public bool ProcessRunning
+    {
+        get => processRunning;
+        set => SetProperty(ref processRunning, value);
     }
 
     public async Task<int> RunProcess(string fileName, string arguments = "", bool redirectOutput = true)
@@ -52,12 +60,14 @@ public class ProcessService : ObservableRecipient, IProcessService
                 process.Dispose();
             };
 
+            ProcessRunning = true;
             process.Start();
             if (redirectOutput)
             {
                 process.BeginOutputReadLine();
             }
             await process.WaitForExitAsync();
+            ProcessRunning = false;
             return taskCompletionSource.Task.Result;
         }
         catch (Exception ex)

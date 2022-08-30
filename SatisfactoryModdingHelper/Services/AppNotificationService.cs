@@ -1,6 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Web;
-
+using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.Windows.AppNotifications;
 
 using SatisfactoryModdingHelper.Contracts.Services;
@@ -11,10 +11,12 @@ namespace SatisfactoryModdingHelper.Notifications;
 public class AppNotificationService : IAppNotificationService
 {
     private readonly INavigationService _navigationService;
+    private readonly ILocalSettingsService _localSettingsService;
 
-    public AppNotificationService(INavigationService navigationService)
+    public AppNotificationService(INavigationService navigationService, ILocalSettingsService localSettingsService)
     {
         _navigationService = navigationService;
+        _localSettingsService = localSettingsService;
     }
 
     ~AppNotificationService()
@@ -42,12 +44,12 @@ public class AppNotificationService : IAppNotificationService
         ////    });
         //// }
 
-        App.MainWindow.DispatcherQueue.TryEnqueue(() =>
-        {
-            App.MainWindow.ShowMessageDialogAsync("TODO: Handle notification invocations when your app is already running.", "Notification Invoked");
+        //App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+        //{
+        //    App.MainWindow.ShowMessageDialogAsync("TODO: Handle notification invocations when your app is already running.", "Notification Invoked");
 
-            App.MainWindow.BringToFront();
-        });
+        //    App.MainWindow.BringToFront();
+        //});
     }
 
     public bool Show(string payload)
@@ -67,5 +69,17 @@ public class AppNotificationService : IAppNotificationService
     public void Unregister()
     {
         AppNotificationManager.Default.Unregister();
+    }
+
+    public void SendNotification(string text)
+    {
+        if (_localSettingsService.Settings.ShowNotifications)
+        {
+            var toasty = new ToastContentBuilder()
+            .AddAppLogoOverride(new Uri("ms-appx:///Assets/WindowIcon.ico"))
+            .AddText(text);
+
+            toasty.Show();
+        }
     }
 }

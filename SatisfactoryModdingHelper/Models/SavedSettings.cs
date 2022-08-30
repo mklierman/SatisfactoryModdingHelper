@@ -24,5 +24,6 @@ namespace SatisfactoryModdingHelper.Models
         public string SinglePlayerArgs { get; set; }
         public double? AppHeight { get; set; }
         public double? AppWidth { get; set; }
+        public bool ShowNotifications { get; set; }
     }
 }

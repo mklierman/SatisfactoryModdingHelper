@@ -26,25 +26,25 @@
                         Margin="{StaticResource XSmallTopMargin}"
                         HorizontalAlignment="Stretch"
                         Command="{x:Bind ViewModel.BuildForDevelopmentEditor}"
-                        IsEnabled="{x:Bind ViewModel.InputsEnabled}" />
+                        IsEnabled="{x:Bind ViewModel.InputsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <Button
                         x:Uid="Main_Button_Shipping"
                         Margin="{StaticResource XSmallTopMargin}"
                         HorizontalAlignment="Stretch"
                         Command="{x:Bind ViewModel.BuildForShipping}"
-                        IsEnabled="{x:Bind ViewModel.InputsEnabled}" />
+                        IsEnabled="{x:Bind ViewModel.InputsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <Button
                         x:Uid="Main_Button_Alpakit"
                         Margin="{StaticResource XSmallTopMargin}"
                         HorizontalAlignment="Stretch"
                         Command="{x:Bind ViewModel.RunAlpakit}"
-                        IsEnabled="{x:Bind ViewModel.InputsEnabled}" />
+                        IsEnabled="True" />
                     <Button
                         x:Uid="Main_Button_Alpakit_Launch"
                         Margin="{StaticResource XSmallTopMargin}"
                         HorizontalAlignment="Stretch"
                         Command="{x:Bind ViewModel.RunAlpakit}"
-                        IsEnabled="{x:Bind ViewModel.InputsEnabled}" />
+                        IsEnabled="{x:Bind ViewModel.InputsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <Grid Margin="{StaticResource XSmallTopMargin}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -56,20 +56,20 @@
                             Grid.Column="0"
                             HorizontalAlignment="Stretch"
                             Command="{x:Bind ViewModel.LaunchMPTesting}"
-                            IsEnabled="{x:Bind ViewModel.InputsEnabled}" />
+                            IsEnabled="{x:Bind ViewModel.InputsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <Button
                             x:Uid="Main_Button_MP1"
                             Grid.Column="1"
                             Margin="{StaticResource SmallLeftRightMargin}"
                             HorizontalAlignment="Stretch"
                             Command="{x:Bind ViewModel.LaunchMPTesting}"
-                            IsEnabled="{x:Bind ViewModel.InputsEnabled}" />
+                            IsEnabled="{x:Bind ViewModel.InputsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <Button
                             x:Uid="Main_Button_MP2"
                             Grid.Column="2"
                             HorizontalAlignment="Stretch"
                             Command="{x:Bind ViewModel.LaunchMPTesting}"
-                            IsEnabled="{x:Bind ViewModel.InputsEnabled}" />
+                            IsEnabled="{x:Bind ViewModel.InputsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
                 </StackPanel>
                 <StackPanel Grid.Column="1">

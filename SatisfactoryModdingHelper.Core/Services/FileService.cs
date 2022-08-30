@@ -1,5 +1,4 @@
 ﻿using System.Text;
-
 using Newtonsoft.Json;
 
 using SatisfactoryModdingHelper.Core.Contracts.Services;
@@ -44,12 +43,14 @@ public class FileService : IFileService
         }
     }
 
-    public void WriteAllTextIfNew(string path, string contents)
+    public bool WriteAllTextIfNew(string path, string contents)
     {
         if (!File.Exists(path))
         {
             File.WriteAllText(path, contents);
+            return true;
         }
+        return false;
     }
 
     public void SaveAccessTransformers(string folderPath, string fileName, AccessTransformersModel content)
@@ -84,4 +85,5 @@ public class FileService : IFileService
 
         File.WriteAllText(Path.Combine(folderPath, fileName), fileContent, Encoding.UTF8);
     }
+
 }

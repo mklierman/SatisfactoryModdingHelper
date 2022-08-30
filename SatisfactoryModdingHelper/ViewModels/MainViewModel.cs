@@ -90,7 +90,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         set => SetProperty(ref outputText, value);
     }
 
-    private bool inputsEnabled = true;
+    private bool inputsEnabled;
     public bool InputsEnabled
     {
         get => inputsEnabled; 
@@ -115,6 +115,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         while (true)
         {
             OutputText = _processService.OutputText;
+            InputsEnabled = !_processService.ProcessRunning;
             await Task.Delay(500);
 
             // Highlighting regex wip
@@ -137,11 +138,9 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     public ICommand BuildForDevelopmentEditor => buildForDevelopmentEditor ??= new AsyncRelayCommand(PerformBuildForDevelopmentEditor);
     private async Task PerformBuildForDevelopmentEditor()
     {
-        InputsEnabled = false;
         _processService.OutputText = "Building Development Editor..." + Environment.NewLine;
         var exitCode = await RunBuild(false);
         _processService.SendProcessFinishedMessage(exitCode, "Build for Development Editor");
-        InputsEnabled = true;
     }
 
     private AsyncRelayCommand buildForShipping;

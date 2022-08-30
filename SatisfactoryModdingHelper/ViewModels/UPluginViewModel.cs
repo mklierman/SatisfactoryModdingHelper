@@ -65,7 +65,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         Description = loadedUPlugin.Description;
         Category = loadedUPlugin.Category;
         CreatedBy = loadedUPlugin.CreatedBy;
-        createdByURL = loadedUPlugin.CreatedByURL;
+        CreatedByURL = loadedUPlugin.CreatedByURL;
         DocsURL = loadedUPlugin.DocsURL;
         MarketplaceURL = loadedUPlugin.MarketplaceURL;
         SupportURL = loadedUPlugin.SupportURL;
@@ -78,7 +78,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         Modules = loadedUPlugin.Modules;
         if (Plugins?.Count > 0)
         {
-            SelectedPluginIndex = 0;
+            SelectedDepPlugin = Plugins[^1];
         }
     }
 
@@ -110,6 +110,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref fileVersion, value);
             loadedUPlugin.FileVersion = int.Parse(value);
+            CheckIfNeedsSave();
         }
     }
     public string Version
@@ -119,6 +120,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref version, value);
             loadedUPlugin.Version = int.Parse(value);
+            CheckIfNeedsSave();
         }
     }
     public string VersionName
@@ -127,6 +129,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref versionName, value);
             loadedUPlugin.VersionName = value;
+            CheckIfNeedsSave();
         }
     }
     public string SemVersion
@@ -135,6 +138,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref semVersion, value);
             loadedUPlugin.SemVersion = value;
+            CheckIfNeedsSave();
         }
     }
     public string FriendlyName
@@ -143,6 +147,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref friendlyName, value);
             loadedUPlugin.FriendlyName = value;
+            CheckIfNeedsSave();
         }
     }
     public string Description
@@ -151,6 +156,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref description, value);
             loadedUPlugin.Description = value;
+            CheckIfNeedsSave();
         }
     }
     public string Category
@@ -159,6 +165,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref category, value);
             loadedUPlugin.Category = value;
+            CheckIfNeedsSave();
         }
     }
     public string CreatedBy
@@ -167,6 +174,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref createdBy, value);
             loadedUPlugin.CreatedBy = value;
+            CheckIfNeedsSave();
         }
     }
     public string CreatedByURL
@@ -175,6 +183,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref createdByURL, value);
             loadedUPlugin.CreatedByURL = value;
+            CheckIfNeedsSave();
         }
     }
     public string DocsURL
@@ -183,6 +192,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref docsURL, value);
             loadedUPlugin.DocsURL = value;
+            CheckIfNeedsSave();
         }
     }
     public string MarketplaceURL
@@ -191,6 +201,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref marketplaceURL, value);
             loadedUPlugin.MarketplaceURL = value;
+            CheckIfNeedsSave();
         }
     }
     public string SupportURL
@@ -199,6 +210,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref supportURL, value);
             loadedUPlugin.SupportURL = value;
+            CheckIfNeedsSave();
         }
     }
     public bool CanContainContent
@@ -207,6 +219,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref canContainContent, value);
             loadedUPlugin.CanContainContent = value;
+            CheckIfNeedsSave();
         }
     }
     public bool IsBetaVersion
@@ -215,6 +228,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref isBetaVersion, value);
             loadedUPlugin.IsBetaVersion = value;
+            CheckIfNeedsSave();
         }
     }
     public bool IsExperimentalVersion
@@ -223,6 +237,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref isExperimentalVersion, value);
             loadedUPlugin.IsExperimentalVersion = value;
+            CheckIfNeedsSave();
         }
     }
     public bool Installed
@@ -231,6 +246,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref installed, value);
             loadedUPlugin.Installed = value;
+            CheckIfNeedsSave();
         }
     }
     public bool AcceptsAnyRemoteVersion
@@ -239,6 +255,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref acceptsAnyRemoteVersion, value);
             loadedUPlugin.AcceptsAnyRemoteVersion = value;
+            CheckIfNeedsSave();
         }
     }
     public ObservableCollection<PluginModel> Plugins
@@ -247,6 +264,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref plugins, value);
             loadedUPlugin.Plugins = value;
+            CheckIfNeedsSave();
         }
     }
     public ObservableCollection<ModuleModel> Modules
@@ -255,6 +273,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             SetProperty(ref modules, value);
             loadedUPlugin.Modules = value;
+            CheckIfNeedsSave();
         }
     }
 
@@ -318,6 +337,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         };
 
         _fileService.Save(folderPath, fileName, uPlugin);
+        CheckIfNeedsSave();
     }
 
     private RelayCommand cancelUPluginChanges;
@@ -326,6 +346,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     private void PerformCancelUPluginChanges()
     {
         PopulateUPluginFields();
+        CheckIfNeedsSave();
     }
 
     private RelayCommand addPlugin;
@@ -339,6 +360,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         }
         Plugins.Add(new PluginModel("New Plugin Dependency", "1.0.0", true));
         SelectedDepPlugin = Plugins[^1];
+        CheckIfNeedsSave();
     }
 
     private RelayCommand removePlugin;
@@ -351,6 +373,19 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         if (oldIndex > 0)
         {
             SelectedDepPlugin = Plugins[oldIndex-1];
+        }
+        CheckIfNeedsSave();
+    }
+
+    private void CheckIfNeedsSave()
+    {
+        if (PluginModified())
+        {
+            UnsavedChanges = true;
+        }
+        else
+        {
+            UnsavedChanges = false;
         }
     }
 
@@ -373,6 +408,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
             Modules = new ObservableCollection<ModuleModel>();
         }
         Modules.Add(new ModuleModel());
+        CheckIfNeedsSave();
     }
 
     private RelayCommand<string> removeModule;
@@ -381,6 +417,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     private void PerformRemoveModule(string moduleName)
     {
         Modules.Remove(Modules.FirstOrDefault(m => m.Name == moduleName));
+        CheckIfNeedsSave();
     }
 
     private bool unsavedChanges = false;
@@ -390,7 +427,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         set
         {
             SetProperty(ref unsavedChanges, value);
-            SaveCancelVisibility =value ? Visibility.Visible : Visibility.Collapsed;
+            SaveCancelVisibility = value ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 
