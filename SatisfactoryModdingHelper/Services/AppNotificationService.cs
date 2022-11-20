@@ -73,7 +73,7 @@ public class AppNotificationService : IAppNotificationService
 
     public void SendNotification(string text)
     {
-        if (_localSettingsService.Settings.ShowNotifications)
+        if (true) // (_localSettingsService.Settings.ShowNotifications)
         {
             var toasty = new ToastContentBuilder()
             .AddAppLogoOverride(new Uri("ms-appx:///Assets/WindowIcon.ico"))

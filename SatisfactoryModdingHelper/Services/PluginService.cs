@@ -20,7 +20,7 @@ public class PluginService : ObservableRecipient, IPluginService
     {
         selectedPlugin = new object();
         _settingsService = settingsService;
-        projectLocation = _settingsService.Settings.ProjectPath;
+        projectLocation = _settingsService.Settings.UProjectFolderPath;
         SelectedPlugin = _settingsService.Settings.CurrentPlugin;
     }
 
@@ -48,7 +48,7 @@ public class PluginService : ObservableRecipient, IPluginService
 
     public IEnumerable? GetPluginList()
     {
-        projectLocation = _settingsService.Settings.ProjectPath;
+        projectLocation = _settingsService.Settings.UProjectFolderPath;
         var pluginDirectory = projectLocation + "//Plugins";
         if (Directory.Exists(pluginDirectory))
         {

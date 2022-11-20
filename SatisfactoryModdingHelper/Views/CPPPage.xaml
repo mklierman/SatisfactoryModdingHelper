@@ -9,32 +9,50 @@
     <Grid x:Name="ContentArea">
 
         <Grid Margin="{StaticResource MediumLeftRightMargin}">
-            <StackPanel>
-                <Button
-                    Margin="{StaticResource XSmallTopMargin}"
-                    Command="{x:Bind ViewModel.GenerateVSFiles}"
-                    Content="Generate VS Files" />
-                <Button
-                    Margin="{StaticResource XSmallTopMargin}"
-                    Command="{x:Bind ViewModel.GenerateModuleFiles}"
-                    CommandParameter="True"
-                    Content="Generate Module Files" />
-                <Button
-                    x:Name="BPFLButton"
-                    Margin="{StaticResource XSmallTopMargin}"
-                    Click="BPFLButton_Click"
-                    Content="Add BPFL" />
-                <Button
-                    x:Name="SubsystemButton"
-                    Margin="{StaticResource XSmallTopMargin}"
-                    Click="SubsystemButton_Click"
-                    Content="Add Subsystem" />
-                <Button
-                    x:Name="RcoButton"
-                    Margin="{StaticResource XSmallTopMargin}"
-                    Click="RcoButton_Click"
-                    Content="Add RCO" />
-            </StackPanel>
+            <ContentControl>
+                <StackPanel>
+                    <Button
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Command="{x:Bind ViewModel.GenerateVSFiles}"
+                        Content="Generate VS Project Files" />
+                    <Button
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Command="{x:Bind ViewModel.GenerateModuleFiles}"
+                        CommandParameter="True"
+                        Content="Generate Plugin Module Files" />
+                    <Button
+                        x:Uid="Main_Button_DevEditor"
+                        Margin="{StaticResource XSmallTopMargin}"
+                        HorizontalAlignment="Stretch"
+                        Command="{x:Bind ViewModel.BuildForDevelopmentEditor}" />
+                    <Button
+                        x:Uid="Main_Button_Shipping"
+                        Margin="{StaticResource XSmallTopMargin}"
+                        HorizontalAlignment="Stretch"
+                        Command="{x:Bind ViewModel.BuildForShipping}" />
+                    <Button
+                        x:Name="CopyDLLButton"
+                        Margin="{StaticResource XSmallTopMargin}"
+                        HorizontalAlignment="Stretch"
+                        Content="Copy CPP Files to Game Dir"
+                        Command="{x:Bind ViewModel.CopyCPPFiles}" />
+                    <Button
+                        x:Name="BPFLButton"
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Click="BPFLButton_Click"
+                        Content="Add BPFL" />
+                    <Button
+                        x:Name="SubsystemButton"
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Click="SubsystemButton_Click"
+                        Content="Add Subsystem" />
+                    <Button
+                        x:Name="RcoButton"
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Click="RcoButton_Click"
+                        Content="Add RCO" />
+                </StackPanel>
+            </ContentControl>
         </Grid>
     </Grid>
 </Page>

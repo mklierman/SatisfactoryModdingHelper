@@ -30,6 +30,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     private readonly IAppNotificationService _appNotificationService;
     private readonly IProcessService _processService;
     private string projectLocation;
+    private string gameLocation;
     private string sourceDir;
     private string publicDir;
     private string privateDir;
@@ -59,15 +60,23 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
 
     public void OnNavigatedTo(object parameter)
     {
-        projectLocation = _settingsService.Settings.ProjectPath;
+        projectLocation = _settingsService.Settings.UProjectFolderPath;
         SelectedPlugin = _pluginService.SelectedPlugin;
-        engineLocation = _settingsService.Settings.UnrealEnginePath;
+        engineLocation = _settingsService.Settings.UnrealEngineFolderPath;
+        gameLocation = _settingsService.Settings.SatisfactoryFolderPath;
 
 
     }
     public void OnNavigatedFrom()
     {
         // Method intentionally left empty.
+    }
+
+    private bool buttonsEnabled;
+    public bool ButtonEnabled
+    {
+        get => buttonsEnabled;
+        set => SetProperty(ref buttonsEnabled, value);
     }
 
     internal async Task<string> GetFromResources(string resourceName)
@@ -101,8 +110,8 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
 
     private async Task PerformGenerateVSFiles()
     {
-        var result = await _processService.RunProcess(@$"{engineLocation}\Binaries\DotNET\UnrealBuildTool.exe", @$"-projectfiles -project=""{projectLocation}\FactoryGame.uproject"" -game -rocket -progress");
-        _appNotificationService.SendNotification($"CPP Module Files have been created and UPlugin has been updated");
+        var result = await _processService.RunProcess(@$"{engineLocation}\Engine\Binaries\DotNET\UnrealBuildTool.exe", @$"-projectfiles -project=""{projectLocation}\FactoryGame.uproject"" -game -rocket -progress");
+        _appNotificationService.SendNotification($"VS Files have been generated");
     }
 
     private AsyncRelayCommand<string> generateModuleFiles;
@@ -214,6 +223,78 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         else
         {
             _appNotificationService.SendNotification($"Unable to create RCO {className}. Class already exists");
+        }
+    }
+
+    private AsyncRelayCommand buildForDevelopmentEditor;
+    public ICommand BuildForDevelopmentEditor => buildForDevelopmentEditor ??= new AsyncRelayCommand(PerformBuildForDevelopmentEditor);
+    private async Task PerformBuildForDevelopmentEditor()
+    {
+        _processService.OutputText = "Building Development Editor..." + Environment.NewLine;
+        var exitCode = await RunBuild(false);
+        _processService.SendProcessFinishedMessage(exitCode, "Build for Development Editor");
+        _appNotificationService.SendNotification($"Build for Development Editor Complete");
+    }
+
+    private AsyncRelayCommand buildForShipping;
+    public ICommand BuildForShipping => buildForShipping ??= new AsyncRelayCommand(PerformBuildForShipping);
+    private async Task PerformBuildForShipping()
+    {
+        _processService.OutputText = "Building Shipping..." + Environment.NewLine;
+        var exitCode = await RunBuild(true);
+        _processService.SendProcessFinishedMessage(exitCode, "Build for Shipping");
+        _appNotificationService.SendNotification($"Build for Shipping Complete");
+    }
+
+    private async Task<int> RunBuild(bool isShipping)
+    {
+        // "C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGame Win64 Shipping -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
+        // "C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGameEditor Win64 Development -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
+
+        var environmentToBuild = isShipping ? "FactoryGame Win64 Shipping" : "FactoryGameEditor Win64 Development";
+        var fileName = @$"`{engineLocation}\Build\BatchFiles\Build.bat`".SetQuotes();
+        var cmdLine = @$"{environmentToBuild} -Project=""{projectLocation}\FactoryGame.uproject"" -WaitMutex -FromMsBuild";
+        var result = await _processService.RunProcess(@$"`{engineLocation}\Build\BatchFiles\Build.bat`".SetQuotes(), @$"{environmentToBuild} -Project=""{projectLocation}\FactoryGame.uproject"" -WaitMutex -FromMsBuild");
+
+        return result;
+    }
+
+    private AsyncRelayCommand copyCPPFiles;
+    public ICommand CopyCPPFiles => copyCPPFiles ??= new AsyncRelayCommand(PerformCopyCPPFiles);
+    private async Task PerformCopyCPPFiles()
+    {
+        //F:\SatisfactoryModMaking\SML-master\Plugins\CounterLimiter\Binaries\Win64
+        //FactoryGame-CounterLimiter-Win64-Shipping.dll
+        //FactoryGame-CounterLimiter-Win64-Shipping.pdb
+        //FactoryGame-Win64-Shipping.modules
+        //F:\Games\SteamLibrary\steamapps\common\Satisfactory\FactoryGame\Mods\CounterLimiter\Binaries\Win64
+        var pluginBinariesLocation = $"{projectLocation}//Plugins//{SelectedPlugin}//Binaries//Win64";
+
+        var dllFileName = $"FactoryGame-{SelectedPlugin}-Win64-Shipping.dll";
+        var pdbFileName = $"FactoryGame-{SelectedPlugin}-Win64-Shipping.pdb";
+        var modulesFileName = "FactoryGame-Win64-Shipping.modules";
+
+        var dllSource = Path.Combine(pluginBinariesLocation, dllFileName);
+        var pdbSource = Path.Combine(pluginBinariesLocation, pdbFileName);
+        var modulesSource = Path.Combine(pluginBinariesLocation, modulesFileName);
+
+        var pluginGameLocation = $"{gameLocation}//FactoryGame//Mods//{SelectedPlugin}//Binaries//Win64";
+
+        var dllDest = Path.Combine(pluginGameLocation, dllFileName);
+        var pdbDest = Path.Combine(pluginGameLocation, pdbFileName);
+        var modulesDest = Path.Combine(pluginGameLocation, modulesFileName);
+
+        if (File.Exists(dllSource))
+        {
+            File.Copy(dllSource, dllDest, overwrite: true);
+        }
+        if (File.Exists(pdbSource))
+        {
+            File.Copy(pdbSource, pdbDest, overwrite: true);
+        }
+        if (File.Exists(modulesSource))
+        {
+            File.Copy(modulesSource, modulesDest, overwrite: true);
         }
     }
 }

@@ -84,7 +84,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
 
     public void OnNavigatedTo(object parameter)
     {
-        projectDirectory = _settingsService.Settings.ProjectPath;
+        projectDirectory = _settingsService.Settings.UProjectFolderPath;
         SelectedPlugin = _pluginService.SelectedPlugin;
         PopulateUPluginFields();
         _pluginService.PluginChangedEvent += OnPluginChanged;
@@ -125,7 +125,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public string VersionName
     {
-        get => versionName; set
+        get => versionName; 
+        set
         {
             SetProperty(ref versionName, value);
             loadedUPlugin.VersionName = value;
@@ -134,7 +135,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public string SemVersion
     {
-        get => semVersion; set
+        get => semVersion; 
+        set
         {
             SetProperty(ref semVersion, value);
             loadedUPlugin.SemVersion = value;
@@ -143,7 +145,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public string FriendlyName
     {
-        get => friendlyName; set
+        get => friendlyName; 
+        set
         {
             SetProperty(ref friendlyName, value);
             loadedUPlugin.FriendlyName = value;
@@ -152,7 +155,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public string Description
     {
-        get => description; set
+        get => description; 
+        set
         {
             SetProperty(ref description, value);
             loadedUPlugin.Description = value;
@@ -161,7 +165,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public string Category
     {
-        get => category; set
+        get => category; 
+        set
         {
             SetProperty(ref category, value);
             loadedUPlugin.Category = value;
@@ -170,7 +175,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public string CreatedBy
     {
-        get => createdBy; set
+        get => createdBy; 
+        set
         {
             SetProperty(ref createdBy, value);
             loadedUPlugin.CreatedBy = value;
@@ -179,7 +185,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public string CreatedByURL
     {
-        get => createdByURL; set
+        get => createdByURL; 
+        set
         {
             SetProperty(ref createdByURL, value);
             loadedUPlugin.CreatedByURL = value;
@@ -188,7 +195,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public string DocsURL
     {
-        get => docsURL; set
+        get => docsURL; 
+        set
         {
             SetProperty(ref docsURL, value);
             loadedUPlugin.DocsURL = value;
@@ -197,7 +205,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public string MarketplaceURL
     {
-        get => marketplaceURL; set
+        get => marketplaceURL; 
+        set
         {
             SetProperty(ref marketplaceURL, value);
             loadedUPlugin.MarketplaceURL = value;
@@ -206,7 +215,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public string SupportURL
     {
-        get => supportURL; set
+        get => supportURL; 
+        set
         {
             SetProperty(ref supportURL, value);
             loadedUPlugin.SupportURL = value;
@@ -215,7 +225,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public bool CanContainContent
     {
-        get => canContainContent; set
+        get => canContainContent; 
+        set
         {
             SetProperty(ref canContainContent, value);
             loadedUPlugin.CanContainContent = value;
@@ -224,7 +235,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public bool IsBetaVersion
     {
-        get => isBetaVersion; set
+        get => isBetaVersion; 
+        set
         {
             SetProperty(ref isBetaVersion, value);
             loadedUPlugin.IsBetaVersion = value;
@@ -233,7 +245,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public bool IsExperimentalVersion
     {
-        get => isExperimentalVersion; set
+        get => isExperimentalVersion; 
+        set
         {
             SetProperty(ref isExperimentalVersion, value);
             loadedUPlugin.IsExperimentalVersion = value;
@@ -242,7 +255,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public bool Installed
     {
-        get => installed; set
+        get => installed; 
+        set
         {
             SetProperty(ref installed, value);
             loadedUPlugin.Installed = value;
@@ -251,7 +265,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public bool AcceptsAnyRemoteVersion
     {
-        get => acceptsAnyRemoteVersion; set
+        get => acceptsAnyRemoteVersion;
+        set
         {
             SetProperty(ref acceptsAnyRemoteVersion, value);
             loadedUPlugin.AcceptsAnyRemoteVersion = value;
@@ -260,7 +275,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public ObservableCollection<PluginModel> Plugins
     {
-        get => plugins; set
+        get => plugins; 
+        set
         {
             SetProperty(ref plugins, value);
             loadedUPlugin.Plugins = value;
@@ -269,7 +285,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     }
     public ObservableCollection<ModuleModel> Modules
     {
-        get => modules; set
+        get => modules; 
+        set
         {
             SetProperty(ref modules, value);
             loadedUPlugin.Modules = value;
@@ -296,7 +313,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
 
     public System.Collections.IEnumerable PluginList
     {
-        get => pluginList; set
+        get => pluginList; 
+        set
         {
             SetProperty(ref pluginList, value);
         }

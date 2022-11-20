@@ -256,7 +256,7 @@
                                             <TextBox
                                                 Grid.Row="0"
                                                 Grid.Column="1"
-                                                Text="{Binding Name}" />
+                                                Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                             <TextBlock
                                                 Grid.Row="1"
                                                 Grid.Column="0"
@@ -264,12 +264,12 @@
                                             <TextBox
                                                 Grid.Row="1"
                                                 Grid.Column="1"
-                                                Text="{Binding SemVersion}" />
+                                                Text="{Binding SemVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                             <CheckBox
                                                 Grid.Row="2"
                                                 Grid.Column="1"
                                                 Content="Enabled"
-                                                IsChecked="{Binding Enabled}" />
+                                                IsChecked="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         </Grid>
                                     </Grid>
                                 </DataTemplate>

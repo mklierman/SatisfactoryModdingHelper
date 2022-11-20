@@ -5,9 +5,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 using Microsoft.UI.Xaml;
-
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.Win32;
 using SatisfactoryModdingHelper.Contracts.Services;
 using SatisfactoryModdingHelper.Contracts.ViewModels;
+using SatisfactoryModdingHelper.Extensions;
 using SatisfactoryModdingHelper.Helpers;
 using SatisfactoryModdingHelper.Services;
 using Windows.ApplicationModel;
@@ -23,6 +25,7 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
     private ElementTheme _elementTheme;
     private string _versionDescription;
     private FolderPicker folderPicker = new();
+    private FileOpenPicker filePicker = new FileOpenPicker();
 
     public ElementTheme ElementTheme
     {
@@ -83,11 +86,14 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
     public void OnNavigatedTo(object parameter)
     {
         _localSettingsService.RestoreData();
-        UnrealEngineLocation = _localSettingsService.Settings.UnrealEnginePath;
-        VisualStudioLocation = _localSettingsService.Settings.VisualStudioPath;
-        ProjectFolder = _localSettingsService.Settings.ProjectPath;
-        SatisfactoryFolder = _localSettingsService.Settings.SatisfactoryPath;
-        SMMFolder = _localSettingsService.Settings.ModManagerPath;
+        UnrealEngineFolderPath = _localSettingsService.Settings.UnrealEngineFolderPath;
+        UnrealBuildToolFilePath = _localSettingsService.Settings.UnrealBuildToolFilePath;
+        UProjectFolderPath = _localSettingsService.Settings.UProjectFolderPath;
+        UProjectFilePath = _localSettingsService.Settings.UProjectFilePath;
+        SatisfactoryFolderPath = _localSettingsService.Settings.SatisfactoryFolderPath;
+        SatisfactoryExecutableFilePath = _localSettingsService.Settings.SatisfactoryExecutableFilePath;
+        ModManagerFilePath = _localSettingsService.Settings.ModManagerFilePath;
+        ModManagerFolderPath = _localSettingsService.Settings.ModManagerFolderPath;
         AlpakitCopyPlugin = _localSettingsService.Settings.AlpakitCopyModToGame;
         AlpakitCloseSatisfactory = _localSettingsService.Settings.AlpakitCloseGame;
         MPPlayer1Name = _localSettingsService.Settings.Player1Name;
@@ -95,69 +101,249 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
         MPPlayer1Args = _localSettingsService.Settings.Player1Args;
         MPPlayer2Args = _localSettingsService.Settings.Player2Args;
         MPGameLocation = _localSettingsService.Settings.Player2SatisfactoryPath;
+
+        if (UnrealEngineFolderPath.IsNullOrEmpty() || UnrealBuildToolFilePath.IsNullOrEmpty())
+        {
+            LocateUnrealEngine();
+        }
+        if (SatisfactoryFolderPath.IsNullOrEmpty() || SatisfactoryExecutableFilePath.IsNullOrEmpty())
+        {
+            LocateSatisfactorySteam();
+        }
+        if (ModManagerFolderPath.IsNullOrEmpty() || ModManagerFilePath.IsNullOrEmpty())
+        {
+            LocateSMM();
+        }
+        LocateUProject();
     }
     public void OnNavigatedFrom()  => _localSettingsService.PersistData();
 
-    private string unrealEngineLocation;
-
-    public string UnrealEngineLocation
+    private void LocateUProject()
     {
-        get => unrealEngineLocation;
+        //C:\Users\Mark Lierman\AppData\Local\Microsoft\Windows\History
+        foreach (var file in Directory.GetFiles("C:\\Users\\Mark Lierman\\AppData\\Local\\Microsoft\\Windows\\History"))
+        {
+            Console.WriteLine(file);
+        }
+        foreach (var dir in Directory.GetDirectories("C:\\Users\\Mark Lierman\\AppData\\Local\\Microsoft\\Windows\\History"))
+        {
+            foreach (var file in Directory.GetFiles(dir))
+            {
+                Console.WriteLine(file);
+            }
+        }
+    }
+
+    private void LocateUnrealEngine()
+    {
+        //C:\Program Files\Unreal Engine - CSS\Engine\Binaries\DotNET\UnrealBuildTool.exe
+        var DefaultCDriveLocation = "C:\\Program Files\\Unreal Engine - CSS\\Engine\\Binaries\\DotNET\\UnrealBuildTool.exe";
+        if (File.Exists(DefaultCDriveLocation))
+        {
+            if (UnrealEngineFolderPath.IsNullOrEmpty())
+            {
+                UnrealEngineFolderPath = "C:\\Program Files\\Unreal Engine - CSS";
+            }
+            if (UnrealBuildToolFilePath.IsNullOrEmpty())
+            {
+                UnrealBuildToolFilePath = DefaultCDriveLocation;
+            }
+        }
+        else
+        {
+            foreach (var drive in DriveInfo.GetDrives())
+            {
+                var path = Path.Combine(drive.Name, "Program Files\\Unreal Engine - CSS\\Engine\\Binaries\\DotNET\\UnrealBuildTool.exe");
+                if (File.Exists(path))
+                {
+                    if (UnrealEngineFolderPath.IsNullOrEmpty())
+                    {
+                        UnrealEngineFolderPath = Path.Combine(drive.Name, "Program Files\\Unreal Engine - CSS");
+                    }
+                    if (UnrealBuildToolFilePath.IsNullOrEmpty())
+                    {
+                        UnrealBuildToolFilePath = path;
+                    }
+                    return;
+                }
+            }
+        }
+    }
+
+    private void LocateSatisfactorySteam()
+    {
+        var steamInstallPath = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Valve\\Steam", "InstallPath", null);
+        steamInstallPath ??= Registry.GetValue("HKEY_CURRENT_USER\\SOFTWARE\\Valve\\Steam", "SteamPath", null);
+        if (steamInstallPath != null)
+        {
+            var libraryFoldersLines = File.ReadAllLines(steamInstallPath + "\\steamapps\\libraryfolders.vdf");
+            foreach (var line in libraryFoldersLines)
+            {
+                if (line.Contains("path"))
+                {
+                    var path = line.Substring(11, line.Length - 12);
+                    path = path.Replace("\"", "");
+                    path = path.Replace("\\\\", "\\");
+                    if (Directory.Exists(path + "\\steamapps\\common\\Satisfactory"))
+                    {
+                        if (SatisfactoryFolderPath.IsNullOrEmpty())
+                        {
+                            SatisfactoryFolderPath = path + "\\steamapps\\common\\Satisfactory";
+                        }
+                        if (SatisfactoryExecutableFilePath.IsNullOrEmpty() && File.Exists(path + "\\steamapps\\common\\Satisfactory\\FactoryGame.exe"))
+                        {
+                            SatisfactoryExecutableFilePath = path + "\\steamapps\\common\\Satisfactory\\FactoryGame.exe";
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    private void LocateSMM()
+    {
+        var smmPath = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Classes\\smmanager\\shell\\open\\command", null, null);
+        if (smmPath != null)
+        {
+            var smmPathString = smmPath.ToString().Substring(1, smmPath.ToString().Length - 7);
+            if (File.Exists(smmPathString ))
+            {
+                if (ModManagerFolderPath.IsNullOrEmpty())
+                {
+                    ModManagerFolderPath = smmPathString.Replace("\\Satisfactory Mod Manager.exe","");
+                }
+                if (ModManagerFilePath.IsNullOrEmpty())
+                {
+                    ModManagerFilePath = smmPathString;
+                }
+            }
+        }
+    }
+
+    private string unrealBuildToolFilePath;
+    public string UnrealBuildToolFilePath
+    {
+        get => unrealBuildToolFilePath;
+        set
+        {
+            SetProperty(ref unrealBuildToolFilePath, value);
+            _localSettingsService.Settings.UnrealBuildToolFilePath = value;
+            _localSettingsService.PersistData();
+        }
+    }
+
+    private string unrealEngineFolderPath;
+    public string UnrealEngineFolderPath
+    {
+        get => unrealEngineFolderPath;
 
         set
         {
-            SetProperty(ref unrealEngineLocation, value);
-            _localSettingsService.Settings.UnrealEnginePath = value;
+            SetProperty(ref unrealEngineFolderPath, value);
+            _localSettingsService.Settings.UnrealEngineFolderPath = value;
             _localSettingsService.PersistData();
+
+            if (value != null && _localSettingsService.Settings.UnrealBuildToolFilePath.IsNullOrEmpty())
+            {
+                if (File.Exists(Path.Combine(value, "FactoryGame.uproject")))
+                {
+                    _localSettingsService.Settings.UnrealBuildToolFilePath = Path.Combine(value, "FactoryGame.uproject");
+                }
+            }
         }
     }
 
-    private string visualStudioLocation;
-
-    public string VisualStudioLocation
+    private string uprojectFilePath;
+    public string UProjectFilePath
     {
-        get => visualStudioLocation;
+        get => uprojectFilePath;
         set
         {
-            SetProperty(ref visualStudioLocation, value);
-            _localSettingsService.Settings.VisualStudioPath = value;
+            SetProperty(ref uprojectFilePath, value);
+            _localSettingsService.Settings.UProjectFilePath = value;
             _localSettingsService.PersistData();
         }
     }
 
-    private string projectFolder;
-
-    public string ProjectFolder
+    private string uProjectFolderPath;
+    public string UProjectFolderPath
     {
-        get => projectFolder;
+        get => uProjectFolderPath;
         set
         {
-            SetProperty(ref projectFolder, value);
-            _localSettingsService.Settings.ProjectPath = value;
+            SetProperty(ref uProjectFolderPath, value);
+            _localSettingsService.Settings.UProjectFolderPath = value;
+            _localSettingsService.PersistData();
+
+            if (value != null && _localSettingsService.Settings.UProjectFilePath.IsNullOrEmpty())
+            {
+                if (File.Exists(Path.Combine(value, "FactoryGame.uproject")))
+                {
+                    _localSettingsService.Settings.UProjectFilePath = Path.Combine(value, "FactoryGame.uproject");
+                }
+            }
+        }
+    }
+
+    private string satisfactoryExecutableFilePath;
+    public string SatisfactoryExecutableFilePath
+    {
+        get => satisfactoryExecutableFilePath;
+        set
+        {
+            SetProperty(ref satisfactoryExecutableFilePath, value);
+            _localSettingsService.Settings.SatisfactoryExecutableFilePath = value;
             _localSettingsService.PersistData();
         }
     }
 
-    private string satisfactoryFolder;
-
-    public string SatisfactoryFolder
+    private string satisfactoryFolderPath;
+    public string SatisfactoryFolderPath
     {
-        get => satisfactoryFolder; set
+        get => satisfactoryFolderPath; set
         {
-            SetProperty(ref satisfactoryFolder, value);
-            _localSettingsService.Settings.SatisfactoryPath = value;
+            SetProperty(ref satisfactoryFolderPath, value);
+            _localSettingsService.Settings.SatisfactoryFolderPath = value;
+            _localSettingsService.PersistData();
+
+            if (value != null && _localSettingsService.Settings.SatisfactoryExecutableFilePath.IsNullOrEmpty())
+            {
+                if (File.Exists(Path.Combine(value, "FactoryGame.exe")))
+                {
+                    _localSettingsService.Settings.SatisfactoryExecutableFilePath = Path.Combine(value, "FactoryGame.exe");
+                }
+            }
+        }
+    }
+
+    private string modManagerFolderPath;
+    public string ModManagerFolderPath
+    {
+        get => modManagerFolderPath; set
+        {
+            SetProperty(ref modManagerFolderPath, value);
+            _localSettingsService.Settings.ModManagerFolderPath = value;
+
+            if (value != null && _localSettingsService.Settings.ModManagerFilePath.IsNullOrEmpty())
+            {
+                if (File.Exists(Path.Combine(value, "Satisfactory Mod Manager.exe")))
+                {
+                    _localSettingsService.Settings.ModManagerFilePath = Path.Combine(value, "Satisfactory Mod Manager.exe");
+                }
+            }
             _localSettingsService.PersistData();
         }
     }
 
-    private string sMMFolder;
-
-    public string SMMFolder
+    private string modManagerFilePath;
+    public string ModManagerFilePath
     {
-        get => sMMFolder; set
+        get => modManagerFilePath;
+        set
         {
-            SetProperty(ref sMMFolder, value);
-            _localSettingsService.Settings.ModManagerPath = value;
+            SetProperty(ref modManagerFilePath, value);
+            _localSettingsService.Settings.ModManagerFilePath = value;
             _localSettingsService.PersistData();
         }
     }
@@ -167,48 +353,15 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
 
     private async Task PerformBrowseForUELocation()
     {
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
-        var folder = await folderPicker.PickSingleFolderAsync();
+        WinRT.Interop.InitializeWithWindow.Initialize(filePicker, ProcessService.GetAppHWND());
 
-        if (folder != null)
+        // Use file picker like normal!
+        filePicker.FileTypeFilter.Add(".exe");
+        var file = await filePicker.PickSingleFileAsync();
+
+        if (file != null)
         {
-            UnrealEngineLocation = folder.Path;
-        }
-    }
-
-    private AsyncRelayCommand browseForVSLocation;
-    public ICommand BrowseForVSLocation => browseForVSLocation ??= new AsyncRelayCommand(PerformBrowseForVSLocation);
-
-    private async Task PerformBrowseForVSLocation()
-    {
-        //var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
-        //var vs2019 = @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE";
-        //var vs2017 = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE";
-        //var vs2015 = @"C:\Program Files (x86)\Microsoft Visual Studio\2015\Community\Common7\IDE";
-        //if (Directory.Exists(vs2019))
-        //{
-        //    folderBrowser.InitialDirectory = vs2019;
-        //}
-        //else if (Directory.Exists(vs2017))
-        //{
-        //    folderBrowser.InitialDirectory = vs2017;
-        //}
-        //else
-        //{
-        //    folderBrowser.InitialDirectory = vs2015;
-        //}
-        //if (folderBrowser.ShowDialog() == true)
-        //{
-        //    VisualStudioLocation = folderBrowser.FileName;
-        //}
-
-
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
-        var folder = await folderPicker.PickSingleFolderAsync();
-
-        if (folder != null)
-        {
-            VisualStudioLocation = folder.Path;
+            UnrealBuildToolFilePath = file.Path;
         }
     }
 
@@ -221,7 +374,7 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
         //folderBrowser.InitialDirectory = "C:\\";
         //if (folderBrowser.ShowDialog() == true)
         //{
-        //    ProjectFolder = folderBrowser.FileName;
+        //    UProjectFolderPath = folderBrowser.FileName;
         //}
 
         WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
@@ -229,7 +382,7 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
 
         if (folder != null)
         {
-            ProjectFolder = folder.Path;
+            UProjectFolderPath = folder.Path;
         }
     }
 
@@ -241,7 +394,7 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
         //var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
         //if (folderBrowser.ShowDialog() == true)
         //{
-        //    SatisfactoryFolder = folderBrowser.FileName;
+        //    SatisfactoryFolderPath = folderBrowser.FileName;
         //}
 
         WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
@@ -249,7 +402,7 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
 
         if (folder != null)
         {
-            SatisfactoryFolder = folder.Path;
+            SatisfactoryFolderPath = folder.Path;
         }
     }
 
@@ -262,7 +415,7 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
         //folderBrowser.InitialDirectory = $"{Environment.GetEnvironmentVariable("LocalAppData")}\\Programs\\Satisfactory Mod Manager";
         //if (folderBrowser.ShowDialog() == true)
         //{
-        //    SMMFolder = folderBrowser.FileName;
+        //    ModManagerFolderPath = folderBrowser.FileName;
         //}
 
         WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
@@ -270,7 +423,7 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
 
         if (folder != null)
         {
-            SMMFolder = folder.Path;
+            ModManagerFolderPath = folder.Path;
         }
     }
 

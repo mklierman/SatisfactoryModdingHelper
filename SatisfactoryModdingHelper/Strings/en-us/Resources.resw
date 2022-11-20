@@ -337,22 +337,22 @@
     <value>Browse</value>
   </data>
   <data name="Settings_Locations_Project.Text" xml:space="preserve">
-    <value>Unreal Project Folder</value>
+    <value>FactoryGame.uproject Path</value>
   </data>
   <data name="Settings_Locations_Project_Hint.Text" xml:space="preserve">
-    <value>C:\code\SML-master</value>
+    <value>C:\code\SML-master\FactoryGame.uproject</value>
   </data>
   <data name="Settings_Locations_Satisfactory.Text" xml:space="preserve">
-    <value>Satisfactory Game Folder</value>
+    <value>Satisfactory Game Executable</value>
   </data>
   <data name="Settings_Locations_Satisfactory_Hint.Text" xml:space="preserve">
-    <value>C:\Program Files (x86)\Steam\steamapps\common\Satisfactory</value>
+    <value>C:\Program Files (x86)\Steam\steamapps\common\Satisfactory\FactoryGame.exe</value>
   </data>
   <data name="Settings_Locations_SMM.Text" xml:space="preserve">
-    <value>SMM Folder</value>
+    <value>SMM Executable</value>
   </data>
   <data name="Settings_Locations_SMM_Hint.Text" xml:space="preserve">
-    <value>%LOCALAPPDATA%\Programs\Satisfactory Mod Manager</value>
+    <value>C:\Program Files\Satisfactory Mod Manager\Satisfactory Mod Manager.exe</value>
   </data>
   <data name="Settings_Locations.Text" xml:space="preserve">
     <value>Commonly Used Locations</value>
@@ -362,12 +362,6 @@
   </data>
   <data name="Settings_Locations_UE_Hint.Text" xml:space="preserve">
     <value>C:\Program Files\Unreal Engine - CSS</value>
-  </data>
-  <data name="Settings_Locations_VS.Text" xml:space="preserve">
-    <value>Visual Studio Folder</value>
-  </data>
-  <data name="Settings_Locations_VS_Hint.Text" xml:space="preserve">
-    <value>C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE</value>
   </data>
   <data name="Settings_MP_Args1.Text" xml:space="preserve">
     <value>Additional Player 1 Args</value>

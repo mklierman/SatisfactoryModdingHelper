@@ -48,7 +48,8 @@ public class ProcessService : ObservableRecipient, IProcessService
                     FileName = fileName,
                     Arguments = arguments,
                     RedirectStandardError = true,
-                    RedirectStandardOutput = redirectOutput
+                    RedirectStandardOutput = redirectOutput,
+                    WorkingDirectory = "C:\\"
                 }
             };
 

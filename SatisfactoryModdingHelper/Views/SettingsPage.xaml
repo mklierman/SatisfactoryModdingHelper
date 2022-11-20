@@ -61,7 +61,7 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.UnrealEngineLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.UnrealBuildToolFilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         <ToolTipService.ToolTip>
                             <TextBlock>
                                     <Run x:Uid="Example_Ex" />
@@ -75,27 +75,6 @@
                         Margin="{StaticResource SmallLeftMargin}"
                             Command="{x:Bind ViewModel.BrowseForUELocation}" />
                 </Grid>
-                <TextBlock x:Uid="Settings_Locations_VS"
-                        Margin="{StaticResource XSmallTopMargin}"
-                        Style="{StaticResource BodyTextStyle}" />
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.VisualStudioLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                        <ToolTipService.ToolTip>
-                            <TextBlock>
-                                    <Run x:Uid="Example_Ex" />
-                                    <Run x:Uid="Settings_Locations_VS_Hint" />
-                            </TextBlock>
-                        </ToolTipService.ToolTip>
-                    </TextBox>
-                    <Button x:Uid="Settings_Button_Browse"
-                            Grid.Column="1"
-                        Margin="{StaticResource SmallLeftMargin}"
-                            Command="{x:Bind ViewModel.BrowseForVSLocation}" />
-                </Grid>
                 <TextBlock x:Uid="Settings_Locations_Project"
                         Margin="{StaticResource XSmallTopMargin}"
                         Style="{StaticResource BodyTextStyle}" />
@@ -104,7 +83,7 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.ProjectFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.UProjectFilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         <ToolTipService.ToolTip>
                             <TextBlock>
                                     <Run x:Uid="Example_Ex" />
@@ -126,7 +105,7 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.SatisfactoryFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.SatisfactoryExecutableFilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         <ToolTipService.ToolTip>
                             <TextBlock>
                                     <Run x:Uid="Example_Ex" />
@@ -148,7 +127,7 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.SMMFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.ModManagerFolderPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         <ToolTipService.ToolTip>
                             <TextBlock>
                                     <Run x:Uid="Example_Ex" />

@@ -37,7 +37,7 @@ public class AccessTransformersViewModel : ObservableRecipient, INavigationAware
 
     public void OnNavigatedTo(object parameter)
     {
-        projectDirectory = _localSettingsService.Settings.ProjectPath;
+        projectDirectory = _localSettingsService.Settings.UProjectFolderPath;
         SelectedPlugin = _pluginService.SelectedPlugin;
         PopulateAccessTransformerFields();
         _pluginService.PluginChangedEvent += OnPluginChanged;

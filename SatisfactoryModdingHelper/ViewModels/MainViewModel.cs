@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using SatisfactoryModdingHelper.Contracts.Services;
 using SatisfactoryModdingHelper.Contracts.ViewModels;
 using SatisfactoryModdingHelper.Extensions;
+using SatisfactoryModdingHelper.Notifications;
 using SatisfactoryModdingHelper.Services;
 using SlavaGu.ConsoleAppLauncher;
 using Windows.ApplicationModel.Core;
@@ -20,6 +21,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     private readonly IPluginService _pluginService;
     private readonly ILocalSettingsService _settingsService;
     public readonly IProcessService _processService;
+    private readonly IAppNotificationService _appNotificationService;
     private string engineLocation = "";
     private string projectLocation = "";
     private string gameLocation = "";
@@ -32,12 +34,13 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     private bool alpakitCopyMod;
     private bool alpakitCloseGame;
 
-    public MainViewModel(INavigationService navigationService, IPluginService pluginService, ILocalSettingsService settingsService, IProcessService processService)
+    public MainViewModel(INavigationService navigationService, IPluginService pluginService, ILocalSettingsService settingsService, IProcessService processService, IAppNotificationService appNotificationService)
     {
         _navigationService = navigationService;
         _pluginService = pluginService;
         _settingsService = settingsService;
         _processService=processService;
+        _appNotificationService=appNotificationService;
         PluginComboBoxEnabled = true;
     }
 
@@ -48,15 +51,15 @@ public class MainViewModel : ObservableRecipient, INavigationAware
 
     public void OnNavigatedTo(object parameter)
     {
-        projectLocation = _settingsService.Settings.ProjectPath;
-        engineLocation = _settingsService.Settings.UnrealEnginePath;
-        gameLocation = _settingsService.Settings.SatisfactoryPath;
+        projectLocation = _settingsService.Settings.UProjectFolderPath;
+        engineLocation = _settingsService.Settings.UnrealEngineFolderPath;
+        gameLocation = _settingsService.Settings.SatisfactoryFolderPath;
         player1Name = _settingsService.Settings.Player1Name;
         player2Name = _settingsService.Settings.Player2Name;
         player1Args = _settingsService.Settings.Player1Args;
         player2Args = _settingsService.Settings.Player2Args;
         mpGameLocation = _settingsService.Settings.Player2SatisfactoryPath;
-        modManagerLocation = _settingsService.Settings.ModManagerPath;
+        modManagerLocation = _settingsService.Settings.ModManagerFolderPath;
         SelectedPlugin = _settingsService.Settings.CurrentPlugin;
         alpakitCopyMod = _settingsService.Settings.AlpakitCopyModToGame;
         alpakitCloseGame = _settingsService.Settings.AlpakitCloseGame;
@@ -107,6 +110,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         var fileName = @$"`{engineLocation}\Build\BatchFiles\Build.bat`".SetQuotes();
         var cmdLine = @$"{environmentToBuild} -Project=""{projectLocation}\FactoryGame.uproject"" -WaitMutex -FromMsBuild";
         var result = await _processService.RunProcess(@$"`{engineLocation}\Build\BatchFiles\Build.bat`".SetQuotes(), @$"{environmentToBuild} -Project=""{projectLocation}\FactoryGame.uproject"" -WaitMutex -FromMsBuild");
+
         return result;
     }
 
@@ -141,6 +145,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         _processService.OutputText = "Building Development Editor..." + Environment.NewLine;
         var exitCode = await RunBuild(false);
         _processService.SendProcessFinishedMessage(exitCode, "Build for Development Editor");
+        _appNotificationService.SendNotification($"Build for Development Editor Complete");
     }
 
     private AsyncRelayCommand buildForShipping;
@@ -150,6 +155,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         _processService.OutputText = "Building Shipping..." + Environment.NewLine;
         var exitCode = await RunBuild(true);
         _processService.SendProcessFinishedMessage(exitCode, "Build for Shipping");
+        _appNotificationService.SendNotification($"Build for Shipping Complete");
     }
 
     private AsyncRelayCommand launchSatisfactory;
@@ -201,7 +207,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         _=_processService.RunProcess(@$"`{gameLocation}\FactoryGame.exe`".SetQuotes(), launchStringArgs1, false);
 
         Thread.Sleep(1000); // Wait a second before launching 2nd game instance
-        if (mpGameLocation.Length > 0)
+        if (mpGameLocation?.Length > 0)
         {
             await MirrorInstallForMPTest();
             _=_processService.RunProcess(@$"`{mpGameLocation}\FactoryGame.exe`".SetQuotes(), launchStringArgs2, false);

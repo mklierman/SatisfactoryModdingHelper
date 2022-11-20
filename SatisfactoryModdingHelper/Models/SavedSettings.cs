@@ -9,13 +9,17 @@ namespace SatisfactoryModdingHelper.Models
     public class SavedSettings
     {
         public string CurrentPlugin { get; set; }
-        public string ProjectPath { get; set; }
-        public string SatisfactoryPath { get; set; }
-        public string UnrealEnginePath { get; set; }
-        public string VisualStudioPath { get; set; }
-        public string ModManagerPath { get; set; }
+        public string UProjectFolderPath { get; set; }
+        public string UProjectFilePath { get; set; }
+        public string SatisfactoryFolderPath { get; set; }
+        public string SatisfactoryExecutableFilePath { get; set; }
+        public string UnrealEngineFolderPath { get; set; }
+        public string UnrealBuildToolFilePath { get; set; }
+        public string ModManagerFolderPath { get; set; }
+        public string ModManagerFilePath { get; set; }
         public bool AlpakitCloseGame { get; set; }
         public bool AlpakitCopyModToGame { get; set; }
+        public bool CopyCPPFilesAfterBuild { get; set; }
         public string Player1Name { get; set; }
         public string Player2Name { get; set; }
         public string Player1Args { get; set; }

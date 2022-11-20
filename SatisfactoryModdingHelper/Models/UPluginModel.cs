@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Windows.System;
 
 namespace SatisfactoryModdingHelper.Models
 {
-    public class PluginModel : IEquatable<PluginModel>
+    public class PluginModel : ObservableRecipient, IEquatable<PluginModel>
     {
         public PluginModel()
         {
