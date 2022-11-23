@@ -29,12 +29,12 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     private readonly IFileService _fileService;
     private readonly IAppNotificationService _appNotificationService;
     private readonly IProcessService _processService;
-    private string projectLocation;
-    private string gameLocation;
+    //private string projectLocation;
+    //private string gameLocation;
     private string sourceDir;
     private string publicDir;
     private string privateDir;
-    private string engineLocation = "";
+  //  private string engineLocation = "";
 
     public CPPViewModel(IPluginService pluginService, IFileService fileService, ILocalSettingsService settingsService, IAppNotificationService appNotificationService, IProcessService processService)
     {
@@ -60,11 +60,11 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
 
     public void OnNavigatedTo(object parameter)
     {
-        projectLocation = _settingsService.Settings.UProjectFolderPath;
+        //projectLocation = _settingsService.Settings.UProjectFolderPath;
         SelectedPlugin = _pluginService.SelectedPlugin;
-        engineLocation = _settingsService.Settings.UnrealEngineFolderPath;
-        gameLocation = _settingsService.Settings.SatisfactoryFolderPath;
-
+        // engineLocation = _settingsService.Settings.UnrealEngineFolderPath;
+        // gameLocation = _settingsService.Settings.SatisfactoryFolderPath;
+        UpdateOutput();
 
     }
     public void OnNavigatedFrom()
@@ -110,7 +110,8 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
 
     private async Task PerformGenerateVSFiles()
     {
-        var result = await _processService.RunProcess(@$"{engineLocation}\Engine\Binaries\DotNET\UnrealBuildTool.exe", @$"-projectfiles -project=""{projectLocation}\FactoryGame.uproject"" -game -rocket -progress");
+        var result = await _processService.RunProcess(@$"{_settingsService.Settings.UnrealBuildToolFilePath}",
+            @$"-projectfiles -project=""{_settingsService.Settings.UProjectFilePath}"" -game -rocket -progress");
         _appNotificationService.SendNotification($"VS Files have been generated");
     }
 
@@ -120,7 +121,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     public async Task PerformGenerateModuleFiles(string showNotification = "True")
     {
         //Make Directory Structure
-        var pluginDirectoryLocation = $"{projectLocation}//Plugins//{SelectedPlugin}";
+        var pluginDirectoryLocation = $"{_settingsService.Settings.UProjectFolderPath}//Plugins//{SelectedPlugin}";
         sourceDir = Directory.CreateDirectory($"{pluginDirectoryLocation}//Source//{SelectedPlugin}").FullName;
         publicDir = Directory.CreateDirectory($"{pluginDirectoryLocation}//Source//{SelectedPlugin}//Public").FullName;
         privateDir = Directory.CreateDirectory($"{pluginDirectoryLocation}//Source//{SelectedPlugin}//Private").FullName;
@@ -252,9 +253,10 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         // "C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGameEditor Win64 Development -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
 
         var environmentToBuild = isShipping ? "FactoryGame Win64 Shipping" : "FactoryGameEditor Win64 Development";
-        var fileName = @$"`{engineLocation}\Build\BatchFiles\Build.bat`".SetQuotes();
-        var cmdLine = @$"{environmentToBuild} -Project=""{projectLocation}\FactoryGame.uproject"" -WaitMutex -FromMsBuild";
-        var result = await _processService.RunProcess(@$"`{engineLocation}\Build\BatchFiles\Build.bat`".SetQuotes(), @$"{environmentToBuild} -Project=""{projectLocation}\FactoryGame.uproject"" -WaitMutex -FromMsBuild");
+        var fileName = @$"`{_settingsService.Settings.UnrealEngineFolderPath}\Engine\Build\BatchFiles\Build.bat`".SetQuotes();
+        var cmdLine = @$"{environmentToBuild} -Project=""{_settingsService.Settings.UProjectFilePath}"" -WaitMutex -FromMsBuild";
+        var result = await _processService.RunProcess(@$"`{_settingsService.Settings.UnrealEngineFolderPath}\Engine\Build\BatchFiles\Build.bat`".SetQuotes(),
+            @$"{environmentToBuild} -Project=""{_settingsService.Settings.UProjectFilePath}"" -WaitMutex -FromMsBuild");
 
         return result;
     }
@@ -268,21 +270,18 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         //FactoryGame-CounterLimiter-Win64-Shipping.pdb
         //FactoryGame-Win64-Shipping.modules
         //F:\Games\SteamLibrary\steamapps\common\Satisfactory\FactoryGame\Mods\CounterLimiter\Binaries\Win64
-        var pluginBinariesLocation = $"{projectLocation}//Plugins//{SelectedPlugin}//Binaries//Win64";
+        var pluginBinariesLocation = $"{_settingsService.Settings.UProjectFolderPath}\\Plugins\\{SelectedPlugin}\\Binaries\\Win64";
 
         var dllFileName = $"FactoryGame-{SelectedPlugin}-Win64-Shipping.dll";
         var pdbFileName = $"FactoryGame-{SelectedPlugin}-Win64-Shipping.pdb";
-        var modulesFileName = "FactoryGame-Win64-Shipping.modules";
 
         var dllSource = Path.Combine(pluginBinariesLocation, dllFileName);
         var pdbSource = Path.Combine(pluginBinariesLocation, pdbFileName);
-        var modulesSource = Path.Combine(pluginBinariesLocation, modulesFileName);
 
-        var pluginGameLocation = $"{gameLocation}//FactoryGame//Mods//{SelectedPlugin}//Binaries//Win64";
+        var pluginGameLocation = $"{_settingsService.Settings.SatisfactoryFolderPath}\\FactoryGame\\Mods\\{SelectedPlugin}\\Binaries\\Win64";
 
         var dllDest = Path.Combine(pluginGameLocation, dllFileName);
         var pdbDest = Path.Combine(pluginGameLocation, pdbFileName);
-        var modulesDest = Path.Combine(pluginGameLocation, modulesFileName);
 
         if (File.Exists(dllSource))
         {
@@ -292,9 +291,25 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         {
             File.Copy(pdbSource, pdbDest, overwrite: true);
         }
-        if (File.Exists(modulesSource))
+    }
+
+    private string outputText;
+    public string OutputText
+    {
+        get => outputText;
+        set => SetProperty(ref outputText, value);
+    }
+
+    public async void UpdateOutput()
+    {
+        while (true)
         {
-            File.Copy(modulesSource, modulesDest, overwrite: true);
+            OutputText = _processService.OutputText;
+            //InputsEnabled = !_processService.ProcessRunning;
+            await Task.Delay(500);
+
+            // Highlighting regex wip
+            // ^\s*(?'ProgressGroup'\[\d+\/\d+\].*$)|^.*\):\s(?'InfoType'\w+).*(?'CodeReference''.*'):\s(?'Message'.*$)
         }
     }
 }

@@ -22,16 +22,16 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     private readonly ILocalSettingsService _settingsService;
     public readonly IProcessService _processService;
     private readonly IAppNotificationService _appNotificationService;
-    private string engineLocation = "";
-    private string projectLocation = "";
-    private string gameLocation = "";
+    //private string engineLocation = "";
+    //private string projectLocation = "";
+    //private string gameLocation = "";
     private string mpGameLocation = "";
-    private string modManagerLocation = "";
+  //  private string modManagerLocation = "";
     private string player1Name = "";
     private string player2Name = "";
     private string player1Args = "";
     private string player2Args = "";
-    private bool alpakitCopyMod;
+    private bool alpakitCopyMod = true;
     private bool alpakitCloseGame;
 
     public MainViewModel(INavigationService navigationService, IPluginService pluginService, ILocalSettingsService settingsService, IProcessService processService, IAppNotificationService appNotificationService)
@@ -51,17 +51,17 @@ public class MainViewModel : ObservableRecipient, INavigationAware
 
     public void OnNavigatedTo(object parameter)
     {
-        projectLocation = _settingsService.Settings.UProjectFolderPath;
-        engineLocation = _settingsService.Settings.UnrealEngineFolderPath;
-        gameLocation = _settingsService.Settings.SatisfactoryFolderPath;
+      //  projectLocation = _settingsService.Settings.UProjectFolderPath;
+       // engineLocation = _settingsService.Settings.UnrealEngineFolderPath;
+       // gameLocation = _settingsService.Settings.SatisfactoryFolderPath;
         player1Name = _settingsService.Settings.Player1Name;
         player2Name = _settingsService.Settings.Player2Name;
         player1Args = _settingsService.Settings.Player1Args;
         player2Args = _settingsService.Settings.Player2Args;
         mpGameLocation = _settingsService.Settings.Player2SatisfactoryPath;
-        modManagerLocation = _settingsService.Settings.ModManagerFolderPath;
+      //  modManagerLocation = _settingsService.Settings.ModManagerFolderPath;
         SelectedPlugin = _settingsService.Settings.CurrentPlugin;
-        alpakitCopyMod = _settingsService.Settings.AlpakitCopyModToGame;
+       // alpakitCopyMod = _settingsService.Settings.AlpakitCopyModToGame;
         alpakitCloseGame = _settingsService.Settings.AlpakitCloseGame;
         UpdateOutput();
     }
@@ -93,11 +93,12 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         set => SetProperty(ref outputText, value);
     }
 
-    private bool inputsEnabled;
+    private bool inputsEnabled = true;
     public bool InputsEnabled
     {
-        get => inputsEnabled; 
-        set => SetProperty(ref inputsEnabled, value);
+        get => true;
+        set => SetProperty(ref inputsEnabled, true);
+        //set => SetProperty(ref inputsEnabled, value);
     }
 
 
@@ -107,9 +108,10 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         // "C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGameEditor Win64 Development -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
 
         var environmentToBuild = isShipping ? "FactoryGame Win64 Shipping" : "FactoryGameEditor Win64 Development";
-        var fileName = @$"`{engineLocation}\Build\BatchFiles\Build.bat`".SetQuotes();
-        var cmdLine = @$"{environmentToBuild} -Project=""{projectLocation}\FactoryGame.uproject"" -WaitMutex -FromMsBuild";
-        var result = await _processService.RunProcess(@$"`{engineLocation}\Build\BatchFiles\Build.bat`".SetQuotes(), @$"{environmentToBuild} -Project=""{projectLocation}\FactoryGame.uproject"" -WaitMutex -FromMsBuild");
+        var fileName = @$"`{_settingsService.Settings.UnrealEngineFolderPath}\Engine\Build\BatchFiles\Build.bat`".SetQuotes();
+        var cmdLine = @$"{environmentToBuild} -Project=""{_settingsService.Settings.UProjectFilePath}"" -WaitMutex -FromMsBuild";
+        var result = await _processService.RunProcess(@$"`{_settingsService.Settings.UnrealEngineFolderPath}\Engine\Build\BatchFiles\Build.bat`".SetQuotes(),
+            @$"{environmentToBuild} -Project=""{_settingsService.Settings.UProjectFilePath}"" -WaitMutex -FromMsBuild");
 
         return result;
     }
@@ -119,7 +121,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         while (true)
         {
             OutputText = _processService.OutputText;
-            InputsEnabled = !_processService.ProcessRunning;
+            //InputsEnabled = !_processService.ProcessRunning;
             await Task.Delay(500);
 
             // Highlighting regex wip
@@ -163,7 +165,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     private Task PerformLaunchSatisfactory()
     {
         _processService.OutputText = "Launching Satisfactory...";
-        _=_processService.RunProcess(@$"{gameLocation}\FactoryGame.exe", "", false);
+        _=_processService.RunProcess(@$"{_settingsService.Settings.SatisfactoryExecutableFilePath}", "", false);
         return Task.CompletedTask;
     }
 
@@ -172,7 +174,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     private Task PerformLaunchModManager()
     {
         _processService.OutputText = "Launching Satisfactory Mod Manager...";
-        _=_processService.RunProcess(@$"{modManagerLocation}\Satisfactory Mod Manager.exe", "", false);
+        _=_processService.RunProcess(@$"{_settingsService.Settings.ModManagerFilePath}", "", false);
         return Task.CompletedTask;
     }
 
@@ -186,8 +188,9 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         }
 
         _processService.OutputText = "Running Alpakit..." + Environment.NewLine;
-        var alpakitArgs = alpakitCopyMod ? @$" -CopyToGameDir -GameDir=`{gameLocation}`" : "";
-        var exitCode = await _processService.RunProcess(@$"{engineLocation}\Build\BatchFiles\RunUAT.bat", $@" -ScriptsForProject=`{projectLocation}\FactoryGame.uproject` PackagePlugin -Project=`{projectLocation}\FactoryGame.uproject` -PluginName=`{SelectedPlugin}` {alpakitArgs}".SetQuotes());
+        var alpakitArgs = alpakitCopyMod ? @$" -CopyToGameDir -GameDir=`{_settingsService.Settings.SatisfactoryFolderPath}`" : "";
+        var exitCode = await _processService.RunProcess(@$"{_settingsService.Settings.UnrealEngineFolderPath}\Engine\Build\BatchFiles\RunUAT.bat",
+            $@" -ScriptsForProject=`{_settingsService.Settings.UProjectFilePath}` PackagePlugin -Project=`{_settingsService.Settings.UProjectFilePath}` -PluginName=`{SelectedPlugin}` {alpakitArgs}".SetQuotes());
         _processService.SendProcessFinishedMessage(exitCode, "Alpakit");
 
         if (exitCode == 0 && launchGame == "True")
@@ -204,7 +207,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         var launchStringArgs1 = $"-EpicPortal -NoSteamClient -Username=`{player1Name}` {player1Args}".SetQuotes();
         var launchStringArgs2 = $"-EpicPortal -NoSteamClient -Username=`{player2Name}` {player2Args}".SetQuotes();
 
-        _=_processService.RunProcess(@$"`{gameLocation}\FactoryGame.exe`".SetQuotes(), launchStringArgs1, false);
+        _=_processService.RunProcess(@$"`{_settingsService.Settings.SatisfactoryExecutableFilePath}`".SetQuotes(), launchStringArgs1, false);
 
         Thread.Sleep(1000); // Wait a second before launching 2nd game instance
         if (mpGameLocation?.Length > 0)
@@ -214,14 +217,14 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         }
         else
         {
-            _=_processService.RunProcess(@$"`{gameLocation}\FactoryGame.exe`".SetQuotes(), launchStringArgs2, false);
+            _=_processService.RunProcess(@$"`{_settingsService.Settings.SatisfactoryExecutableFilePath}`".SetQuotes(), launchStringArgs2, false);
         }
     }
 
     private async Task MirrorInstallForMPTest()
     {
         _processService.OutputText += $"Mirroring Satisfactory install to secondary location...{Environment.NewLine}";
-        var launchStringArgs = @$"`{gameLocation}` `{mpGameLocation}` /PURGE /MIR /XD Configs /R:2 /W:2 /NS /NDL /NFL /NP";
+        var launchStringArgs = @$"`{_settingsService.Settings.SatisfactoryFolderPath}` `{mpGameLocation}` /PURGE /MIR /XD Configs /R:2 /W:2 /NS /NDL /NFL /NP";
         await _processService.RunProcess(@$"`ROBOCOPY.EXE`".SetQuotes(), launchStringArgs.SetQuotes(), false);
     }
 

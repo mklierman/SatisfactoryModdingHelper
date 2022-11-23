@@ -61,7 +61,7 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.UnrealBuildToolFilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.UnrealEngineFolderPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         <ToolTipService.ToolTip>
                             <TextBlock>
                                     <Run x:Uid="Example_Ex" />
@@ -127,7 +127,7 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.ModManagerFolderPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox Grid.Column="0" Text="{x:Bind ViewModel.ModManagerFilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         <ToolTipService.ToolTip>
                             <TextBlock>
                                     <Run x:Uid="Example_Ex" />

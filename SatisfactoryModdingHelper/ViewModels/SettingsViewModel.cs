@@ -114,22 +114,38 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
         {
             LocateSMM();
         }
-        LocateUProject();
+        if (UProjectFolderPath.IsNullOrEmpty() || UProjectFilePath.IsNullOrEmpty())
+        {
+            LocateUProject();
+        }
     }
+
     public void OnNavigatedFrom()  => _localSettingsService.PersistData();
 
     private void LocateUProject()
     {
-        //C:\Users\Mark Lierman\AppData\Local\Microsoft\Windows\History
-        foreach (var file in Directory.GetFiles("C:\\Users\\Mark Lierman\\AppData\\Local\\Microsoft\\Windows\\History"))
+        //C:\Users\Mark Lierman\AppData\Local\UnrealEngine\4.26\Saved\Config\Windows\EditorSettings.ini
+        var editorSettingsPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\UnrealEngine\\4.26\\Saved\\Config\\Windows\\EditorSettings.ini"; 
+        if (File.Exists(editorSettingsPath))
         {
-            Console.WriteLine(file);
-        }
-        foreach (var dir in Directory.GetDirectories("C:\\Users\\Mark Lierman\\AppData\\Local\\Microsoft\\Windows\\History"))
-        {
-            foreach (var file in Directory.GetFiles(dir))
+            foreach (var line in File.ReadLines(editorSettingsPath))
             {
-                Console.WriteLine(file);
+                var idx = line.IndexOf("RecentlyOpenedProjectFiles=");
+                if (idx >= 0)
+                {
+                    var projectPath = line.Substring(27, line.Length - 27);
+                    projectPath = projectPath.Replace("/", "\\");
+                    if (UProjectFilePath.IsNullOrEmpty())
+                    {
+                        UProjectFilePath = projectPath;
+                    }
+                    if (UProjectFolderPath.IsNullOrEmpty())
+                    {
+                        var folderPath = projectPath.Replace("\\FactoryGame.uproject", "");
+                        UProjectFolderPath = folderPath;
+                    }
+                    return;
+                }
             }
         }
     }

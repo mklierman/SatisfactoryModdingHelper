@@ -53,6 +53,17 @@
                         Content="Add RCO" />
                 </StackPanel>
             </ContentControl>
+            <Grid
+            Grid.Row="2"
+            Height="400"
+            Margin="{StaticResource SmallTopBottomMargin}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <TextBlock
+                    Margin="{StaticResource XSmallLeftTopRightBottomMargin}"
+                    Text="{x:Bind ViewModel.OutputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    TextWrapping="Wrap" />
+                </ScrollViewer>
+            </Grid>
         </Grid>
     </Grid>
 </Page>
