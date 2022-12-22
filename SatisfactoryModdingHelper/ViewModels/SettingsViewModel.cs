@@ -538,10 +538,10 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
 
     private void PerformBrowseForSecondaryGameLocation()
     {
-        var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
-        if (folderBrowser.ShowDialog() == true)
-        {
-            MPGameLocation = folderBrowser.FileName;
-        }
+        //var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
+        //if (folderBrowser.ShowDialog() == true)
+        //{
+        //    MPGameLocation = folderBrowser.FileName;
+        //}
     }
 }

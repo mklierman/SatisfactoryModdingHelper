@@ -313,11 +313,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
 
     public System.Collections.IEnumerable PluginList
     {
-        get => pluginList; 
-        set
-        {
-            SetProperty(ref pluginList, value);
-        }
+        get => pluginList;
+        set => SetProperty(ref pluginList, value);
     }
 
     private RelayCommand saveUPlugin;

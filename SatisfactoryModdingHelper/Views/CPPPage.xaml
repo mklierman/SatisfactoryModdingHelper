@@ -2,67 +2,135 @@
     x:Class="SatisfactoryModdingHelper.Views.CPPPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
     <Grid x:Name="ContentArea">
-
         <Grid Margin="{StaticResource MediumLeftRightMargin}">
-            <ContentControl>
-                <StackPanel>
-                    <Button
-                        Margin="{StaticResource XSmallTopMargin}"
-                        Command="{x:Bind ViewModel.GenerateVSFiles}"
-                        Content="Generate VS Project Files" />
-                    <Button
-                        Margin="{StaticResource XSmallTopMargin}"
-                        Command="{x:Bind ViewModel.GenerateModuleFiles}"
-                        CommandParameter="True"
-                        Content="Generate Plugin Module Files" />
-                    <Button
-                        x:Uid="Main_Button_DevEditor"
-                        Margin="{StaticResource XSmallTopMargin}"
-                        HorizontalAlignment="Stretch"
-                        Command="{x:Bind ViewModel.BuildForDevelopmentEditor}" />
-                    <Button
-                        x:Uid="Main_Button_Shipping"
-                        Margin="{StaticResource XSmallTopMargin}"
-                        HorizontalAlignment="Stretch"
-                        Command="{x:Bind ViewModel.BuildForShipping}" />
-                    <Button
-                        x:Name="CopyDLLButton"
-                        Margin="{StaticResource XSmallTopMargin}"
-                        HorizontalAlignment="Stretch"
-                        Content="Copy CPP Files to Game Dir"
-                        Command="{x:Bind ViewModel.CopyCPPFiles}" />
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel
+                Grid.Row="0"
+                Grid.Column="0"
+                Margin="{StaticResource SmallLeftRightMargin}">
+                <Button
+                    Margin="{StaticResource XSmallTopMargin}"
+                    HorizontalAlignment="Stretch"
+                    Command="{x:Bind ViewModel.GenerateVSFiles}"
+                    Content="Generate VS Project Files" />
+                <Button
+                    x:Uid="Main_Button_DevEditor"
+                    Margin="{StaticResource XSmallTopMargin}"
+                    HorizontalAlignment="Stretch"
+                    Command="{x:Bind ViewModel.BuildForDevelopmentEditor}" />
+                <Button
+                    x:Uid="Main_Button_Shipping"
+                    Margin="{StaticResource XSmallTopMargin}"
+                    HorizontalAlignment="Stretch"
+                    Command="{x:Bind ViewModel.BuildForShipping}" />
+                <Button
+                    x:Name="CopyDLLButton"
+                    Margin="{StaticResource XSmallTopMargin}"
+                    HorizontalAlignment="Stretch"
+                    Command="{x:Bind ViewModel.CopyCPPFiles}"
+                    Content="Copy DLL to Game Dir" />
+            </StackPanel>
+            <StackPanel Grid.Row="0" Grid.Column="1">
+                <Button
+                    Margin="{StaticResource XSmallTopMargin}"
+                    HorizontalAlignment="Stretch"
+                    Command="{x:Bind ViewModel.GenerateModuleFiles}"
+                    CommandParameter="True"
+                    Content="Generate Plugin Module Files" />
+                <Grid Margin="{StaticResource XSmallTopMargin}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
                     <Button
                         x:Name="BPFLButton"
-                        Margin="{StaticResource XSmallTopMargin}"
+                        Grid.Column="1"
+                        Margin="{StaticResource SmallLeftRightMargin}"
+                        HorizontalAlignment="Stretch"
                         Click="BPFLButton_Click"
                         Content="Add BPFL" />
                     <Button
                         x:Name="SubsystemButton"
-                        Margin="{StaticResource XSmallTopMargin}"
+                        Grid.Column="0"
+                        HorizontalAlignment="Stretch"
                         Click="SubsystemButton_Click"
                         Content="Add Subsystem" />
                     <Button
                         x:Name="RcoButton"
-                        Margin="{StaticResource XSmallTopMargin}"
+                        Grid.Column="2"
+                        HorizontalAlignment="Stretch"
                         Click="RcoButton_Click"
                         Content="Add RCO" />
-                </StackPanel>
-            </ContentControl>
+                </Grid>
+
+                <CheckBox
+                    Margin="{StaticResource XSmallTopBottomMargin}"
+                    VerticalAlignment="Center"
+                    Content="Copy DLL After Build Shipping"
+                    IsChecked="{x:Bind ViewModel.CopyDLLAfterBuildShipping, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+            </StackPanel>
             <Grid
-            Grid.Row="2"
-            Height="400"
-            Margin="{StaticResource SmallTopBottomMargin}">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                Height="400"
+                Margin="{StaticResource SmallTopBottomMargin}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ToggleButton
+                    x:Name="ScrollToggle"
+                    Grid.Row="0"
+                    Content="Scroll to End"
+                    Grid.Column="1"/>
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Command="{x:Bind ViewModel.ClearOutput}"
+                    Content="Clear Output" />
+                <ListView
+                    x:Name="OutputDataGrid"
+                    Grid.Row="1"
+                    Grid.ColumnSpan="3"
+                    CanDrag="False"
+                    ItemsSource="{x:Bind ViewModel.OutputText}" />
+                <!--<controls:DataGrid
+                    x:Name="OutputDataGrid"
+                    Grid.Row="1"
+                    Grid.ColumnSpan="3"
+                    CanDrag="False"
+                    CanUserReorderColumns="False"
+                    ColumnWidth="Auto"
+                    HeadersVisibility="None"
+                    HorizontalScrollBarVisibility="Visible"
+                    IsReadOnly="True"
+                    ItemsSource="{x:Bind ViewModel.OutputText}"
+                    VerticalScrollBarVisibility="Visible" />-->
+                <!--<ScrollViewer VerticalScrollBarVisibility="Auto">
                     <TextBlock
-                    Margin="{StaticResource XSmallLeftTopRightBottomMargin}"
-                    Text="{x:Bind ViewModel.OutputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    TextWrapping="Wrap" />
-                </ScrollViewer>
+                        Margin="{StaticResource XSmallLeftTopRightBottomMargin}"
+                        Text="{x:Bind ViewModel.OutputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        TextWrapping="Wrap" />
+                </ScrollViewer>-->
             </Grid>
         </Grid>
     </Grid>

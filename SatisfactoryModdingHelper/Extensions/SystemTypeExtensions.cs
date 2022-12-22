@@ -12,31 +12,19 @@ public class SystemTypeExtension : MarkupExtension
 
     public int Int
     {
-        set
-        {
-            parameter = value;
-        }
+        set => parameter = value;
     }
     public double Double
     {
-        set
-        {
-            parameter = value;
-        }
+        set => parameter = value;
     }
     public float Float
     {
-        set
-        {
-            parameter = value;
-        }
+        set => parameter = value;
     }
     public bool Bool
     {
-        set
-        {
-            parameter = value;
-        }
+        set => parameter = value;
     }
     // add more as needed here
 

@@ -62,7 +62,6 @@ namespace SatisfactoryModdingHelper.Models
         public string? ModManagerFilePath { get; set; }
         public bool AlpakitCloseGame { get; set; }
         public bool AlpakitCopyModToGame { get; set; }
-        public bool CopyCPPFilesAfterBuild { get; set; }
         public string? Player1Name { get; set; }
         public string? Player2Name { get; set; }
         public string? Player1Args { get; set; }
@@ -72,5 +71,6 @@ namespace SatisfactoryModdingHelper.Models
         public double? AppHeight { get; set; }
         public double? AppWidth { get; set; }
         public bool ShowNotifications { get; set; }
+        public bool CopyDLLAfterBuildShipping { get; set; }
     }
 }

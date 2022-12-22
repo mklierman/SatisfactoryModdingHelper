@@ -1,4 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.WinUI.UI.Controls;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using SatisfactoryModdingHelper.Dialogs;
 using SatisfactoryModdingHelper.ViewModels;
@@ -16,6 +18,7 @@ public sealed partial class CPPPage : Page
     {
         ViewModel = App.GetService<CPPViewModel>();
         InitializeComponent();
+       // ViewModel.OutputDataGrid = OutputDataGrid;
     }
 
     private async void BPFLButton_Click(object sender, RoutedEventArgs e)
@@ -68,5 +71,29 @@ public sealed partial class CPPPage : Page
         {
             ViewModel.PerformAddRCO(((SingleInputRequestDialog)dialog.Content).InputResult);
         }
+    }
+
+    private void DataGrid_SizeChanged(object sender, DataGridRowEventArgs e)
+    {
+        Console.WriteLine("Loading Row");
+        //if (ScrollToggle.IsEnabled)
+        //{
+        //    var dg = (DataGrid)sender;
+        //    if (((ObservableCollection<string>)dg.ItemsSource).Count() > 1)
+        //    {
+        //        var firstItem = ((ObservableCollection<string>)dg.ItemsSource).First();
+        //        var lastItem = ((ObservableCollection<string>)dg.ItemsSource).Last();
+        //        if (firstItem != lastItem)
+        //        {
+        //          dg.ScrollIntoView(lastItem, dg.Columns[0]);
+        //        }
+        //    }
+        //}
+    }
+
+    private void DataGrid_SizeChanged_1(object sender, SizeChangedEventArgs e)
+    {
+
+        Console.WriteLine("SizeChanged");
     }
 }

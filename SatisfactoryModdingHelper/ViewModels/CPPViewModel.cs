@@ -1,10 +1,14 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Reflection;
+using System.Text;
 using System.Windows.Input;
 using System.Xml.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.Toolkit.Uwp.Notifications;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
@@ -28,7 +32,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     private readonly IPluginService _pluginService;
     private readonly IFileService _fileService;
     private readonly IAppNotificationService _appNotificationService;
-    private readonly IProcessService _processService;
+    public readonly IProcessService _processService;
     //private string projectLocation;
     //private string gameLocation;
     private string sourceDir;
@@ -64,12 +68,37 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         SelectedPlugin = _pluginService.SelectedPlugin;
         // engineLocation = _settingsService.Settings.UnrealEngineFolderPath;
         // gameLocation = _settingsService.Settings.SatisfactoryFolderPath;
+        copyDLLAfterBuildShipping = _settingsService.Settings.CopyDLLAfterBuildShipping;
+        RunUpdateOutput = true;
         UpdateOutput();
 
     }
     public void OnNavigatedFrom()
     {
-        // Method intentionally left empty.
+        RunUpdateOutput = false;
+    }
+
+    private bool RunUpdateOutput = false;
+
+    private ObservableCollection<string> outputList;
+    public ObservableCollection<string> OutputList
+    {
+        get => outputList;
+        set => SetProperty(ref outputList, value);
+    }
+
+    private bool copyDLLAfterBuildShipping;
+    public bool CopyDLLAfterBuildShipping
+    {
+        get => copyDLLAfterBuildShipping;
+        set
+        {
+            if (SetProperty(ref copyDLLAfterBuildShipping, value))
+            {
+                _settingsService.Settings.CopyDLLAfterBuildShipping = value;
+                _settingsService.PersistData();
+            }
+        }
     }
 
     private bool buttonsEnabled;
@@ -245,6 +274,11 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         var exitCode = await RunBuild(true);
         _processService.SendProcessFinishedMessage(exitCode, "Build for Shipping");
         _appNotificationService.SendNotification($"Build for Shipping Complete");
+
+        if (CopyDLLAfterBuildShipping)
+        {
+            await PerformCopyCPPFiles();
+        }
     }
 
     private async Task<int> RunBuild(bool isShipping)
@@ -291,20 +325,57 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         {
             File.Copy(pdbSource, pdbDest, overwrite: true);
         }
+        _processService.AddStringToOutput($"DLL and PDB Copied to {pluginGameLocation}");
     }
 
-    private string outputText;
-    public string OutputText
+    public DataGrid OutputDataGrid;
+
+    private AsyncRelayCommand clearOutput;
+    public ICommand ClearOutput => clearOutput ??= new AsyncRelayCommand(PerformClearOutput);
+    private async Task PerformClearOutput()
+    {
+        App.MainWindow.DispatcherQueue.TryEnqueue(() => { OutputList.Clear(); });
+    }
+
+    private ObservableCollection<string> outputText = new ObservableCollection<string>();
+    public ObservableCollection<string> OutputText
     {
         get => outputText;
         set => SetProperty(ref outputText, value);
     }
 
+    private long lastFileLocation = 0;
+
     public async void UpdateOutput()
     {
-        while (true)
+        var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+
+        while (RunUpdateOutput)
         {
-            OutputText = _processService.OutputText;
+            using (FileStream fs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                StreamReader sr = new StreamReader(fs);
+                
+                var initialFileSize = fs.Length;
+                var newLength = initialFileSize - lastFileLocation;
+                if (newLength > 0) 
+                {
+                    fs.Seek(lastFileLocation, SeekOrigin.Begin);
+                    while (!sr.EndOfStream)
+                        {
+                            var newline = sr.ReadLine();
+                            if (newline != null)
+                            {
+                                OutputText.Add(newline);
+                                //if (OutputDataGrid.Columns.Count > 0)
+                                //{
+                                //    OutputDataGrid.ScrollIntoView(OutputText.Last(), OutputDataGrid.Columns[0]);
+                                //}
+                            }
+                        }
+                     lastFileLocation = fs.Position;
+                }
+            }
             //InputsEnabled = !_processService.ProcessRunning;
             await Task.Delay(500);
 

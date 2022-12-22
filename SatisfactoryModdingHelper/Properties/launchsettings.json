@@ -1,10 +1,12 @@
-﻿{
-    "profiles": {
-      "SatisfactoryModdingHelper (Package)": {
-        "commandName": "MsixPackage"
-      },
-      "SatisfactoryModdingHelper (Unpackaged)": {
-        "commandName": "Project"
-      }
+{
+  "profiles": {
+    "SatisfactoryModdingHelper (Package)": {
+      "commandName": "MsixPackage",
+      "nativeDebugging": true
+    },
+    "SatisfactoryModdingHelper (Unpackaged)": {
+      "commandName": "Project",
+      "nativeDebugging": true
     }
+  }
 }

@@ -18,7 +18,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
 {
 
     private readonly INavigationService _navigationService;
-    private readonly IPluginService _pluginService;
+    public readonly IPluginService _pluginService;
     private readonly ILocalSettingsService _settingsService;
     public readonly IProcessService _processService;
     private readonly IAppNotificationService _appNotificationService;

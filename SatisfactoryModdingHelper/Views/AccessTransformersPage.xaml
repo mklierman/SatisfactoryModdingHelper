@@ -59,13 +59,13 @@
                                             Grid.Row="0"
                                             Grid.Column="0"
                                             Header="Class:"
-                                            Text="{Binding Class}" />
+                                            Text="{Binding Class, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         <TextBox
                                             Grid.Row="1"
                                             Grid.Column="0"
                                             Margin="{StaticResource SmallTopMargin}"
                                             Header="Friend Class:"
-                                            Text="{Binding FriendClass}" />
+                                            Text="{Binding FriendClass, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         <Button
                                             Grid.RowSpan="2"
                                             Grid.Column="1"
@@ -113,12 +113,12 @@
                                             Grid.Row="0"
                                             Grid.Column="0"
                                             Header="Class:"
-                                            Text="{Binding Class}" />
+                                            Text="{Binding Class, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         <TextBox
                                             Grid.Row="1"
                                             Grid.Column="0"
                                             Header="Property:"
-                                            Text="{Binding Property}" />
+                                            Text="{Binding Property, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         <Button
                                             Grid.RowSpan="2"
                                             Grid.Column="1"
@@ -166,13 +166,13 @@
                                             Grid.Row="0"
                                             Grid.Column="0"
                                             Header="Class:"
-                                            Text="{Binding Class}" />
+                                            Text="{Binding Class, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         <TextBox
                                             Grid.Row="1"
                                             Grid.Column="0"
                                             Margin="{StaticResource SmallTopMargin}"
                                             Header="Property:"
-                                            Text="{Binding Property}" />
+                                            Text="{Binding Property, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         <Button
                                             Grid.RowSpan="2"
                                             Grid.Column="1"

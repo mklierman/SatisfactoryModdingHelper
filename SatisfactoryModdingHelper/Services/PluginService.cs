@@ -44,6 +44,8 @@ public class PluginService : ObservableRecipient, IPluginService
         }
     }
 
+    private readonly string[] ignoredPlugins = {"wwise", "alpakit", "smleditor", "abstractinstance", "sml", "examplemod" };
+
     public IEnumerable? PluginList => GetPluginList();
 
     public IEnumerable? GetPluginList()
@@ -56,7 +58,10 @@ public class PluginService : ObservableRecipient, IPluginService
             foreach (var directory in Directory.GetDirectories(pluginDirectory))
             {
                 var di = new DirectoryInfo(directory);
-                pluginDirs.Add(di.Name);
+                if (!ignoredPlugins.Contains(di.Name.ToLower()))
+                {
+                    pluginDirs.Add(di.Name);
+                }
             }
             return pluginDirs;
         }

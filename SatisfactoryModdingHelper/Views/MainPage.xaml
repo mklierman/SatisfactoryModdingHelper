@@ -61,6 +61,7 @@
                         <Button
                             x:Uid="Main_Button_MP1"
                             Grid.Column="1"
+                            
                             Margin="{StaticResource SmallLeftRightMargin}"
                             HorizontalAlignment="Stretch"
                             Command="{x:Bind ViewModel.LaunchMPTesting}"

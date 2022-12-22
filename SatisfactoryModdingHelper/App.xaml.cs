@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 
 using SatisfactoryModdingHelper.Activation;
@@ -40,6 +41,8 @@ public partial class App : Application
     }
 
     public static WindowEx MainWindow { get; } = new MainWindow();
+    public static DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+    public static Microsoft.UI.Dispatching.DispatcherQueue staticDispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
     public App()
     {

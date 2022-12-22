@@ -85,6 +85,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock
                                 Grid.Column="0"
@@ -96,6 +97,14 @@
                                 HorizontalAlignment="Stretch"
                                 ItemsSource="{x:Bind ViewModel.PluginList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 SelectedValue="{x:Bind ViewModel.SelectedPlugin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button
+                                Grid.Column="2"
+                                Height="40"
+                            Margin="{StaticResource XSmallLeftMargin}"
+                            Command="{x:Bind ViewModel.RefreshList}">
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE149;" />
+                            </Button>
+
                         </Grid>
                     </Grid>
                 </NavigationView.Header>

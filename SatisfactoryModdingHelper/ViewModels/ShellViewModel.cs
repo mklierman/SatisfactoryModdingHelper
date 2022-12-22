@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Navigation;
 
@@ -77,6 +79,15 @@ public class ShellViewModel : ObservableRecipient
     public System.Collections.IEnumerable PluginList
     {
         get => pluginList; set => SetProperty(ref pluginList, value);
+    }
+
+    private AsyncRelayCommand refreshList;
+    public ICommand RefreshList => refreshList ??= new AsyncRelayCommand(PerformRefreshList);
+    private async Task PerformRefreshList()
+    {
+        var curPlugin = SelectedPlugin;
+        PluginList = _pluginService.PluginList;
+        SelectedPlugin = curPlugin;
     }
 
     private object selectedPlugin;

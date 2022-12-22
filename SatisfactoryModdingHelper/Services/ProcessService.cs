@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.UI.Controls;
 using SatisfactoryModdingHelper.Contracts.Services;
+using Windows.System;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SatisfactoryModdingHelper.Services;
 public class ProcessService : ObservableRecipient, IProcessService
@@ -14,7 +19,9 @@ public class ProcessService : ObservableRecipient, IProcessService
     {
         outputText = "";
         processRunning = false;
+        dispatcherQueue = DispatcherQueue.GetForCurrentThread();
     }
+    public DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
     private string outputText;
 
@@ -24,6 +31,13 @@ public class ProcessService : ObservableRecipient, IProcessService
         set => SetProperty(ref outputText, value);
     }
 
+    private ObservableCollection<string> outputList = new();
+    public ObservableCollection<string> OutputList
+    {
+        get => outputList;
+        set => SetProperty(ref outputList, value);
+    }
+
     private bool processRunning;
     public bool ProcessRunning
     {
@@ -31,11 +45,13 @@ public class ProcessService : ObservableRecipient, IProcessService
         set => SetProperty(ref processRunning, value);
     }
 
+    public static DispatcherQueue? ProcessServiceThread = null;
+
     public async Task<int> RunProcess(string fileName, string arguments = "", bool redirectOutput = true)
     {
         try
         {
-
+            ProcessServiceThread = DispatcherQueue.GetForCurrentThread();
             var taskCompletionSource = new TaskCompletionSource<int>();
             Process process = new()
             {
@@ -52,9 +68,22 @@ public class ProcessService : ObservableRecipient, IProcessService
                     WorkingDirectory = "C:\\"
                 }
             };
-
+            //process.OutputDataReceived += (s, e) => {
+            //    lock (OutputList)
+            //    {
+            //       // OutputList.Add(e.Data ?? "");
+            //        App.MainWindow.DispatcherQueue.TryEnqueue(() => { OutputList.Add(e.Data ?? ""); });
+            //    }
+            //};
+            //process.ErrorDataReceived += (s, e) => {
+            //    lock (OutputList)
+            //    {
+            //       // OutputList.Add("! > " + e.Data ?? "");
+            //        App.MainWindow.DispatcherQueue.TryEnqueue(() => { OutputList.Add("! > " + e.Data ?? ""); });
+            //    }
+            //};
             process.OutputDataReceived += Cmd_DataReceived;
-
+            process.ErrorDataReceived += Cmd_DataReceived;
             process.Exited += (sender, args) =>
             {
                 taskCompletionSource.SetResult(process.ExitCode);
@@ -80,7 +109,23 @@ public class ProcessService : ObservableRecipient, IProcessService
 
     private void Cmd_DataReceived(object sender, DataReceivedEventArgs e)
     {
-        OutputText += e.Data + Environment.NewLine;
+        //ProcessServiceThread?.TryEnqueue(() => { OutputList.Add(e.Data ?? ""); });
+      //  OutputList.Add(e.Data ?? "");
+        //dispatcherQueue.TryEnqueue(() => { OutputList.Add(e.Data ?? ""); });
+        var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+       // App.staticDispatcherQueue.TryEnqueue(() => { OutputList.Add(e.Data ?? ""); });
+       // App.MainWindow.DispatcherQueue.TryEnqueue(() => { OutputList.Add(e.Data ?? ""); });
+        File.AppendAllText(path, (e.Data ?? "") + Environment.NewLine);
+        // OutputText += e.Data + Environment.NewLine;
+        //if (!File.Exists(path))
+        //{
+        //    var stream = File.Create(path);
+        //    stream.Close();
+        //}
+        //using var outStream = new FileStream(path, FileMode.Open,
+        //                       FileAccess.Write, FileShare.ReadWrite);
+        //byte[] bytes = Encoding.UTF8.GetBytes((e.Data ?? "") + Environment.NewLine);
+        //outStream.Write(bytes, 0, bytes.Length);
     }
 
     public void SendProcessFinishedMessage(int exitCode, string prefix)
@@ -115,4 +160,6 @@ public class ProcessService : ObservableRecipient, IProcessService
             return proc.MainWindowHandle;
         }
     }
+
+    public void AddStringToOutput(string outputText) => OutputList.Add(outputText);
 }
