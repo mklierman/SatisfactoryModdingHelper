@@ -3,17 +3,4 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:SatisfactoryModdingHelper">
 
-    <Style TargetType="local:AutoScrollingListView" xmlns:local="using:SatisfactoryModdingHelper.Controls">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="local:AutoScrollingListView">
-                    <Border
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
 </ResourceDictionary>

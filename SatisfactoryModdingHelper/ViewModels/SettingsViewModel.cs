@@ -152,35 +152,47 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
 
     private void LocateUnrealEngine()
     {
-        //C:\Program Files\Unreal Engine - CSS\Engine\Binaries\DotNET\UnrealBuildTool.exe
-        var DefaultCDriveLocation = "C:\\Program Files\\Unreal Engine - CSS\\Engine\\Binaries\\DotNET\\UnrealBuildTool.exe";
-        if (File.Exists(DefaultCDriveLocation))
+        //HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{F9524AE1-57B8-4EB8-BC4D-951EF9656DC7}_is1
+        var UECSSLoc = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{F9524AE1-57B8-4EB8-BC4D-951EF9656DC7}_is1", "InstallLocation", null);
+        UECSSLoc ??= Registry.GetValue("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{F9524AE1-57B8-4EB8-BC4D-951EF9656DC7}_is1", "InstallLocation", null);
+
+        if ( !string.IsNullOrEmpty(UECSSLoc.ToString()))
         {
-            if (UnrealEngineFolderPath.IsNullOrEmpty())
-            {
-                UnrealEngineFolderPath = "C:\\Program Files\\Unreal Engine - CSS";
-            }
-            if (UnrealBuildToolFilePath.IsNullOrEmpty())
-            {
-                UnrealBuildToolFilePath = DefaultCDriveLocation;
-            }
+            UnrealEngineFolderPath = UECSSLoc.ToString();
+            UnrealBuildToolFilePath = UECSSLoc.ToString() + "Engine\\Binaries\\DotNET\\UnrealBuildTool.exe";
         }
         else
         {
-            foreach (var drive in DriveInfo.GetDrives())
+            //C:\Program Files\Unreal Engine - CSS\Engine\Binaries\DotNET\UnrealBuildTool.exe
+            var DefaultCDriveLocation = "C:\\Program Files\\Unreal Engine - CSS\\Engine\\Binaries\\DotNET\\UnrealBuildTool.exe";
+            if (File.Exists(DefaultCDriveLocation))
             {
-                var path = Path.Combine(drive.Name, "Program Files\\Unreal Engine - CSS\\Engine\\Binaries\\DotNET\\UnrealBuildTool.exe");
-                if (File.Exists(path))
+                if (UnrealEngineFolderPath.IsNullOrEmpty())
                 {
-                    if (UnrealEngineFolderPath.IsNullOrEmpty())
+                    UnrealEngineFolderPath = "C:\\Program Files\\Unreal Engine - CSS";
+                }
+                if (UnrealBuildToolFilePath.IsNullOrEmpty())
+                {
+                    UnrealBuildToolFilePath = DefaultCDriveLocation;
+                }
+            }
+            else
+            {
+                foreach (var drive in DriveInfo.GetDrives())
+                {
+                    var path = Path.Combine(drive.Name, "Program Files\\Unreal Engine - CSS\\Engine\\Binaries\\DotNET\\UnrealBuildTool.exe");
+                    if (File.Exists(path))
                     {
-                        UnrealEngineFolderPath = Path.Combine(drive.Name, "Program Files\\Unreal Engine - CSS");
+                        if (UnrealEngineFolderPath.IsNullOrEmpty())
+                        {
+                            UnrealEngineFolderPath = Path.Combine(drive.Name, "Program Files\\Unreal Engine - CSS");
+                        }
+                        if (UnrealBuildToolFilePath.IsNullOrEmpty())
+                        {
+                            UnrealBuildToolFilePath = path;
+                        }
+                        return;
                     }
-                    if (UnrealBuildToolFilePath.IsNullOrEmpty())
-                    {
-                        UnrealBuildToolFilePath = path;
-                    }
-                    return;
                 }
             }
         }
@@ -369,15 +381,22 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
 
     private async Task PerformBrowseForUELocation()
     {
-        WinRT.Interop.InitializeWithWindow.Initialize(filePicker, ProcessService.GetAppHWND());
+        //WinRT.Interop.InitializeWithWindow.Initialize(filePicker, ProcessService.GetAppHWND());
 
-        // Use file picker like normal!
-        filePicker.FileTypeFilter.Add(".exe");
-        var file = await filePicker.PickSingleFileAsync();
+        //// Use file picker like normal!
+        //filePicker.FileTypeFilter.Add(".exe");
+        //var file = await filePicker.PickSingleFileAsync();
 
-        if (file != null)
+        //if (file != null)
+        //{
+        //    UnrealBuildToolFilePath = file.Path;
+        //}
+
+        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
+        var folder = await folderPicker.PickSingleFolderAsync();
+        if (folder != null)
         {
-            UnrealBuildToolFilePath = file.Path;
+            UnrealEngineFolderPath = folder.Path;
         }
     }
 
@@ -386,20 +405,24 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
 
     private async Task PerformBrowseForProjectLocation()
     {
-        //var folderBrowser = new WPFFolderBrowser.WPFFolderBrowserDialog();
-        //folderBrowser.InitialDirectory = "C:\\";
-        //if (folderBrowser.ShowDialog() == true)
-        //{
-        //    UProjectFolderPath = folderBrowser.FileName;
-        //}
+        WinRT.Interop.InitializeWithWindow.Initialize(filePicker, ProcessService.GetAppHWND());
 
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
-        var folder = await folderPicker.PickSingleFolderAsync();
+        // Use file picker like normal!
+        filePicker.FileTypeFilter.Add(".uproject");
+        var file = await filePicker.PickSingleFileAsync();
 
-        if (folder != null)
+        if (file != null)
         {
-            UProjectFolderPath = folder.Path;
+            UProjectFilePath = file.Path;
         }
+
+        //WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
+        //var folder = await folderPicker.PickSingleFolderAsync();
+
+        //if (folder != null)
+        //{
+        //    UProjectFolderPath = folder.Path;
+        //}
     }
 
     private AsyncRelayCommand browseForGameLocation;
@@ -413,12 +436,20 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
         //    SatisfactoryFolderPath = folderBrowser.FileName;
         //}
 
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
-        var folder = await folderPicker.PickSingleFolderAsync();
+        //WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
+        //var folder = await folderPicker.PickSingleFolderAsync();
 
-        if (folder != null)
+        //if (folder != null)
+        //{
+        //    SatisfactoryFolderPath = folder.Path;
+        //}
+
+        filePicker.FileTypeFilter.Add(".exe");
+        var file = await filePicker.PickSingleFileAsync();
+
+        if (file != null)
         {
-            SatisfactoryFolderPath = folder.Path;
+            SatisfactoryExecutableFilePath = file.Path;
         }
     }
 
@@ -434,13 +465,21 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
         //    ModManagerFolderPath = folderBrowser.FileName;
         //}
 
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
-        var folder = await folderPicker.PickSingleFolderAsync();
+        filePicker.FileTypeFilter.Add(".exe");
+        var file = await filePicker.PickSingleFileAsync();
 
-        if (folder != null)
+        if (file != null)
         {
-            ModManagerFolderPath = folder.Path;
+            ModManagerFilePath = file.Path;
         }
+
+        //WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, ProcessService.GetAppHWND());
+        //var folder = await folderPicker.PickSingleFolderAsync();
+
+        //if (folder != null)
+        //{
+        //    ModManagerFolderPath = folder.Path;
+        //}
     }
 
     private bool alpakitCopyPlugin;

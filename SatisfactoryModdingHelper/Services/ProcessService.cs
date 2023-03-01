@@ -20,6 +20,12 @@ public class ProcessService : ObservableRecipient, IProcessService
         outputText = "";
         processRunning = false;
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+
+        var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+        if (!File.Exists(path))
+        {
+            File.Create(path).Close();
+        }
     }
     public DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
