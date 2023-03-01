@@ -109,28 +109,13 @@ public class ProcessService : ObservableRecipient, IProcessService
 
     private void Cmd_DataReceived(object sender, DataReceivedEventArgs e)
     {
-        //ProcessServiceThread?.TryEnqueue(() => { OutputList.Add(e.Data ?? ""); });
-      //  OutputList.Add(e.Data ?? "");
-        //dispatcherQueue.TryEnqueue(() => { OutputList.Add(e.Data ?? ""); });
         var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
-       // App.staticDispatcherQueue.TryEnqueue(() => { OutputList.Add(e.Data ?? ""); });
-       // App.MainWindow.DispatcherQueue.TryEnqueue(() => { OutputList.Add(e.Data ?? ""); });
         File.AppendAllText(path, (e.Data ?? "") + Environment.NewLine);
-        // OutputText += e.Data + Environment.NewLine;
-        //if (!File.Exists(path))
-        //{
-        //    var stream = File.Create(path);
-        //    stream.Close();
-        //}
-        //using var outStream = new FileStream(path, FileMode.Open,
-        //                       FileAccess.Write, FileShare.ReadWrite);
-        //byte[] bytes = Encoding.UTF8.GetBytes((e.Data ?? "") + Environment.NewLine);
-        //outStream.Write(bytes, 0, bytes.Length);
     }
 
     public void SendProcessFinishedMessage(int exitCode, string prefix)
     {
-        OutputText += exitCode switch
+        var resultOutputText = exitCode switch
         {
             0 => $"{prefix} Successful",
             2 => $"{prefix} Failed: Unable to find a needed file. Double check your directory paths",
@@ -138,6 +123,7 @@ public class ProcessService : ObservableRecipient, IProcessService
             5 => $"{prefix} Failed: Access Denied to something",
             _ => $"{prefix} Failed",
         };
+        AddStringToOutput(resultOutputText);
     }
 
     public void CloseRunningSatisfactoryProcesses()
@@ -145,10 +131,12 @@ public class ProcessService : ObservableRecipient, IProcessService
         var processlist = Process.GetProcessesByName("Satisfactory.exe");
         if (processlist.Length > 0)
         {
-            OutputText = "Stopping existing Satisfactory processess..." + Environment.NewLine;
+            AddStringToOutput("Stopping existing Satisfactory processess...");
             foreach (var process in processlist)
             {
+                var procName = process.ProcessName;
                 process.Kill();
+                AddStringToOutput($"{procName} has been stopped");
             }
         }
     }
@@ -161,5 +149,9 @@ public class ProcessService : ObservableRecipient, IProcessService
         }
     }
 
-    public void AddStringToOutput(string outputText) => OutputList.Add(outputText);
+    public void AddStringToOutput(string outputText)
+    {
+        var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+        File.AppendAllText(path, (outputText ?? "") + Environment.NewLine);
+    }
 }

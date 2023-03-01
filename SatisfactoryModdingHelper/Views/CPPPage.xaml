@@ -87,7 +87,9 @@
                 Grid.Row="1"
                 Grid.ColumnSpan="2"
                 Height="400"
-                Margin="{StaticResource SmallTopBottomMargin}">
+                Margin="{StaticResource SmallTopBottomMargin}"
+                Background="{ThemeResource AcrylicBackgroundFillColorBaseBrush}"
+                CornerRadius="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
@@ -97,11 +99,6 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <ToggleButton
-                    x:Name="ScrollToggle"
-                    Grid.Row="0"
-                    Content="Scroll to End"
-                    Grid.Column="1"/>
                 <Button
                     Grid.Row="0"
                     Grid.Column="2"
@@ -112,25 +109,13 @@
                     Grid.Row="1"
                     Grid.ColumnSpan="3"
                     CanDrag="False"
-                    ItemsSource="{x:Bind ViewModel.OutputText}" />
-                <!--<controls:DataGrid
-                    x:Name="OutputDataGrid"
-                    Grid.Row="1"
-                    Grid.ColumnSpan="3"
-                    CanDrag="False"
-                    CanUserReorderColumns="False"
-                    ColumnWidth="Auto"
-                    HeadersVisibility="None"
-                    HorizontalScrollBarVisibility="Visible"
-                    IsReadOnly="True"
-                    ItemsSource="{x:Bind ViewModel.OutputText}"
-                    VerticalScrollBarVisibility="Visible" />-->
-                <!--<ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <TextBlock
-                        Margin="{StaticResource XSmallLeftTopRightBottomMargin}"
-                        Text="{x:Bind ViewModel.OutputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        TextWrapping="Wrap" />
-                </ScrollViewer>-->
+                    ItemsSource="{x:Bind ViewModel.OutputText}">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsStackPanel VerticalAlignment="Bottom" ItemsUpdatingScrollMode="KeepLastItemInView" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
             </Grid>
         </Grid>
     </Grid>

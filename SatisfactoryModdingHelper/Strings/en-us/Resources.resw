@@ -408,4 +408,10 @@
   <data name="Example_Ex.Text" xml:space="preserve">
     <value>ex: </value>
   </data>
+  <data name="Settings_SP.Text" xml:space="preserve">
+    <value>SP Settings</value>
+  </data>
+  <data name="Settings_SP_Args.Text" xml:space="preserve">
+    <value>Command Line Args</value>
+  </data>
 </root>

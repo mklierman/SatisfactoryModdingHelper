@@ -16,6 +16,7 @@
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Controls\OutputTextControl.xaml" />
     <None Remove="Dialogs\SingleInputRequestDialog.xaml" />
   </ItemGroup>
 
@@ -24,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0-preview2" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
     <PackageReference Include="ConsoleAppLauncher" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
@@ -41,6 +42,9 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Controls\OutputTextControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <None Update="Templates\BPFL.cpp.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -75,10 +79,6 @@
 
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controls\" />
   </ItemGroup>
   
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">

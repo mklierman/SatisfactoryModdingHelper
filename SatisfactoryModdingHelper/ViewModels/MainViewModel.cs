@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -46,7 +47,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
 
     public void OnNavigatedFrom()
     {
-        //Not needed atm
+        RunUpdateOutput = false;
     }
 
     public void OnNavigatedTo(object parameter)
@@ -63,6 +64,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         SelectedPlugin = _settingsService.Settings.CurrentPlugin;
        // alpakitCopyMod = _settingsService.Settings.AlpakitCopyModToGame;
         alpakitCloseGame = _settingsService.Settings.AlpakitCloseGame;
+        RunUpdateOutput = true;
         UpdateOutput();
     }
 
@@ -86,11 +88,52 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         get => pluginComboBoxEnabled; set => SetProperty(ref pluginComboBoxEnabled, value);
     }
 
-    private string outputText;
-    public string OutputText
+    private ObservableCollection<string> outputText = new ObservableCollection<string>();
+    public ObservableCollection<string> OutputText
     {
         get => outputText;
         set => SetProperty(ref outputText, value);
+    }
+
+    private long lastFileLocation = 0;
+    private bool RunUpdateOutput = false;
+
+    public async void UpdateOutput()
+    {
+        var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+
+        while (RunUpdateOutput)
+        {
+            using (FileStream fs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                StreamReader sr = new StreamReader(fs);
+
+                var initialFileSize = fs.Length;
+                var newLength = initialFileSize - lastFileLocation;
+                if (newLength > 0)
+                {
+                    fs.Seek(lastFileLocation, SeekOrigin.Begin);
+                    while (!sr.EndOfStream)
+                    {
+                        var newline = sr.ReadLine();
+                        if (newline != null)
+                        {
+                            OutputText.Add(newline);
+                            //if (OutputDataGrid.Columns.Count > 0)
+                            //{
+                            //    OutputDataGrid.ScrollIntoView(OutputText.Last(), OutputDataGrid.Columns[0]);
+                            //}
+                        }
+                    }
+                    lastFileLocation = fs.Position;
+                }
+            }
+            //InputsEnabled = !_processService.ProcessRunning;
+            await Task.Delay(500);
+
+            // Highlighting regex wip
+            // ^\s*(?'ProgressGroup'\[\d+\/\d+\].*$)|^.*\):\s(?'InfoType'\w+).*(?'CodeReference''.*'):\s(?'Message'.*$)
+        }
     }
 
     private bool inputsEnabled = true;
@@ -116,18 +159,18 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         return result;
     }
 
-    public async void UpdateOutput()
-    {
-        while (true)
-        {
-            OutputText = _processService.OutputText;
-            //InputsEnabled = !_processService.ProcessRunning;
-            await Task.Delay(500);
+    //public async void UpdateOutput()
+    //{
+    //    while (true)
+    //    {
+    //        OutputText = _processService.OutputText;
+    //        //InputsEnabled = !_processService.ProcessRunning;
+    //        await Task.Delay(500);
 
-            // Highlighting regex wip
-            // ^\s*(?'ProgressGroup'\[\d+\/\d+\].*$)|^.*\):\s(?'InfoType'\w+).*(?'CodeReference''.*'):\s(?'Message'.*$)
-        }
-    }
+    //        // Highlighting regex wip
+    //        // ^\s*(?'ProgressGroup'\[\d+\/\d+\].*$)|^.*\):\s(?'InfoType'\w+).*(?'CodeReference''.*'):\s(?'Message'.*$)
+    //    }
+    //}
 
     public void RunApp(string fileName, string cmdLine, Action<string> replyHandler)
     {
@@ -192,7 +235,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         var exitCode = await _processService.RunProcess(@$"{_settingsService.Settings.UnrealEngineFolderPath}\Engine\Build\BatchFiles\RunUAT.bat",
             $@" -ScriptsForProject=`{_settingsService.Settings.UProjectFilePath}` PackagePlugin -Project=`{_settingsService.Settings.UProjectFilePath}` -PluginName=`{SelectedPlugin}` {alpakitArgs}".SetQuotes());
         _processService.SendProcessFinishedMessage(exitCode, "Alpakit");
-
+        _appNotificationService.SendNotification($"Alpakit Complete");
         if (exitCode == 0 && launchGame == "True")
         {
             _=PerformLaunchSatisfactory();
@@ -214,18 +257,21 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         {
             await MirrorInstallForMPTest();
             _=_processService.RunProcess(@$"`{mpGameLocation}\FactoryGame.exe`".SetQuotes(), launchStringArgs2, false);
+            _processService.AddStringToOutput($"Launching MP Host");
         }
         else
         {
             _=_processService.RunProcess(@$"`{_settingsService.Settings.SatisfactoryExecutableFilePath}`".SetQuotes(), launchStringArgs2, false);
+            _processService.AddStringToOutput($"Launching MP Client");
         }
     }
 
     private async Task MirrorInstallForMPTest()
     {
-        _processService.OutputText += $"Mirroring Satisfactory install to secondary location...{Environment.NewLine}";
+        _processService.AddStringToOutput($"Mirroring Satisfactory install to secondary location...");
         var launchStringArgs = @$"`{_settingsService.Settings.SatisfactoryFolderPath}` `{mpGameLocation}` /PURGE /MIR /XD Configs /R:2 /W:2 /NS /NDL /NFL /NP";
         await _processService.RunProcess(@$"`ROBOCOPY.EXE`".SetQuotes(), launchStringArgs.SetQuotes(), false);
+        _processService.AddStringToOutput($"Mirroring Complete");
     }
 
     private bool aIOBuildDevEditor;
@@ -283,5 +329,14 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         {
             await PerformLaunchMPTesting();
         }
+    }
+
+    private AsyncRelayCommand clearOutput;
+    public ICommand ClearOutput => clearOutput ??= new AsyncRelayCommand(PerformClearOutput);
+    private async Task PerformClearOutput()
+    {
+        var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+        File.WriteAllText(path, "");
+        OutputText.Clear();
     }
 }

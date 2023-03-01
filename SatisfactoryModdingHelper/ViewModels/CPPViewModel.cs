@@ -141,7 +141,8 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     {
         var result = await _processService.RunProcess(@$"{_settingsService.Settings.UnrealBuildToolFilePath}",
             @$"-projectfiles -project=""{_settingsService.Settings.UProjectFilePath}"" -game -rocket -progress");
-        _appNotificationService.SendNotification($"VS Files have been generated");
+        _processService.AddStringToOutput("Generate VS Files Complete");
+        _appNotificationService.SendNotification($"Generate VS Files Complete");
     }
 
     private AsyncRelayCommand<string> generateModuleFiles;
@@ -183,10 +184,8 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
 
         }
 
-        if (showNotification == "True")
-        {
-            _appNotificationService.SendNotification($"CPP Module Files have been created and UPlugin has been updated");
-        }
+        _processService.AddStringToOutput("CPP Module Files have been created and UPlugin has been updated");
+        _appNotificationService.SendNotification($"CPP Module Files have been created and UPlugin has been updated");
     }
 
     public async void PerformAddBPFL(string className)
@@ -205,10 +204,12 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         if (headerCreated && cppCreated)
         {
             _appNotificationService.SendNotification($"BPFL {className} has been created");
+            _processService.AddStringToOutput($"BPFL {className} created");
         }
         else
         {
             _appNotificationService.SendNotification($"Unable to create BPFL {className}. Class already exists");
+            _processService.AddStringToOutput($"Unable to create BPFL {className}. Class already exists");
         }
     }
 
@@ -227,10 +228,12 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         if (headerCreated && cppCreated)
         {
             _appNotificationService.SendNotification($"Subsystem {className} has been created");
+            _processService.AddStringToOutput($"Subsystem {className} created");
         }
         else
         {
             _appNotificationService.SendNotification($"Unable to create Subsystem {className}. Class already exists");
+            _processService.AddStringToOutput($"Unable to create Subsystem {className}. Class already exists");
         }
     }
 
@@ -249,10 +252,12 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         if (headerCreated && cppCreated)
         {
             _appNotificationService.SendNotification($"RCO {className} has been created");
+            _processService.AddStringToOutput($"RCO {className} created");
         }
         else
         {
             _appNotificationService.SendNotification($"Unable to create RCO {className}. Class already exists");
+            _processService.AddStringToOutput($"Unable to create RCO {className}. Class already exists");
         }
     }
 
@@ -326,6 +331,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
             File.Copy(pdbSource, pdbDest, overwrite: true);
         }
         _processService.AddStringToOutput($"DLL and PDB Copied to {pluginGameLocation}");
+        _appNotificationService.SendNotification($"DLL and PDB Copied to Game directory");
     }
 
     public DataGrid OutputDataGrid;
@@ -334,10 +340,12 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     public ICommand ClearOutput => clearOutput ??= new AsyncRelayCommand(PerformClearOutput);
     private async Task PerformClearOutput()
     {
-        App.MainWindow.DispatcherQueue.TryEnqueue(() => { OutputList.Clear(); });
+        var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+        File.WriteAllText(path, "");
+        OutputText.Clear();
     }
 
-    private ObservableCollection<string> outputText = new ObservableCollection<string>();
+    private ObservableCollection<string> outputText = new();
     public ObservableCollection<string> OutputText
     {
         get => outputText;
@@ -367,10 +375,6 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
                             if (newline != null)
                             {
                                 OutputText.Add(newline);
-                                //if (OutputDataGrid.Columns.Count > 0)
-                                //{
-                                //    OutputDataGrid.ScrollIntoView(OutputText.Last(), OutputDataGrid.Columns[0]);
-                                //}
                             }
                         }
                      lastFileLocation = fs.Position;

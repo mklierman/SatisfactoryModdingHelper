@@ -469,6 +469,19 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
         }
     }
 
+    private string sPArgs;
+
+    public string SPArgs
+    {
+        get => sPArgs;
+        set
+        {
+            SetProperty(ref sPArgs, value);
+            _localSettingsService.Settings.SinglePlayerArgs = value;
+            _localSettingsService.PersistData();
+        }
+    }
+
     private string mPPlayer1Name;
 
     public string MPPlayer1Name

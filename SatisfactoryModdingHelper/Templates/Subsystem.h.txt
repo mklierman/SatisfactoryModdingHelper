@@ -6,10 +6,8 @@
 #include "[ClassName].generated.h"
 
 UCLASS()
-class [PluginReferenceUC]_API A[ClassName] : public AModSubsystem, public IFGSaveInterface
-{
+class [PluginReferenceUC]_API A[ClassName] : public AModSubsystem
 	GENERATED_BODY()
 public:
 
-	virtual bool ShouldSave_Implementation() const override;
 };

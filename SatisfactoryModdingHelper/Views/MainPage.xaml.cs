@@ -1,4 +1,8 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using System.Collections.Specialized;
+using System.Timers;
+using Microsoft.UI.Composition;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 using SatisfactoryModdingHelper.ViewModels;
 
@@ -15,6 +19,8 @@ public sealed partial class MainPage : Page
     {
         ViewModel = App.GetService<MainViewModel>();
         InitializeComponent();
+
+
     }
 
     private void ScrollViewer_SizeChanged(object sender, Microsoft.UI.Xaml.SizeChangedEventArgs e)
@@ -22,4 +28,5 @@ public sealed partial class MainPage : Page
         var sv = (ScrollViewer)sender;
         sv.ChangeView(null, sv.ScrollableHeight, null);
     }
+
 }
