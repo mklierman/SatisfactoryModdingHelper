@@ -151,7 +151,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     public async Task PerformGenerateModuleFiles(string showNotification = "True")
     {
         //Make Directory Structure
-        var pluginDirectoryLocation = $"{_settingsService.Settings.UProjectFolderPath}//Plugins//{SelectedPlugin}";
+        var pluginDirectoryLocation = $"{_settingsService.Settings.UProjectFolderPath}//Mods//{SelectedPlugin}";
         sourceDir = Directory.CreateDirectory($"{pluginDirectoryLocation}//Source//{SelectedPlugin}").FullName;
         publicDir = Directory.CreateDirectory($"{pluginDirectoryLocation}//Source//{SelectedPlugin}//Public").FullName;
         privateDir = Directory.CreateDirectory($"{pluginDirectoryLocation}//Source//{SelectedPlugin}//Private").FullName;

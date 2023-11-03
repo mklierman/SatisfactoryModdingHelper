@@ -71,13 +71,13 @@
                             Grid.Column="1"
                             Margin="{StaticResource SmallLeftRightMargin}"
                             HorizontalAlignment="Stretch"
-                            Command="{x:Bind ViewModel.LaunchMPTesting}"
+                            Command="{x:Bind ViewModel.LaunchMPHost}"
                             IsEnabled="{x:Bind ViewModel.InputsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <Button
                             x:Uid="Main_Button_MP2"
                             Grid.Column="2"
                             HorizontalAlignment="Stretch"
-                            Command="{x:Bind ViewModel.LaunchMPTesting}"
+                            Command="{x:Bind ViewModel.LaunchMPClient}"
                             IsEnabled="{x:Bind ViewModel.InputsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
                 </StackPanel>

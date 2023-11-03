@@ -288,9 +288,14 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
         get => uprojectFilePath;
         set
         {
-            SetProperty(ref uprojectFilePath, value);
-            _localSettingsService.Settings.UProjectFilePath = value;
-            _localSettingsService.PersistData();
+            if (File.Exists(value))
+            {
+                SetProperty(ref uprojectFilePath, value);
+                _localSettingsService.Settings.UProjectFilePath = value;
+                _localSettingsService.PersistData();
+
+                UProjectFolderPath = Path.GetDirectoryName(value);
+            }
         }
     }
 
@@ -304,13 +309,13 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
             _localSettingsService.Settings.UProjectFolderPath = value;
             _localSettingsService.PersistData();
 
-            if (value != null && _localSettingsService.Settings.UProjectFilePath.IsNullOrEmpty())
-            {
-                if (File.Exists(Path.Combine(value, "FactoryGame.uproject")))
-                {
-                    _localSettingsService.Settings.UProjectFilePath = Path.Combine(value, "FactoryGame.uproject");
-                }
-            }
+            //if (value != null && _localSettingsService.Settings.UProjectFilePath.IsNullOrEmpty())
+            //{
+            //    if (File.Exists(Path.Combine(value, "FactoryGame.uproject")))
+            //    {
+            //        _localSettingsService.Settings.UProjectFilePath = Path.Combine(value, "FactoryGame.uproject");
+            //    }
+            //}
         }
     }
 

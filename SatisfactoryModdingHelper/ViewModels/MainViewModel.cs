@@ -119,10 +119,6 @@ public class MainViewModel : ObservableRecipient, INavigationAware
                         if (newline != null)
                         {
                             OutputText.Add(newline);
-                            //if (OutputDataGrid.Columns.Count > 0)
-                            //{
-                            //    OutputDataGrid.ScrollIntoView(OutputText.Last(), OutputDataGrid.Columns[0]);
-                            //}
                         }
                     }
                     lastFileLocation = fs.Position;
@@ -141,36 +137,22 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     {
         get => true;
         set => SetProperty(ref inputsEnabled, true);
-        //set => SetProperty(ref inputsEnabled, value);
     }
 
 
     private async Task<int> RunBuild(bool isShipping)
     {
+        // Sample commands
         // "C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGame Win64 Shipping -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
         // "C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGameEditor Win64 Development -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
 
         var environmentToBuild = isShipping ? "FactoryGame Win64 Shipping" : "FactoryGameEditor Win64 Development";
         var fileName = @$"`{_settingsService.Settings.UnrealEngineFolderPath}\Engine\Build\BatchFiles\Build.bat`".SetQuotes();
         var cmdLine = @$"{environmentToBuild} -Project=""{_settingsService.Settings.UProjectFilePath}"" -WaitMutex -FromMsBuild";
-        var result = await _processService.RunProcess(@$"`{_settingsService.Settings.UnrealEngineFolderPath}\Engine\Build\BatchFiles\Build.bat`".SetQuotes(),
-            @$"{environmentToBuild} -Project=""{_settingsService.Settings.UProjectFilePath}"" -WaitMutex -FromMsBuild");
+        var result = await _processService.RunProcess(fileName, cmdLine);
 
         return result;
     }
-
-    //public async void UpdateOutput()
-    //{
-    //    while (true)
-    //    {
-    //        OutputText = _processService.OutputText;
-    //        //InputsEnabled = !_processService.ProcessRunning;
-    //        await Task.Delay(500);
-
-    //        // Highlighting regex wip
-    //        // ^\s*(?'ProgressGroup'\[\d+\/\d+\].*$)|^.*\):\s(?'InfoType'\w+).*(?'CodeReference''.*'):\s(?'Message'.*$)
-    //    }
-    //}
 
     public void RunApp(string fileName, string cmdLine, Action<string> replyHandler)
     {
@@ -246,22 +228,35 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     public ICommand LaunchMPTesting => launchMPTesting ??= new AsyncRelayCommand(PerformLaunchMPTesting);
     private async Task PerformLaunchMPTesting()
     {
-        //Build launch strings
-        var launchStringArgs1 = $"-EpicPortal -NoSteamClient -Username=`{player1Name}` {player1Args}".SetQuotes();
-        var launchStringArgs2 = $"-EpicPortal -NoSteamClient -Username=`{player2Name}` {player2Args}".SetQuotes();
+        PerformLaunchMPHost();
+        await Task.Delay(1000);
+        PerformLaunchMPClient();
+    }
 
-        _=_processService.RunProcess(@$"`{_settingsService.Settings.SatisfactoryExecutableFilePath}`".SetQuotes(), launchStringArgs1, false);
+    private AsyncRelayCommand launchMPHost;
+    public ICommand LaunchMPHost => launchMPTesting ??= new AsyncRelayCommand(PerformLaunchMPHost);
+    private async Task PerformLaunchMPHost()
+    {
+        var launchStringArgs1 = $"-EpicPortal -NoSteamClient {player1Args}".SetQuotes();
+        _ = _processService.RunProcess(@$"`{_settingsService.Settings.SatisfactoryExecutableFilePath}`".SetQuotes(), launchStringArgs1, false);
+        _processService.AddStringToOutput($"Launching MP Host");
+    }
 
-        Thread.Sleep(1000); // Wait a second before launching 2nd game instance
+    private AsyncRelayCommand launchMPClient;
+    public ICommand LaunchMPClient => launchMPTesting ??= new AsyncRelayCommand(PerformLaunchMPClient);
+    private async Task PerformLaunchMPClient()
+    {
+        var launchStringArgs2 = $"-EpicPortal -NoSteamClient {player2Args}".SetQuotes();
+
         if (mpGameLocation?.Length > 0)
         {
             await MirrorInstallForMPTest();
-            _=_processService.RunProcess(@$"`{mpGameLocation}\FactoryGame.exe`".SetQuotes(), launchStringArgs2, false);
-            _processService.AddStringToOutput($"Launching MP Host");
+            _ = _processService.RunProcess(@$"`{mpGameLocation}\FactoryGame.exe`".SetQuotes(), launchStringArgs2, false);
+            _processService.AddStringToOutput($"Launching MP Client");
         }
         else
         {
-            _=_processService.RunProcess(@$"`{_settingsService.Settings.SatisfactoryExecutableFilePath}`".SetQuotes(), launchStringArgs2, false);
+            _ = _processService.RunProcess(@$"`{_settingsService.Settings.SatisfactoryExecutableFilePath}`".SetQuotes(), launchStringArgs2, false);
             _processService.AddStringToOutput($"Launching MP Client");
         }
     }

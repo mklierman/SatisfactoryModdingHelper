@@ -51,7 +51,7 @@ public class PluginService : ObservableRecipient, IPluginService
     public IEnumerable? GetPluginList()
     {
         projectLocation = _settingsService.Settings.UProjectFolderPath;
-        var pluginDirectory = projectLocation + "//Plugins";
+        var pluginDirectory = projectLocation + "\\Mods";
         if (Directory.Exists(pluginDirectory))
         {
             List<string> pluginDirs = new();
