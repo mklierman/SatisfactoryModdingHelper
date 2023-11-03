@@ -234,7 +234,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     }
 
     private AsyncRelayCommand launchMPHost;
-    public ICommand LaunchMPHost => launchMPTesting ??= new AsyncRelayCommand(PerformLaunchMPHost);
+    public ICommand LaunchMPHost => launchMPHost ??= new AsyncRelayCommand(PerformLaunchMPHost);
     private async Task PerformLaunchMPHost()
     {
         var launchStringArgs1 = $"-EpicPortal -NoSteamClient {player1Args}".SetQuotes();
@@ -243,7 +243,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     }
 
     private AsyncRelayCommand launchMPClient;
-    public ICommand LaunchMPClient => launchMPTesting ??= new AsyncRelayCommand(PerformLaunchMPClient);
+    public ICommand LaunchMPClient => launchMPClient ??= new AsyncRelayCommand(PerformLaunchMPClient);
     private async Task PerformLaunchMPClient()
     {
         var launchStringArgs2 = $"-EpicPortal -NoSteamClient {player2Args}".SetQuotes();
