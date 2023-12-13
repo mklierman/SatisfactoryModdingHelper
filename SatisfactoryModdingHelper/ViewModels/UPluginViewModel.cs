@@ -8,6 +8,7 @@ using SatisfactoryModdingHelper.Contracts.Services;
 using SatisfactoryModdingHelper.Contracts.ViewModels;
 using SatisfactoryModdingHelper.Core.Contracts.Services;
 using SatisfactoryModdingHelper.Models;
+using SatisfactoryModdingHelper.Services;
 
 namespace SatisfactoryModdingHelper.ViewModels;
 
@@ -16,6 +17,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     private readonly IPluginService _pluginService;
     private readonly IFileService _fileService;
     private readonly ILocalSettingsService _settingsService;
+    private readonly IProcessService _processService;
     private UPluginModel loadedUPlugin;
     private string projectDirectory;
     private string fileVersion;
@@ -37,48 +39,61 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     private bool acceptsAnyRemoteVersion;
     private ObservableCollection<PluginModel> plugins;
     private ObservableCollection<ModuleModel> modules;
-    public UPluginViewModel(IPluginService pluginService, IFileService fileService, ILocalSettingsService settingsService)
+
+    public UPluginViewModel(IPluginService pluginService, IFileService fileService, ILocalSettingsService settingsService, IProcessService processService)
     {
         _pluginService = pluginService;
         _fileService = fileService;
         _settingsService = settingsService;
+        _processService = processService;
     }
 
     private UPluginModel GetSelectedPluginModel()
     {
-        if (string.IsNullOrEmpty(projectDirectory) || SelectedPlugin == null)
+        try
         {
-            return new UPluginModel();
+            if (string.IsNullOrEmpty(projectDirectory) || SelectedPlugin == null)
+            {
+                return new UPluginModel();
+            }
+            string upluginText = File.ReadAllText(@$"{projectDirectory}/Plugins/{SelectedPlugin}/{SelectedPlugin}.uplugin");
+            return JsonConvert.DeserializeObject<UPluginModel>(upluginText);
         }
-        string upluginText = File.ReadAllText(@$"{projectDirectory}/Plugins/{SelectedPlugin}/{SelectedPlugin}.uplugin");
-        return JsonConvert.DeserializeObject<UPluginModel>(upluginText);
+        catch (Exception ex)
+        {
+            _processService.AddExceptionToOutput("Error getting .uplugin file", ex);
+            return null;
+        }
     }
 
     private void PopulateUPluginFields()
     {
         loadedUPlugin = GetSelectedPluginModel();
-        FileVersion = loadedUPlugin.FileVersion.ToString();
-        Version = loadedUPlugin.Version.ToString();
-        VersionName = loadedUPlugin.VersionName;
-        SemVersion = loadedUPlugin.SemVersion;
-        FriendlyName = loadedUPlugin.FriendlyName;
-        Description = loadedUPlugin.Description;
-        Category = loadedUPlugin.Category;
-        CreatedBy = loadedUPlugin.CreatedBy;
-        CreatedByURL = loadedUPlugin.CreatedByURL;
-        DocsURL = loadedUPlugin.DocsURL;
-        MarketplaceURL = loadedUPlugin.MarketplaceURL;
-        SupportURL = loadedUPlugin.SupportURL;
-        CanContainContent = loadedUPlugin.CanContainContent;
-        IsBetaVersion = loadedUPlugin.IsBetaVersion;
-        IsExperimentalVersion = loadedUPlugin.IsExperimentalVersion;
-        Installed = loadedUPlugin.Installed;
-        AcceptsAnyRemoteVersion = loadedUPlugin.AcceptsAnyRemoteVersion;
-        Plugins = loadedUPlugin.Plugins;
-        Modules = loadedUPlugin.Modules;
-        if (Plugins?.Count > 0)
+        if (loadedUPlugin != null)
         {
-            SelectedDepPlugin = Plugins[^1];
+            FileVersion = loadedUPlugin.FileVersion.ToString();
+            Version = loadedUPlugin.Version.ToString();
+            VersionName = loadedUPlugin.VersionName;
+            SemVersion = loadedUPlugin.SemVersion;
+            FriendlyName = loadedUPlugin.FriendlyName;
+            Description = loadedUPlugin.Description;
+            Category = loadedUPlugin.Category;
+            CreatedBy = loadedUPlugin.CreatedBy;
+            CreatedByURL = loadedUPlugin.CreatedByURL;
+            DocsURL = loadedUPlugin.DocsURL;
+            MarketplaceURL = loadedUPlugin.MarketplaceURL;
+            SupportURL = loadedUPlugin.SupportURL;
+            CanContainContent = loadedUPlugin.CanContainContent;
+            IsBetaVersion = loadedUPlugin.IsBetaVersion;
+            IsExperimentalVersion = loadedUPlugin.IsExperimentalVersion;
+            Installed = loadedUPlugin.Installed;
+            AcceptsAnyRemoteVersion = loadedUPlugin.AcceptsAnyRemoteVersion;
+            Plugins = loadedUPlugin.Plugins;
+            Modules = loadedUPlugin.Modules;
+            if (Plugins?.Count > 0)
+            {
+                SelectedDepPlugin = Plugins[^1];
+            }
         }
     }
 

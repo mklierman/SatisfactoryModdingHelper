@@ -160,4 +160,11 @@ public class ProcessService : ObservableRecipient, IProcessService
         var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
         File.AppendAllText(path, (outputText ?? "") + Environment.NewLine);
     }
+
+    public void AddExceptionToOutput(string message, Exception exception)
+    {
+        var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+        File.AppendAllText(path, (message ?? "") + Environment.NewLine);
+        File.AppendAllText(path, (exception.ToString() ?? "") + Environment.NewLine);
+    }
 }

@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using SatisfactoryModdingHelper.Contracts.Services;
 using SatisfactoryModdingHelper.Contracts.ViewModels;
 using SatisfactoryModdingHelper.Extensions;
+using SatisfactoryModdingHelper.Helpers;
 using SatisfactoryModdingHelper.Notifications;
 using SatisfactoryModdingHelper.Services;
 using SlavaGu.ConsoleAppLauncher;
@@ -212,12 +213,16 @@ public class MainViewModel : ObservableRecipient, INavigationAware
             _processService.CloseRunningSatisfactoryProcesses();
         }
 
-        _processService.OutputText = "Running Alpakit..." + Environment.NewLine;
+        _processService.OutputText = StringHelper.RunningAlpakit + Environment.NewLine;
         var alpakitArgs = alpakitCopyMod ? @$" -CopyToGameDir -GameDir=`{_settingsService.Settings.SatisfactoryFolderPath}`" : "";
+
         var exitCode = await _processService.RunProcess(@$"{_settingsService.Settings.UnrealEngineFolderPath}\Engine\Build\BatchFiles\RunUAT.bat",
             $@" -ScriptsForProject=`{_settingsService.Settings.UProjectFilePath}` PackagePlugin -Project=`{_settingsService.Settings.UProjectFilePath}` -PluginName=`{SelectedPlugin}` {alpakitArgs}".SetQuotes());
+
         _processService.SendProcessFinishedMessage(exitCode, "Alpakit");
-        _appNotificationService.SendNotification($"Alpakit Complete");
+
+        _appNotificationService.SendNotification(StringHelper.AlpakitComplete);
+
         if (exitCode == 0 && launchGame == "True")
         {
             _=PerformLaunchSatisfactory();

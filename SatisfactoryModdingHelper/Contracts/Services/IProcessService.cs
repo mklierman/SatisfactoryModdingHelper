@@ -19,4 +19,5 @@ public interface IProcessService
     public void CloseRunningSatisfactoryProcesses();
 
     public void AddStringToOutput(string outputText);
+    public void AddExceptionToOutput(string message, Exception exception);
 }
