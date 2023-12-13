@@ -63,7 +63,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         mpGameLocation = _settingsService.Settings.Player2SatisfactoryPath;
       //  modManagerLocation = _settingsService.Settings.ModManagerFolderPath;
         SelectedPlugin = _settingsService.Settings.CurrentPlugin;
-       // alpakitCopyMod = _settingsService.Settings.AlpakitCopyModToGame;
+        alpakitCopyMod = _settingsService.Settings.AlpakitCopyModToGame;
         alpakitCloseGame = _settingsService.Settings.AlpakitCloseGame;
         RunUpdateOutput = true;
         UpdateOutput();
@@ -140,21 +140,6 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         set => SetProperty(ref inputsEnabled, true);
     }
 
-
-    private async Task<int> RunBuild(bool isShipping)
-    {
-        // Sample commands
-        // "C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGame Win64 Shipping -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
-        // "C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGameEditor Win64 Development -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
-
-        var environmentToBuild = isShipping ? StringHelper.WinShipping : StringHelper.WinDev;
-        var fileName = StringHelper.GetBuildBatPath(_settingsService.Settings.UnrealEngineFolderPath);
-        var args = StringHelper.GetBuildArgs(environmentToBuild, _settingsService.Settings.UProjectFilePath);
-        var result = await _processService.RunProcess(fileName, args);
-
-        return result;
-    }
-
     public void RunApp(string fileName, string cmdLine, Action<string> replyHandler)
     {
         var app = new ConsoleApp(fileName, cmdLine);
@@ -170,9 +155,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     public ICommand BuildForDevelopmentEditor => buildForDevelopmentEditor ??= new AsyncRelayCommand(PerformBuildForDevelopmentEditor);
     private async Task PerformBuildForDevelopmentEditor()
     {
-        _processService.OutputText = StringHelper.BuildingDev + Environment.NewLine;
-        var exitCode = await RunBuild(false);
-        _processService.SendProcessFinishedMessage(exitCode, StringHelper.BuildForDev);
+        await _processService.RunBuild(false, _settingsService.Settings.UnrealEngineFolderPath, _settingsService.Settings.UProjectFilePath);
         _appNotificationService.SendNotification(StringHelper.BuildDevComplete);
     }
 
@@ -180,9 +163,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     public ICommand BuildForShipping => buildForShipping ??= new AsyncRelayCommand(PerformBuildForShipping);
     private async Task PerformBuildForShipping()
     {
-        _processService.OutputText = StringHelper.BuildingShipping + Environment.NewLine;
-        var exitCode = await RunBuild(true);
-        _processService.SendProcessFinishedMessage(exitCode, StringHelper.BuildForShipping);
+        await _processService.RunBuild(true, _settingsService.Settings.UnrealEngineFolderPath, _settingsService.Settings.UProjectFilePath);
         _appNotificationService.SendNotification(StringHelper.BuildShippingComplete);
     }
 

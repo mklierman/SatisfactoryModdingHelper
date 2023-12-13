@@ -25,6 +25,8 @@ namespace SatisfactoryModdingHelper.Helpers
         public const string BuildShippingComplete = "Build for Shipping Complete";
         public const string LaunchingSatisfactory = "Launching Satisfactory...";
         public const string LaunchingSMM = "Launching Satisfactory Mod Manager...";
+        public const string GenVSFiles = "Generating VS Files...";
+        public const string GenVSFilesComplete = "Generate VS Files Complete";
 
         public static string GetAlpakitArgs(bool shouldCopyMod, string? satisfactoryFolderPath, string? uprojectFilePath, string? modName)
         {
@@ -56,6 +58,11 @@ namespace SatisfactoryModdingHelper.Helpers
         public static string GetBuildArgs(string? environmentToBuild, string? uprojectFilePath)
         {
             return $"{environmentToBuild} -Project=\"{uprojectFilePath}\" -WaitMutex -FromMsBuild";
+        }
+
+        public static string GetGenerateVSFilesArgs(string? uProjectFilePath)
+        {
+            return $"-projectfiles -project=\"{uProjectFilePath}\" -game -rocket -progress";
         }
             
     }

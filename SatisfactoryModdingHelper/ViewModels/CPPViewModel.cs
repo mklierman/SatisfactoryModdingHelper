@@ -20,6 +20,7 @@ using SatisfactoryModdingHelper.Core.Contracts.Services;
 using SatisfactoryModdingHelper.Core.Services;
 using SatisfactoryModdingHelper.Dialogs;
 using SatisfactoryModdingHelper.Extensions;
+using SatisfactoryModdingHelper.Helpers;
 using SatisfactoryModdingHelper.Models;
 using SatisfactoryModdingHelper.Services;
 using Windows.Storage;
@@ -108,41 +109,13 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         set => SetProperty(ref buttonsEnabled, value);
     }
 
-    internal async Task<string> GetFromResources(string resourceName)
-    {
-        var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri($"ms-appx:///Templates/{resourceName}"));
-        using (Stream stream = await file.OpenStreamForReadAsync())
-        {
-            using (var reader = new StreamReader(stream))
-            {
-                return reader.ReadToEnd();
-            }
-        }
-    }
-    internal async Task<string> GetFromResources(string resourceName, string oldValue, string newValue)
-    {
-        var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri($"ms-appx:///Templates/{resourceName}"));
-        string fileText;
-        using (Stream stream = await file.OpenStreamForReadAsync())
-        {
-            using (var reader = new StreamReader(stream))
-            {
-                fileText = reader.ReadToEnd();
-            }
-        }
-        return fileText.Replace(oldValue, newValue);
-    }
-
-
     private AsyncRelayCommand generateVSFiles;
     public ICommand GenerateVSFiles => generateVSFiles ??= new AsyncRelayCommand(PerformGenerateVSFiles);
 
     private async Task PerformGenerateVSFiles()
     {
-        var result = await _processService.RunProcess(@$"{_settingsService.Settings.UnrealBuildToolFilePath}",
-            @$"-projectfiles -project=""{_settingsService.Settings.UProjectFilePath}"" -game -rocket -progress");
-        _processService.AddStringToOutput("Generate VS Files Complete");
-        _appNotificationService.SendNotification($"Generate VS Files Complete");
+        await _processService.GenerateVSFiles(_settingsService.Settings.UnrealBuildToolFilePath, _settingsService.Settings.UProjectFilePath);
+        _appNotificationService.SendNotification(StringHelper.GenVSFilesComplete);
     }
 
     private AsyncRelayCommand<string> generateModuleFiles;
@@ -157,9 +130,9 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         privateDir = Directory.CreateDirectory($"{pluginDirectoryLocation}//Source//{SelectedPlugin}//Private").FullName;
 
         //Make Files
-        var buildCS = await GetFromResources("Buildcs.txt", "[PluginReference]", SelectedPlugin.ToString());
-        var moduleH = await GetFromResources("Module.h.txt", "[PluginReference]", SelectedPlugin.ToString());
-        var moduleCPP = await GetFromResources("Module.cpp.txt", "[PluginReference]", SelectedPlugin.ToString());
+        var buildCS = await ResourceHelpers.GetFromResources("Buildcs.txt", "[PluginReference]", SelectedPlugin.ToString());
+        var moduleH = await ResourceHelpers.GetFromResources("Module.h.txt", "[PluginReference]", SelectedPlugin.ToString());
+        var moduleCPP = await ResourceHelpers.GetFromResources("Module.cpp.txt", "[PluginReference]", SelectedPlugin.ToString());
 
         _fileService.WriteAllTextIfNew($"{sourceDir}//{SelectedPlugin}.Build.cs", buildCS);
         _fileService.WriteAllTextIfNew($"{publicDir}//{SelectedPlugin}Module.h", moduleH);
@@ -193,8 +166,8 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
 
         await PerformGenerateModuleFiles("False"); //Should probably do some sort of checks
 
-        var hFile = await GetFromResources("BPFL.h.txt", "[ClassName]", className);
-        var cppFile = await GetFromResources("BPFL.cpp.txt", "[ClassName]", className);
+        var hFile = await ResourceHelpers.GetFromResources("BPFL.h.txt", "[ClassName]", className);
+        var cppFile = await ResourceHelpers.GetFromResources("BPFL.cpp.txt", "[ClassName]", className);
 
         hFile = hFile.Replace("[PluginReferenceUC]", SelectedPlugin.ToString().ToUpper());
 
@@ -217,8 +190,8 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     {
         await PerformGenerateModuleFiles("False"); //Should probably do some sort of checks
 
-        var hFile = await GetFromResources("Subsystem.h.txt", "[ClassName]", className);
-        var cppFile = await GetFromResources("Subsystem.cpp.txt", "[ClassName]", className);
+        var hFile = await ResourceHelpers.GetFromResources("Subsystem.h.txt", "[ClassName]", className);
+        var cppFile = await ResourceHelpers.GetFromResources("Subsystem.cpp.txt", "[ClassName]", className);
 
         hFile = hFile.Replace("[PluginReferenceUC]", SelectedPlugin.ToString().ToUpper());
 
@@ -241,8 +214,8 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     {
         await PerformGenerateModuleFiles("False"); //Should probably do some sort of checks
 
-        var hFile = await GetFromResources("RCO.h.txt", "[ClassName]", className);
-        var cppFile = await GetFromResources("RCO.cpp.txt", "[ClassName]", className);
+        var hFile = await ResourceHelpers.GetFromResources("RCO.h.txt", "[ClassName]", className);
+        var cppFile = await ResourceHelpers.GetFromResources("RCO.cpp.txt", "[ClassName]", className);
 
         hFile = hFile.Replace("[PluginReferenceUC]", SelectedPlugin.ToString().ToUpper());
 
@@ -265,39 +238,21 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     public ICommand BuildForDevelopmentEditor => buildForDevelopmentEditor ??= new AsyncRelayCommand(PerformBuildForDevelopmentEditor);
     private async Task PerformBuildForDevelopmentEditor()
     {
-        _processService.OutputText = "Building Development Editor..." + Environment.NewLine;
-        var exitCode = await RunBuild(false);
-        _processService.SendProcessFinishedMessage(exitCode, "Build for Development Editor");
-        _appNotificationService.SendNotification($"Build for Development Editor Complete");
+        await _processService.RunBuild(false, _settingsService.Settings.UnrealEngineFolderPath, _settingsService.Settings.UProjectFilePath);
+        _appNotificationService.SendNotification(StringHelper.BuildDevComplete);
     }
 
     private AsyncRelayCommand buildForShipping;
     public ICommand BuildForShipping => buildForShipping ??= new AsyncRelayCommand(PerformBuildForShipping);
     private async Task PerformBuildForShipping()
     {
-        _processService.OutputText = "Building Shipping..." + Environment.NewLine;
-        var exitCode = await RunBuild(true);
-        _processService.SendProcessFinishedMessage(exitCode, "Build for Shipping");
-        _appNotificationService.SendNotification($"Build for Shipping Complete");
+        await _processService.RunBuild(true, _settingsService.Settings.UnrealEngineFolderPath, _settingsService.Settings.UProjectFilePath);
+        _appNotificationService.SendNotification(StringHelper.BuildShippingComplete);
 
         if (CopyDLLAfterBuildShipping)
         {
             await PerformCopyCPPFiles();
         }
-    }
-
-    private async Task<int> RunBuild(bool isShipping)
-    {
-        // "C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGame Win64 Shipping -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
-        // "C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGameEditor Win64 Development -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
-
-        var environmentToBuild = isShipping ? "FactoryGame Win64 Shipping" : "FactoryGameEditor Win64 Development";
-        var fileName = @$"`{_settingsService.Settings.UnrealEngineFolderPath}\Engine\Build\BatchFiles\Build.bat`".SetQuotes();
-        var cmdLine = @$"{environmentToBuild} -Project=""{_settingsService.Settings.UProjectFilePath}"" -WaitMutex -FromMsBuild";
-        var result = await _processService.RunProcess(@$"`{_settingsService.Settings.UnrealEngineFolderPath}\Engine\Build\BatchFiles\Build.bat`".SetQuotes(),
-            @$"{environmentToBuild} -Project=""{_settingsService.Settings.UProjectFilePath}"" -WaitMutex -FromMsBuild");
-
-        return result;
     }
 
     private AsyncRelayCommand copyCPPFiles;

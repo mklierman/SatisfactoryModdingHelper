@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.UI.Controls;
 using SatisfactoryModdingHelper.Contracts.Services;
+using SatisfactoryModdingHelper.Helpers;
 using Windows.System;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -166,5 +167,30 @@ public class ProcessService : ObservableRecipient, IProcessService
         var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
         File.AppendAllText(path, (message ?? "") + Environment.NewLine);
         File.AppendAllText(path, (exception.ToString() ?? "") + Environment.NewLine);
+    }
+
+    public async Task<int> RunBuild(bool isShipping, string? unrealEngineFolderPath, string? uProjectFilePath)
+    {
+        OutputText = isShipping ? StringHelper.BuildingShipping : StringHelper.BuildingDev;
+        OutputText += Environment.NewLine;
+
+        var environmentToBuild = isShipping ? StringHelper.WinShipping : StringHelper.WinDev;
+        var fileName = StringHelper.GetBuildBatPath(unrealEngineFolderPath);
+        var args = StringHelper.GetBuildArgs(environmentToBuild, uProjectFilePath);
+        var result = await RunProcess(fileName, args);
+
+        var finishType = isShipping ? StringHelper.BuildForShipping : StringHelper.BuildForDev;
+        SendProcessFinishedMessage(result, finishType);
+
+        return result;
+    }
+
+    public async Task<int> GenerateVSFiles(string? unrealBuildToolFilePath, string? uProjectFilePath)
+    {
+        AddStringToOutput(StringHelper.GenVSFiles);
+        var args = StringHelper.GetGenerateVSFilesArgs(uProjectFilePath);
+        var result = await RunProcess(unrealBuildToolFilePath, args);
+        AddStringToOutput(StringHelper.GenVSFilesComplete);
+        return result;
     }
 }
