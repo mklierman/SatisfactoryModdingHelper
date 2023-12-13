@@ -27,12 +27,12 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     //private string engineLocation = "";
     //private string projectLocation = "";
     //private string gameLocation = "";
-    private string mpGameLocation = "";
+    private string? mpGameLocation = "";
   //  private string modManagerLocation = "";
-    private string player1Name = "";
-    private string player2Name = "";
-    private string player1Args = "";
-    private string player2Args = "";
+    private string? player1Name = "";
+    private string? player2Name = "";
+    private string? player1Args = "";
+    private string? player2Args = "";
     private bool alpakitCopyMod = true;
     private bool alpakitCloseGame;
 
@@ -89,7 +89,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         get => pluginComboBoxEnabled; set => SetProperty(ref pluginComboBoxEnabled, value);
     }
 
-    private ObservableCollection<string> outputText = new ObservableCollection<string>();
+    private ObservableCollection<string> outputText = new();
     public ObservableCollection<string> OutputText
     {
         get => outputText;
@@ -147,10 +147,10 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         // "C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGame Win64 Shipping -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
         // "C:\Program Files\Unreal Engine - CSS\Engine\Build\BatchFiles\Build.bat" FactoryGameEditor Win64 Development -Project="$(SolutionDir)FactoryGame.uproject" -WaitMutex -FromMsBuild
 
-        var environmentToBuild = isShipping ? "FactoryGame Win64 Shipping" : "FactoryGameEditor Win64 Development";
-        var fileName = @$"`{_settingsService.Settings.UnrealEngineFolderPath}\Engine\Build\BatchFiles\Build.bat`".SetQuotes();
-        var cmdLine = @$"{environmentToBuild} -Project=""{_settingsService.Settings.UProjectFilePath}"" -WaitMutex -FromMsBuild";
-        var result = await _processService.RunProcess(fileName, cmdLine);
+        var environmentToBuild = isShipping ? StringHelper.WinShipping : StringHelper.WinDev;
+        var fileName = StringHelper.GetBuildBatPath(_settingsService.Settings.UnrealEngineFolderPath);
+        var args = StringHelper.GetBuildArgs(environmentToBuild, _settingsService.Settings.UProjectFilePath);
+        var result = await _processService.RunProcess(fileName, args);
 
         return result;
     }
@@ -170,28 +170,28 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     public ICommand BuildForDevelopmentEditor => buildForDevelopmentEditor ??= new AsyncRelayCommand(PerformBuildForDevelopmentEditor);
     private async Task PerformBuildForDevelopmentEditor()
     {
-        _processService.OutputText = "Building Development Editor..." + Environment.NewLine;
+        _processService.OutputText = StringHelper.BuildingDev + Environment.NewLine;
         var exitCode = await RunBuild(false);
-        _processService.SendProcessFinishedMessage(exitCode, "Build for Development Editor");
-        _appNotificationService.SendNotification($"Build for Development Editor Complete");
+        _processService.SendProcessFinishedMessage(exitCode, StringHelper.BuildForDev);
+        _appNotificationService.SendNotification(StringHelper.BuildDevComplete);
     }
 
     private AsyncRelayCommand buildForShipping;
     public ICommand BuildForShipping => buildForShipping ??= new AsyncRelayCommand(PerformBuildForShipping);
     private async Task PerformBuildForShipping()
     {
-        _processService.OutputText = "Building Shipping..." + Environment.NewLine;
+        _processService.OutputText = StringHelper.BuildingShipping + Environment.NewLine;
         var exitCode = await RunBuild(true);
-        _processService.SendProcessFinishedMessage(exitCode, "Build for Shipping");
-        _appNotificationService.SendNotification($"Build for Shipping Complete");
+        _processService.SendProcessFinishedMessage(exitCode, StringHelper.BuildForShipping);
+        _appNotificationService.SendNotification(StringHelper.BuildShippingComplete);
     }
 
     private AsyncRelayCommand launchSatisfactory;
     public ICommand LaunchSatisfactory => launchSatisfactory ??= new AsyncRelayCommand(PerformLaunchSatisfactory);
     private Task PerformLaunchSatisfactory()
     {
-        _processService.OutputText = "Launching Satisfactory...";
-        _=_processService.RunProcess(@$"{_settingsService.Settings.SatisfactoryExecutableFilePath}", "", false);
+        _processService.OutputText = StringHelper.LaunchingSatisfactory;
+        _ =_processService.RunProcess(@$"{_settingsService.Settings.SatisfactoryExecutableFilePath}", "", false);
         return Task.CompletedTask;
     }
 
@@ -199,7 +199,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     public ICommand LaunchModManager => launchModManager ??= new AsyncRelayCommand(PerformLaunchModManager);
     private Task PerformLaunchModManager()
     {
-        _processService.OutputText = "Launching Satisfactory Mod Manager...";
+        _processService.OutputText = StringHelper.LaunchingSMM;
         _=_processService.RunProcess(@$"{_settingsService.Settings.ModManagerFilePath}", "", false);
         return Task.CompletedTask;
     }
@@ -214,10 +214,9 @@ public class MainViewModel : ObservableRecipient, INavigationAware
         }
 
         _processService.OutputText = StringHelper.RunningAlpakit + Environment.NewLine;
-        var alpakitArgs = alpakitCopyMod ? @$" -CopyToGameDir -GameDir=`{_settingsService.Settings.SatisfactoryFolderPath}`" : "";
 
-        var exitCode = await _processService.RunProcess(@$"{_settingsService.Settings.UnrealEngineFolderPath}\Engine\Build\BatchFiles\RunUAT.bat",
-            $@" -ScriptsForProject=`{_settingsService.Settings.UProjectFilePath}` PackagePlugin -Project=`{_settingsService.Settings.UProjectFilePath}` -PluginName=`{SelectedPlugin}` {alpakitArgs}".SetQuotes());
+        var exitCode = await _processService.RunProcess(StringHelper.GetUATBatPath(_settingsService.Settings.UnrealEngineFolderPath),
+            StringHelper.GetAlpakitArgs(alpakitCopyMod, _settingsService.Settings.SatisfactoryFolderPath, _settingsService.Settings.UProjectFilePath, SelectedPlugin.ToString()));
 
         _processService.SendProcessFinishedMessage(exitCode, "Alpakit");
 
@@ -242,36 +241,36 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     public ICommand LaunchMPHost => launchMPHost ??= new AsyncRelayCommand(PerformLaunchMPHost);
     private async Task PerformLaunchMPHost()
     {
-        var launchStringArgs1 = $"-EpicPortal -NoSteamClient {player1Args}".SetQuotes();
-        _ = _processService.RunProcess(@$"`{_settingsService.Settings.SatisfactoryExecutableFilePath}`".SetQuotes(), launchStringArgs1, false);
-        _processService.AddStringToOutput($"Launching MP Host");
+        var launchStringArgs = StringHelper.GetMPLaunchArgs(player1Args);
+        _ = _processService.RunProcess(@$"`{_settingsService.Settings.SatisfactoryExecutableFilePath}`".SetQuotes(), launchStringArgs, false);
+        _processService.AddStringToOutput(StringHelper.LaunchingMPHost);
     }
 
     private AsyncRelayCommand launchMPClient;
     public ICommand LaunchMPClient => launchMPClient ??= new AsyncRelayCommand(PerformLaunchMPClient);
     private async Task PerformLaunchMPClient()
     {
-        var launchStringArgs2 = $"-EpicPortal -NoSteamClient {player2Args}".SetQuotes();
+        var launchStringArgs = StringHelper.GetMPLaunchArgs(player2Args);
 
         if (mpGameLocation?.Length > 0)
         {
             await MirrorInstallForMPTest();
-            _ = _processService.RunProcess(@$"`{mpGameLocation}\FactoryGame.exe`".SetQuotes(), launchStringArgs2, false);
-            _processService.AddStringToOutput($"Launching MP Client");
+            _ = _processService.RunProcess($"\"{mpGameLocation}\\FactoryGame.exe\"", launchStringArgs, false);
         }
         else
         {
-            _ = _processService.RunProcess(@$"`{_settingsService.Settings.SatisfactoryExecutableFilePath}`".SetQuotes(), launchStringArgs2, false);
-            _processService.AddStringToOutput($"Launching MP Client");
+            _ = _processService.RunProcess($"\"{_settingsService.Settings.SatisfactoryExecutableFilePath}\"", launchStringArgs, false);
         }
+        _processService.AddStringToOutput(StringHelper.LaunchingMPClient);
     }
 
     private async Task MirrorInstallForMPTest()
     {
-        _processService.AddStringToOutput($"Mirroring Satisfactory install to secondary location...");
-        var launchStringArgs = @$"`{_settingsService.Settings.SatisfactoryFolderPath}` `{mpGameLocation}` /PURGE /MIR /XD Configs /R:2 /W:2 /NS /NDL /NFL /NP";
-        await _processService.RunProcess(@$"`ROBOCOPY.EXE`".SetQuotes(), launchStringArgs.SetQuotes(), false);
-        _processService.AddStringToOutput($"Mirroring Complete");
+        _processService.AddStringToOutput(StringHelper.RunningMirror);
+        
+        var launchStringArgs = StringHelper.GetRobocopyArgs(_settingsService.Settings.SatisfactoryFolderPath, mpGameLocation);
+        await _processService.RunProcess("\"ROBOCOPY.EXE\"", launchStringArgs, false);
+        _processService.AddStringToOutput(StringHelper.MirrorComplete);
     }
 
     private bool aIOBuildDevEditor;
