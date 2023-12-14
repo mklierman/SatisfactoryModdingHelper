@@ -6,7 +6,7 @@
 #include "[ClassName].generated.h"
 
 UCLASS()
-class [PluginReferenceUC]_API A[ClassName] : public AModSubsystem
+class [ModReferenceUC]_API A[ClassName] : public AModSubsystem
 	GENERATED_BODY()
 public:
 

@@ -5,7 +5,7 @@
 #include "[ClassName].generated.h"
 
 UCLASS()
-class [PluginReferenceUC]_API U[ClassName] : public UFGRemoteCallObject
+class [ModReferenceUC]_API U[ClassName] : public UFGRemoteCallObject
 {
 	GENERATED_BODY()
 
@@ -14,7 +14,7 @@ class [PluginReferenceUC]_API U[ClassName] : public UFGRemoteCallObject
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "Networking", meta = (WorldContext = "WorldContext"))
-	static U[ClassName]* Get[PluginReference]DefaultRCO(UObject* WorldContext) { return Get(WorldContext); }
+	static U[ClassName]* Get[ModReference]DefaultRCO(UObject* WorldContext) { return Get(WorldContext); }
 
 	static U[ClassName]* Get(UObject* WorldContext)
 	{

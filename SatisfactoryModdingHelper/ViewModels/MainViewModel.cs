@@ -20,15 +20,15 @@ public class MainViewModel : ObservableRecipient, INavigationAware
 {
 
     private readonly INavigationService _navigationService;
-    public readonly IPluginService _pluginService;
+    public readonly IModService _modService;
     private readonly ILocalSettingsService _settingsService;
     public readonly IProcessService _processService;
     private readonly IAppNotificationService _appNotificationService;
-    //private string engineLocation = "";
-    //private string projectLocation = "";
-    //private string gameLocation = "";
+    private string? engineLocation = "";
+    private string? projectFileLocation = "";
+    private string? gameLocation = "";
     private string? mpGameLocation = "";
-  //  private string modManagerLocation = "";
+    private string? modManagerLocation = "";
     private string? player1Name = "";
     private string? player2Name = "";
     private string? player1Args = "";
@@ -36,14 +36,14 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     private bool alpakitCopyMod = true;
     private bool alpakitCloseGame;
 
-    public MainViewModel(INavigationService navigationService, IPluginService pluginService, ILocalSettingsService settingsService, IProcessService processService, IAppNotificationService appNotificationService)
+    public MainViewModel(INavigationService navigationService, IModService modService, ILocalSettingsService settingsService, IProcessService processService, IAppNotificationService appNotificationService)
     {
         _navigationService = navigationService;
-        _pluginService = pluginService;
+        _modService = modService;
         _settingsService = settingsService;
         _processService=processService;
         _appNotificationService=appNotificationService;
-        PluginComboBoxEnabled = true;
+        ModComboBoxEnabled = true;
     }
 
     public void OnNavigatedFrom()
@@ -53,40 +53,40 @@ public class MainViewModel : ObservableRecipient, INavigationAware
 
     public void OnNavigatedTo(object parameter)
     {
-      //  projectLocation = _settingsService.Settings.UProjectFolderPath;
-       // engineLocation = _settingsService.Settings.UnrealEngineFolderPath;
-       // gameLocation = _settingsService.Settings.SatisfactoryFolderPath;
+        projectFileLocation = _settingsService.Settings.UProjectFilePath;
+        engineLocation = _settingsService.Settings.UnrealEngineFolderPath;
+        gameLocation = _settingsService.Settings.SatisfactoryFolderPath;
         player1Name = _settingsService.Settings.Player1Name;
         player2Name = _settingsService.Settings.Player2Name;
         player1Args = _settingsService.Settings.Player1Args;
         player2Args = _settingsService.Settings.Player2Args;
         mpGameLocation = _settingsService.Settings.Player2SatisfactoryPath;
-      //  modManagerLocation = _settingsService.Settings.ModManagerFolderPath;
-        SelectedPlugin = _settingsService.Settings.CurrentPlugin;
+        modManagerLocation = _settingsService.Settings.ModManagerFolderPath;
+        SelectedMod = _settingsService.Settings.CurrentMod;
         alpakitCopyMod = _settingsService.Settings.AlpakitCopyModToGame;
         alpakitCloseGame = _settingsService.Settings.AlpakitCloseGame;
         RunUpdateOutput = true;
         UpdateOutput();
     }
 
-    public object SelectedPlugin
+    public object SelectedMod
     {
-        get => _pluginService.SelectedPlugin;
+        get => _modService.SelectedMod;
         set
         {
             if (value != null)
             {
-                _pluginService.SelectedPlugin = value;
-                _settingsService.Settings.CurrentPlugin = value.ToString();
+                _modService.SelectedMod = value;
+                _settingsService.Settings.CurrentMod = value.ToString();
                 _settingsService.PersistData();
             }
         }
     }
 
-    private bool pluginComboBoxEnabled;
-    public bool PluginComboBoxEnabled
+    private bool modComboBoxEnabled;
+    public bool ModComboBoxEnabled
     {
-        get => pluginComboBoxEnabled; set => SetProperty(ref pluginComboBoxEnabled, value);
+        get => modComboBoxEnabled; set => SetProperty(ref modComboBoxEnabled, value);
     }
 
     private ObservableCollection<string> outputText = new();
@@ -155,7 +155,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     public ICommand BuildForDevelopmentEditor => buildForDevelopmentEditor ??= new AsyncRelayCommand(PerformBuildForDevelopmentEditor);
     private async Task PerformBuildForDevelopmentEditor()
     {
-        await _processService.RunBuild(false, _settingsService.Settings.UnrealEngineFolderPath, _settingsService.Settings.UProjectFilePath);
+        await _processService.RunBuild(false, engineLocation, projectFileLocation);
         _appNotificationService.SendNotification(StringHelper.BuildDevComplete);
     }
 
@@ -163,7 +163,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     public ICommand BuildForShipping => buildForShipping ??= new AsyncRelayCommand(PerformBuildForShipping);
     private async Task PerformBuildForShipping()
     {
-        await _processService.RunBuild(true, _settingsService.Settings.UnrealEngineFolderPath, _settingsService.Settings.UProjectFilePath);
+        await _processService.RunBuild(true, engineLocation, projectFileLocation);
         _appNotificationService.SendNotification(StringHelper.BuildShippingComplete);
     }
 
@@ -196,8 +196,8 @@ public class MainViewModel : ObservableRecipient, INavigationAware
 
         _processService.OutputText = StringHelper.RunningAlpakit + Environment.NewLine;
 
-        var exitCode = await _processService.RunProcess(StringHelper.GetUATBatPath(_settingsService.Settings.UnrealEngineFolderPath),
-            StringHelper.GetAlpakitArgs(alpakitCopyMod, _settingsService.Settings.SatisfactoryFolderPath, _settingsService.Settings.UProjectFilePath, SelectedPlugin.ToString()));
+        var exitCode = await _processService.RunProcess(StringHelper.GetUATBatPath(engineLocation),
+            StringHelper.GetAlpakitArgs(alpakitCopyMod, gameLocation, projectFileLocation, SelectedMod.ToString()));
 
         _processService.SendProcessFinishedMessage(exitCode, "Alpakit");
 
@@ -249,7 +249,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     {
         _processService.AddStringToOutput(StringHelper.RunningMirror);
         
-        var launchStringArgs = StringHelper.GetRobocopyArgs(_settingsService.Settings.SatisfactoryFolderPath, mpGameLocation);
+        var launchStringArgs = StringHelper.GetRobocopyArgs(gameLocation, mpGameLocation);
         await _processService.RunProcess("\"ROBOCOPY.EXE\"", launchStringArgs, false);
         _processService.AddStringToOutput(StringHelper.MirrorComplete);
     }

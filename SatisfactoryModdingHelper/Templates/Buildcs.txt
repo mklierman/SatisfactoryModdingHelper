@@ -2,9 +2,9 @@
 using System.IO;
 using System;
 
-public class [PluginReference] : ModuleRules
+public class [ModReference] : ModuleRules
 {
-    public [PluginReference](ReadOnlyTargetRules Target) : base(Target)
+    public [ModReference](ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
         bLegacyPublicIncludePaths = false;

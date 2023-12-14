@@ -21,5 +21,5 @@ public interface IProcessService
     public void AddStringToOutput(string outputText);
     public void AddExceptionToOutput(string message, Exception exception);
     public Task<int> RunBuild(bool isShipping, string? unrealEngineFolderPath, string? uProjectFilePath);
-    public Task<int> GenerateVSFiles(string? unrealBuildToolFilePath, string? uProjectFilePath)
+    public Task<int> GenerateVSFiles(string? unrealBuildToolFilePath, string? uProjectFilePath);
 }

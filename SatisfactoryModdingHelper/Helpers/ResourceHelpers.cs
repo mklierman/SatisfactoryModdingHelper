@@ -9,7 +9,7 @@ public static class ResourceHelpers
 
     public static string GetLocalized(this string resourceKey) => _resourceLoader.GetString(resourceKey);
 
-    public static async Task<string> GetFromResources(string resourceName)
+    public static async Task<string> GetTemplateResource(string resourceName)
     {
         var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri($"ms-appx:///Templates/{resourceName}"));
         using var stream = await file.OpenStreamForReadAsync();
@@ -17,7 +17,7 @@ public static class ResourceHelpers
         return reader.ReadToEnd();
     }
 
-    public static async Task<string> GetFromResources(string resourceName, string oldValue, string newValue)
+    public static async Task<string> GetTemplateResourceAndReplace(string resourceName, string oldValue, string newValue)
     {
         var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri($"ms-appx:///Templates/{resourceName}"));
         string fileText;

@@ -70,7 +70,7 @@ public partial class App : Application
             services.AddSingleton<INavigationService, NavigationService>();
 
             services.AddSingleton<IProcessService, ProcessService>();
-            services.AddSingleton<IPluginService, PluginService>();
+            services.AddSingleton<IModService, ModService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();

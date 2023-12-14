@@ -11,7 +11,7 @@ namespace SatisfactoryModdingHelper.Models
         /// <summary>
         /// Plugin Reference Name. eg: LoadBalancers
         /// </summary>
-        public string? CurrentPlugin { get; set; }
+        public string? CurrentMod { get; set; }
 
         /// <summary>
         /// Path to folder container .uproject file

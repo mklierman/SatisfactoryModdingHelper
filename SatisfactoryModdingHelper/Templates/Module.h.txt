@@ -2,7 +2,7 @@
 
 #include "Modules/ModuleManager.h"
 
-class F[PluginReference]Module : public FDefaultGameModuleImpl {
+class F[ModReference]Module : public FDefaultGameModuleImpl {
 public:
 	virtual void StartupModule() override;
 

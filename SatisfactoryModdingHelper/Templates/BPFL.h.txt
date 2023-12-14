@@ -6,7 +6,7 @@
 #include "[ClassName].generated.h"
 
 UCLASS()
-class [PluginReferenceUC]_API U[ClassName] : public UBlueprintFunctionLibrary
+class [ModReferenceUC]_API U[ClassName] : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 

@@ -49,7 +49,7 @@
                     HorizontalAlignment="Stretch"
                     Command="{x:Bind ViewModel.GenerateModuleFiles}"
                     CommandParameter="True"
-                    Content="Generate Plugin Module Files" />
+                    Content="Generate Mod Module Files" />
                 <Grid Margin="{StaticResource XSmallTopMargin}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />

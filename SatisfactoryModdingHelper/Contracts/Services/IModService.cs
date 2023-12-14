@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace SatisfactoryModdingHelper.Contracts.Services;
 
-public interface IPluginService
+public interface IModService
 {
-    object SelectedPlugin { get; set; }
-    IEnumerable? PluginList { get; }
+    object SelectedMod { get; set; }
+    IEnumerable? ModList { get; }
 
-    IEnumerable? GetPluginList();
+    IEnumerable? GetModList();
 
-    event EventHandler<object> PluginChangedEvent;
+    event EventHandler<object> ModChangedEvent;
 }

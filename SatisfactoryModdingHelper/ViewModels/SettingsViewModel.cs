@@ -94,7 +94,7 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
         SatisfactoryExecutableFilePath = _localSettingsService.Settings.SatisfactoryExecutableFilePath;
         ModManagerFilePath = _localSettingsService.Settings.ModManagerFilePath;
         ModManagerFolderPath = _localSettingsService.Settings.ModManagerFolderPath;
-        AlpakitCopyPlugin = _localSettingsService.Settings.AlpakitCopyModToGame;
+        AlpakitCopyMod = _localSettingsService.Settings.AlpakitCopyModToGame;
         AlpakitCloseSatisfactory = _localSettingsService.Settings.AlpakitCloseGame;
         MPPlayer1Name = _localSettingsService.Settings.Player1Name;
         MPPlayer2Name = _localSettingsService.Settings.Player2Name;
@@ -487,14 +487,14 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
         //}
     }
 
-    private bool alpakitCopyPlugin;
+    private bool alpakitCopyMod;
 
-    public bool AlpakitCopyPlugin
+    public bool AlpakitCopyMod
     {
-        get => alpakitCopyPlugin;
+        get => alpakitCopyMod;
         set
         {
-            SetProperty(ref alpakitCopyPlugin, value);
+            SetProperty(ref alpakitCopyMod, value);
             _localSettingsService.Settings.AlpakitCopyModToGame = value;
             _localSettingsService.PersistData();
         }

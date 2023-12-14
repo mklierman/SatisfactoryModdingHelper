@@ -15,7 +15,7 @@ namespace SatisfactoryModdingHelper.ViewModels;
 public class AccessTransformersViewModel : ObservableRecipient, INavigationAware
 {
     private readonly ILocalSettingsService _localSettingsService;
-    private readonly IPluginService _pluginService;
+    private readonly IModService _modService;
     private readonly IFileService _fileService;
     //                                        ^(\w+)\S*(?:Class=")(\w+)\S+\s\S*(?:=")(\w+)
     private const string regexPattern = "^(\\w+)\\S*(?:Class=\")(\\w+)\\S+\\s\\S*(?:=\")(\\w+)";
@@ -24,28 +24,28 @@ public class AccessTransformersViewModel : ObservableRecipient, INavigationAware
     private ObservableCollection<FriendModel> friends;
     private ObservableCollection<BlueprintReadWriteModel> blueprints;
 
-    public AccessTransformersViewModel(IPluginService pluginService, IFileService fileService, ILocalSettingsService localSettingsService)
+    public AccessTransformersViewModel(IModService modService, IFileService fileService, ILocalSettingsService localSettingsService)
     {
-        _pluginService = pluginService;
+        _modService = modService;
         _fileService = fileService;
         _localSettingsService = localSettingsService;
     }
     public void OnNavigatedFrom()
     {
-        _pluginService.PluginChangedEvent -= OnPluginChanged;
+        _modService.ModChangedEvent -= OnModChanged;
     }
 
     public void OnNavigatedTo(object parameter)
     {
         projectDirectory = _localSettingsService.Settings.UProjectFolderPath;
-        SelectedPlugin = _pluginService.SelectedPlugin;
+        SelectedMod = _modService.SelectedMod;
         PopulateAccessTransformerFields();
-        _pluginService.PluginChangedEvent += OnPluginChanged;
+        _modService.ModChangedEvent += OnModChanged;
     }
 
-    private void OnPluginChanged(object? sender, object e)
+    private void OnModChanged(object? sender, object e)
     {
-        SelectedPlugin = e;
+        SelectedMod = e;
     }
 
     private bool unsavedChanges = false;
@@ -67,13 +67,13 @@ public class AccessTransformersViewModel : ObservableRecipient, INavigationAware
     }
 
 
-    private object selectedPlugin;
-    public object SelectedPlugin
+    private object selectedMod;
+    public object SelectedMod
     {
-        get => selectedPlugin;
+        get => selectedMod;
         set
         {
-            if (SetProperty(ref selectedPlugin, value))
+            if (SetProperty(ref selectedMod, value))
             {
                 PopulateAccessTransformerFields();
             }
@@ -112,16 +112,16 @@ public class AccessTransformersViewModel : ObservableRecipient, INavigationAware
         set => SetProperty(ref loadedAccessTransformers, value);
     }
 
-    private AccessTransformersModel GetSelectedPluginAccessTransformers()
+    private AccessTransformersModel GetSelectedModAccessTransformers()
     {
         var returnModel = new AccessTransformersModel();
 
-        if (string.IsNullOrEmpty(projectDirectory) || SelectedPlugin == null)
+        if (string.IsNullOrEmpty(projectDirectory) || SelectedMod == null)
         {
             return returnModel;
         }
 
-        string filePath = @$"{projectDirectory}\Plugins\{SelectedPlugin}\Config\AccessTransformers.ini";
+        string filePath = @$"{projectDirectory}\Mods\{SelectedMod}\Config\AccessTransformers.ini";
         if (!File.Exists(filePath))
         {
             return returnModel;
@@ -166,7 +166,7 @@ public class AccessTransformersViewModel : ObservableRecipient, INavigationAware
 
     private void PopulateAccessTransformerFields()
     {
-        LoadedAccessTransformers = GetSelectedPluginAccessTransformers();
+        LoadedAccessTransformers = GetSelectedModAccessTransformers();
         Accessors = LoadedAccessTransformers.AccessorTransformers;
         Friends = LoadedAccessTransformers.FriendTransformers;
         Blueprints = LoadedAccessTransformers.BlueprintReadWriteTransformers;
@@ -223,12 +223,12 @@ public class AccessTransformersViewModel : ObservableRecipient, INavigationAware
 
     private void PerformSaveChanges()
     {
-        if (string.IsNullOrEmpty(projectDirectory) || SelectedPlugin == null)
+        if (string.IsNullOrEmpty(projectDirectory) || SelectedMod == null)
         {
             return;
         }
 
-        var folderPath = @$"{projectDirectory}\Plugins\{SelectedPlugin}\Config\";
+        var folderPath = @$"{projectDirectory}\Plugins\{SelectedMod}\Config\";
         var fileName = $@"AccessTransformers.ini";
 
         AccessTransformersModel accessTransformers = new AccessTransformersModel()

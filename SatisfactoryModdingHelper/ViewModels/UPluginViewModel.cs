@@ -14,7 +14,7 @@ namespace SatisfactoryModdingHelper.ViewModels;
 
 public class UPluginViewModel : ObservableObject, INavigationAware
 {
-    private readonly IPluginService _pluginService;
+    private readonly IModService _modService;
     private readonly IFileService _fileService;
     private readonly ILocalSettingsService _settingsService;
     private readonly IProcessService _processService;
@@ -40,23 +40,23 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     private ObservableCollection<PluginModel> plugins;
     private ObservableCollection<ModuleModel> modules;
 
-    public UPluginViewModel(IPluginService pluginService, IFileService fileService, ILocalSettingsService settingsService, IProcessService processService)
+    public UPluginViewModel(IModService modService, IFileService fileService, ILocalSettingsService settingsService, IProcessService processService)
     {
-        _pluginService = pluginService;
+        _modService = modService;
         _fileService = fileService;
         _settingsService = settingsService;
         _processService = processService;
     }
 
-    private UPluginModel GetSelectedPluginModel()
+    private UPluginModel GetSelectedModModel()
     {
         try
         {
-            if (string.IsNullOrEmpty(projectDirectory) || SelectedPlugin == null)
+            if (string.IsNullOrEmpty(projectDirectory) || SelectedMod == null)
             {
                 return new UPluginModel();
             }
-            string upluginText = File.ReadAllText(@$"{projectDirectory}/Plugins/{SelectedPlugin}/{SelectedPlugin}.uplugin");
+            string upluginText = File.ReadAllText(@$"{projectDirectory}/Mods/{SelectedMod}/{SelectedMod}.uplugin");
             return JsonConvert.DeserializeObject<UPluginModel>(upluginText);
         }
         catch (Exception ex)
@@ -68,7 +68,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
 
     private void PopulateUPluginFields()
     {
-        loadedUPlugin = GetSelectedPluginModel();
+        loadedUPlugin = GetSelectedModModel();
         if (loadedUPlugin != null)
         {
             FileVersion = loadedUPlugin.FileVersion.ToString();
@@ -100,21 +100,21 @@ public class UPluginViewModel : ObservableObject, INavigationAware
     public void OnNavigatedTo(object parameter)
     {
         projectDirectory = _settingsService.Settings.UProjectFolderPath;
-        SelectedPlugin = _pluginService.SelectedPlugin;
+        SelectedMod = _modService.SelectedMod;
         PopulateUPluginFields();
-        _pluginService.PluginChangedEvent += OnPluginChanged;
+        _modService.ModChangedEvent += OnModChanged;
 
     }
 
     public void OnNavigatedFrom()
     {
 
-        _pluginService.PluginChangedEvent -= OnPluginChanged;
+        _modService.ModChangedEvent -= OnModChanged;
     }
 
-    private void OnPluginChanged(object? sender, object e)
+    private void OnModChanged(object? sender, object e)
     {
-        SelectedPlugin = e;
+        SelectedMod = e;
         PopulateUPluginFields();
     }
 
@@ -309,15 +309,15 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         }
     }
 
-    private object selectedPlugin;
+    private object selectedMod;
 
 
-    public object SelectedPlugin
+    public object SelectedMod
     {
-        get => selectedPlugin;
+        get => selectedMod;
         set
         {
-            if (SetProperty(ref selectedPlugin, value))
+            if (SetProperty(ref selectedMod, value))
             {
                 PopulateUPluginFields();
             }
@@ -337,12 +337,12 @@ public class UPluginViewModel : ObservableObject, INavigationAware
 
     private void PerformSaveUPlugin()
     {
-        if (string.IsNullOrEmpty(projectDirectory) || SelectedPlugin == null)
+        if (string.IsNullOrEmpty(projectDirectory) || SelectedMod == null)
         {
             return;
         }
-        string folderPath = @$"{projectDirectory}/Plugins/{SelectedPlugin}/";
-        string fileName = $@"{SelectedPlugin}.uplugin";
+        string folderPath = @$"{projectDirectory}/Mods/{SelectedMod}/";
+        string fileName = $@"{SelectedMod}.uplugin";
         UPluginModel uPlugin = new()
         {
             FileVersion = int.Parse(FileVersion),
@@ -421,7 +421,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
 
     private bool PluginModified()
     {
-        if (!GetSelectedPluginModel().Equals(loadedUPlugin))
+        if (!GetSelectedModModel().Equals(loadedUPlugin))
         {
             return true;
         }

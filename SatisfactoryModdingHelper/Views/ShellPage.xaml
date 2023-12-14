@@ -90,7 +90,7 @@
                                 Height="40"
                                 HorizontalAlignment="Stretch"
                                 ItemsSource="{x:Bind ViewModel.PluginList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                SelectedValue="{x:Bind ViewModel.SelectedPlugin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                SelectedValue="{x:Bind ViewModel.SelectedMod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Button
                                 Grid.Column="2"
                                 Height="40"

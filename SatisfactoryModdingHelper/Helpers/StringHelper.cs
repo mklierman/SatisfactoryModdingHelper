@@ -27,6 +27,20 @@ namespace SatisfactoryModdingHelper.Helpers
         public const string LaunchingSMM = "Launching Satisfactory Mod Manager...";
         public const string GenVSFiles = "Generating VS Files...";
         public const string GenVSFilesComplete = "Generate VS Files Complete";
+        public const string BuildcsTemplateName = "Buildcs.txt";
+        public const string ModulehTemplateName = "Module.h.txt";
+        public const string ModulecppTemplateName = "Module.cpp.txt";
+        public const string BPFLhTemplateName = "BPFL.h.txt";
+        public const string BPFLcppTemplateName = "BPFL.cpp.txt";
+        public const string RCOhTemplateName = "RCO.h.txt";
+        public const string RCOcppTemplateName = "RCO.cpp.txt";
+        public const string SubsystemhTemplateName = "Subsystem.h.txt";
+        public const string SubsystemcppTemplateName = "Subsystem.cpp.txt";
+        public const string TemplateModReferencePlaceholder = "[ModReference]";
+        public const string TemplateModReferenceUCPlaceholder = "[ModReferenceUC]";
+        public const string Buildcs = "Build.cs";
+        public const string Moduleh = "Module.h";
+        public const string Modulecpp = "Module.cpp";
 
         public static string GetAlpakitArgs(bool shouldCopyMod, string? satisfactoryFolderPath, string? uprojectFilePath, string? modName)
         {
@@ -64,6 +78,42 @@ namespace SatisfactoryModdingHelper.Helpers
         {
             return $"-projectfiles -project=\"{uProjectFilePath}\" -game -rocket -progress";
         }
-            
+
+        public static string GetModPublicFolderPath(string? modFolderPath, string? modName)
+        {
+            return $"{modFolderPath}//Source//{modName}//Public";
+        }
+
+        public static string GetModPrivateFolderPath(string? modFolderPath, string? modName)
+        {
+            return $"{modFolderPath}//Source//{modName}//Private";
+        }
+        public static string GetModSourceFolderPath(string? modFolderPath, string? modName)
+        {
+            return $"{modFolderPath}//Source//{modName}";
+        }
+
+        public static string GetModFolderPath(string? uProjectFolderPath, string? modName)
+        {
+            return $"{uProjectFolderPath}//Mods//{modName}";
+        }
+
+        public static string GetBuildcsFilePath(string? modFolderPath, string? modName)
+        {
+            return $"{modFolderPath}//Source//{modName}//{modName}.{Buildcs}";
+        }
+        public static string GetModulehFilePath(string? modFolderPath, string? modName)
+        {
+            return $"{modFolderPath}//Source//{modName}//{modName}{Moduleh}";
+        }
+        public static string GetModulecppFilePath(string? modFolderPath, string? modName)
+        {
+            return $"{modFolderPath}//Source//{modName}//{modName}{Modulecpp}";
+        }
+
+        public static string GetUpluginFilePath(string? modFolderPath, string? modName)
+        {
+            return $"{modFolderPath}//{modName}.uplugin";
+        }
     }
 }

@@ -15,7 +15,7 @@ public class ShellViewModel : ObservableRecipient
     private bool _isBackEnabled;
     private object? _selected;
     private readonly ILocalSettingsService _localSettingsService;
-    private readonly IPluginService _pluginService;
+    private readonly IModService _modService;
 
     public INavigationService NavigationService
     {
@@ -39,13 +39,13 @@ public class ShellViewModel : ObservableRecipient
         set => SetProperty(ref _selected, value);
     }
 
-    public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService, IPluginService pluginService, ILocalSettingsService settingsService)
+    public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService, IModService modService, ILocalSettingsService settingsService)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;
         _localSettingsService = settingsService;
-        _pluginService = pluginService;
+        _modService = modService;
     }
 
     private void OnNavigated(object sender, NavigationEventArgs e)
@@ -63,56 +63,56 @@ public class ShellViewModel : ObservableRecipient
         {
             Selected = selectedItem;
         }
-        PluginList = _pluginService.PluginList;
-        SelectedPlugin = _pluginService.SelectedPlugin;
+        ModList = _modService.ModList;
+        SelectedMod = _modService.SelectedMod;
     }
 
-    private bool pluginComboBoxEnabled;
+    private bool modComboBoxEnabled;
 
-    public bool PluginComboBoxEnabled
+    public bool ModComboBoxEnabled
     {
-        get => pluginComboBoxEnabled; set => SetProperty(ref pluginComboBoxEnabled, value);
+        get => modComboBoxEnabled; set => SetProperty(ref modComboBoxEnabled, value);
     }
 
-    private System.Collections.IEnumerable pluginList;
+    private System.Collections.IEnumerable modList;
 
-    public System.Collections.IEnumerable PluginList
+    public System.Collections.IEnumerable ModList
     {
-        get => pluginList; set => SetProperty(ref pluginList, value);
+        get => modList; set => SetProperty(ref modList, value);
     }
 
     private AsyncRelayCommand refreshList;
     public ICommand RefreshList => refreshList ??= new AsyncRelayCommand(PerformRefreshList);
     private async Task PerformRefreshList()
     {
-        var curPlugin = SelectedPlugin;
-        PluginList = _pluginService.PluginList;
-        SelectedPlugin = curPlugin;
+        var curMod = SelectedMod;
+        ModList = _modService.ModList;
+        SelectedMod = curMod;
     }
 
-    private object selectedPlugin;
+    private object selectedMod;
 
-    public object SelectedPlugin
+    public object SelectedMod
     {
-        get => selectedPlugin;
+        get => selectedMod;
         set
         {
-            SetProperty(ref selectedPlugin, value);
+            SetProperty(ref selectedMod, value);
             if (value != null)
             {
 
-                _pluginService.SelectedPlugin = value;
-                _localSettingsService.Settings.CurrentPlugin = value.ToString();
+                _modService.SelectedMod = value;
+                _localSettingsService.Settings.CurrentMod = value.ToString();
                 _localSettingsService.PersistData();
             }
         }
     }
 
-    private Visibility pluginSelectorVisibility;
+    private Visibility modSelectorVisibility;
 
-    public Visibility PluginSelectorVisibility
+    public Visibility ModSelectorVisibility
     {
-        get => pluginSelectorVisibility; set => SetProperty(ref pluginSelectorVisibility, value);
+        get => modSelectorVisibility; set => SetProperty(ref modSelectorVisibility, value);
     }
 
 }

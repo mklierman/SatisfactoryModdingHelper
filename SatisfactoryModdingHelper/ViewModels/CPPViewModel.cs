@@ -30,7 +30,7 @@ namespace SatisfactoryModdingHelper.ViewModels;
 public class CPPViewModel : ObservableRecipient, INavigationAware
 {
     private readonly ILocalSettingsService _settingsService;
-    private readonly IPluginService _pluginService;
+    private readonly IModService _modService;
     private readonly IFileService _fileService;
     private readonly IAppNotificationService _appNotificationService;
     public readonly IProcessService _processService;
@@ -41,22 +41,22 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     private string privateDir;
   //  private string engineLocation = "";
 
-    public CPPViewModel(IPluginService pluginService, IFileService fileService, ILocalSettingsService settingsService, IAppNotificationService appNotificationService, IProcessService processService)
+    public CPPViewModel(IModService modService, IFileService fileService, ILocalSettingsService settingsService, IAppNotificationService appNotificationService, IProcessService processService)
     {
-        _pluginService = pluginService;
+        _modService = modService;
         _fileService = fileService;
         _settingsService = settingsService;
         _appNotificationService=appNotificationService;
         _processService = processService;
     }
 
-    private object selectedPlugin;
-    public object SelectedPlugin
+    private object selectedMod;
+    public object SelectedMod
     {
-        get => selectedPlugin;
+        get => selectedMod;
         set
         {
-            if (SetProperty(ref selectedPlugin, value))
+            if (SetProperty(ref selectedMod, value))
             {
 
             }
@@ -66,7 +66,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     public void OnNavigatedTo(object parameter)
     {
         //projectLocation = _settingsService.Settings.UProjectFolderPath;
-        SelectedPlugin = _pluginService.SelectedPlugin;
+        SelectedMod = _modService.SelectedMod;
         // engineLocation = _settingsService.Settings.UnrealEngineFolderPath;
         // gameLocation = _settingsService.Settings.SatisfactoryFolderPath;
         copyDLLAfterBuildShipping = _settingsService.Settings.CopyDLLAfterBuildShipping;
@@ -124,41 +124,42 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     public async Task PerformGenerateModuleFiles(string showNotification = "True")
     {
         //Make Directory Structure
-        var pluginDirectoryLocation = $"{_settingsService.Settings.UProjectFolderPath}//Mods//{SelectedPlugin}";
-        sourceDir = Directory.CreateDirectory($"{pluginDirectoryLocation}//Source//{SelectedPlugin}").FullName;
-        publicDir = Directory.CreateDirectory($"{pluginDirectoryLocation}//Source//{SelectedPlugin}//Public").FullName;
-        privateDir = Directory.CreateDirectory($"{pluginDirectoryLocation}//Source//{SelectedPlugin}//Private").FullName;
+        var modDirectoryLocation = StringHelper.GetModFolderPath(_settingsService.Settings.UProjectFolderPath, SelectedMod.ToString());
+        sourceDir = Directory.CreateDirectory(StringHelper.GetModSourceFolderPath(modDirectoryLocation, SelectedMod.ToString())).FullName;
+        publicDir = Directory.CreateDirectory(StringHelper.GetModPublicFolderPath(modDirectoryLocation, SelectedMod.ToString())).FullName;
+        privateDir = Directory.CreateDirectory(StringHelper.GetModPrivateFolderPath(modDirectoryLocation, SelectedMod.ToString())).FullName;
 
         //Make Files
-        var buildCS = await ResourceHelpers.GetFromResources("Buildcs.txt", "[PluginReference]", SelectedPlugin.ToString());
-        var moduleH = await ResourceHelpers.GetFromResources("Module.h.txt", "[PluginReference]", SelectedPlugin.ToString());
-        var moduleCPP = await ResourceHelpers.GetFromResources("Module.cpp.txt", "[PluginReference]", SelectedPlugin.ToString());
-
-        _fileService.WriteAllTextIfNew($"{sourceDir}//{SelectedPlugin}.Build.cs", buildCS);
-        _fileService.WriteAllTextIfNew($"{publicDir}//{SelectedPlugin}Module.h", moduleH);
-        _fileService.WriteAllTextIfNew($"{privateDir}//{SelectedPlugin}Module.cpp", moduleCPP);
+        var buildCS = await ResourceHelpers.GetTemplateResourceAndReplace(StringHelper.BuildcsTemplateName, StringHelper.TemplateModReferencePlaceholder, SelectedMod.ToString());
+        var moduleH = await ResourceHelpers.GetTemplateResourceAndReplace(StringHelper.ModulehTemplateName, StringHelper.TemplateModReferencePlaceholder, SelectedMod.ToString());
+        var moduleCPP = await ResourceHelpers.GetTemplateResourceAndReplace(StringHelper.ModulecppTemplateName, StringHelper.TemplateModReferencePlaceholder, SelectedMod.ToString());
+        
+        _fileService.WriteAllTextIfNew(StringHelper.GetBuildcsFilePath(sourceDir, SelectedMod.ToString()), buildCS);
+        _fileService.WriteAllTextIfNew(StringHelper.GetModulehFilePath(sourceDir, SelectedMod.ToString()), moduleH);
+        _fileService.WriteAllTextIfNew(StringHelper.GetModulecppFilePath(sourceDir, SelectedMod.ToString()), moduleCPP);
 
         //OutputText = "Base C++ Directories and Files Created";
 
         //Edit uplugin
-        string upluginText = File.ReadAllText($"{pluginDirectoryLocation}//{SelectedPlugin}.uplugin");
-        UPluginModel uPlugin = JsonConvert.DeserializeObject<UPluginModel>(upluginText);
+        var upluginPath = StringHelper.GetUpluginFilePath(modDirectoryLocation, SelectedMod.ToString());
+        var upluginText = File.ReadAllText(upluginPath);
+        var uPlugin = JsonConvert.DeserializeObject<UPluginModel>(upluginText);
 
-        if (uPlugin.Modules == null || uPlugin.Modules.Count == 0)
+        if (uPlugin?.Modules == null || uPlugin.Modules.Count == 0)
         {
             Models.ModuleModel module = new();
-            module.Name = SelectedPlugin.ToString();
+            module.Name = SelectedMod.ToString();
             module.Type = "Runtime";
             module.LoadingPhase = "Default";
             uPlugin.Modules ??= new ObservableCollection<ModuleModel>();
             uPlugin.Modules.Add(module);
             upluginText = JsonConvert.SerializeObject(uPlugin, Formatting.Indented);
-            File.WriteAllText($"{pluginDirectoryLocation}//{SelectedPlugin}.uplugin", upluginText);
+            File.WriteAllText(upluginPath, upluginText);
 
         }
 
-        _processService.AddStringToOutput("CPP Module Files have been created and UPlugin has been updated");
-        _appNotificationService.SendNotification($"CPP Module Files have been created and UPlugin has been updated");
+        _processService.AddStringToOutput(StringHelper.ModuleFilesGenerated);
+        _appNotificationService.SendNotification(StringHelper.ModuleFilesGenerated);
     }
 
     public async void PerformAddBPFL(string className)
@@ -166,10 +167,10 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
 
         await PerformGenerateModuleFiles("False"); //Should probably do some sort of checks
 
-        var hFile = await ResourceHelpers.GetFromResources("BPFL.h.txt", "[ClassName]", className);
-        var cppFile = await ResourceHelpers.GetFromResources("BPFL.cpp.txt", "[ClassName]", className);
+        var hFile = await ResourceHelpers.GetTemplateResourceAndReplace("BPFL.h.txt", "[ClassName]", className);
+        var cppFile = await ResourceHelpers.GetTemplateResourceAndReplace("BPFL.cpp.txt", "[ClassName]", className);
 
-        hFile = hFile.Replace("[PluginReferenceUC]", SelectedPlugin.ToString().ToUpper());
+        hFile = hFile.Replace("[ModReferenceUC]", SelectedMod.ToString().ToUpper());
 
         var headerCreated = _fileService.WriteAllTextIfNew($"{publicDir}//{className}.h", hFile);
         var cppCreated = _fileService.WriteAllTextIfNew($"{privateDir}//{className}.cpp", cppFile);
@@ -190,10 +191,10 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     {
         await PerformGenerateModuleFiles("False"); //Should probably do some sort of checks
 
-        var hFile = await ResourceHelpers.GetFromResources("Subsystem.h.txt", "[ClassName]", className);
-        var cppFile = await ResourceHelpers.GetFromResources("Subsystem.cpp.txt", "[ClassName]", className);
+        var hFile = await ResourceHelpers.GetTemplateResourceAndReplace("Subsystem.h.txt", "[ClassName]", className);
+        var cppFile = await ResourceHelpers.GetTemplateResourceAndReplace("Subsystem.cpp.txt", "[ClassName]", className);
 
-        hFile = hFile.Replace("[PluginReferenceUC]", SelectedPlugin.ToString().ToUpper());
+        hFile = hFile.Replace("[ModReferenceUC]", SelectedMod.ToString().ToUpper());
 
         var headerCreated = _fileService.WriteAllTextIfNew($"{publicDir}//{className}.h", hFile);
         var cppCreated = _fileService.WriteAllTextIfNew($"{privateDir}//{className}.cpp", cppFile);
@@ -214,10 +215,10 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     {
         await PerformGenerateModuleFiles("False"); //Should probably do some sort of checks
 
-        var hFile = await ResourceHelpers.GetFromResources("RCO.h.txt", "[ClassName]", className);
-        var cppFile = await ResourceHelpers.GetFromResources("RCO.cpp.txt", "[ClassName]", className);
+        var hFile = await ResourceHelpers.GetTemplateResourceAndReplace("RCO.h.txt", "[ClassName]", className);
+        var cppFile = await ResourceHelpers.GetTemplateResourceAndReplace("RCO.cpp.txt", "[ClassName]", className);
 
-        hFile = hFile.Replace("[PluginReferenceUC]", SelectedPlugin.ToString().ToUpper());
+        hFile = hFile.Replace("[ModReferenceUC]", SelectedMod.ToString().ToUpper());
 
         var headerCreated = _fileService.WriteAllTextIfNew($"{publicDir}//{className}.h", hFile);
         var cppCreated = _fileService.WriteAllTextIfNew($"{privateDir}//{className}.cpp", cppFile);
@@ -259,23 +260,23 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     public ICommand CopyCPPFiles => copyCPPFiles ??= new AsyncRelayCommand(PerformCopyCPPFiles);
     private async Task PerformCopyCPPFiles()
     {
-        //F:\SatisfactoryModMaking\SML-master\Plugins\CounterLimiter\Binaries\Win64
+        //F:\SatisfactoryModMaking\SML-master\Mods\CounterLimiter\Binaries\Win64
         //FactoryGame-CounterLimiter-Win64-Shipping.dll
         //FactoryGame-CounterLimiter-Win64-Shipping.pdb
         //FactoryGame-Win64-Shipping.modules
         //F:\Games\SteamLibrary\steamapps\common\Satisfactory\FactoryGame\Mods\CounterLimiter\Binaries\Win64
-        var pluginBinariesLocation = $"{_settingsService.Settings.UProjectFolderPath}\\Plugins\\{SelectedPlugin}\\Binaries\\Win64";
+        var modBinariesLocation = $"{_settingsService.Settings.UProjectFolderPath}\\Mods\\{SelectedMod}\\Binaries\\Win64";
 
-        var dllFileName = $"FactoryGame-{SelectedPlugin}-Win64-Shipping.dll";
-        var pdbFileName = $"FactoryGame-{SelectedPlugin}-Win64-Shipping.pdb";
+        var dllFileName = $"FactoryGame-{SelectedMod}-Win64-Shipping.dll";
+        var pdbFileName = $"FactoryGame-{SelectedMod}-Win64-Shipping.pdb";
 
-        var dllSource = Path.Combine(pluginBinariesLocation, dllFileName);
-        var pdbSource = Path.Combine(pluginBinariesLocation, pdbFileName);
+        var dllSource = Path.Combine(modBinariesLocation, dllFileName);
+        var pdbSource = Path.Combine(modBinariesLocation, pdbFileName);
 
-        var pluginGameLocation = $"{_settingsService.Settings.SatisfactoryFolderPath}\\FactoryGame\\Mods\\{SelectedPlugin}\\Binaries\\Win64";
+        var modGameLocation = $"{_settingsService.Settings.SatisfactoryFolderPath}\\FactoryGame\\Mods\\{SelectedMod}\\Binaries\\Win64";
 
-        var dllDest = Path.Combine(pluginGameLocation, dllFileName);
-        var pdbDest = Path.Combine(pluginGameLocation, pdbFileName);
+        var dllDest = Path.Combine(modGameLocation, dllFileName);
+        var pdbDest = Path.Combine(modGameLocation, pdbFileName);
 
         if (File.Exists(dllSource))
         {
@@ -285,7 +286,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         {
             File.Copy(pdbSource, pdbDest, overwrite: true);
         }
-        _processService.AddStringToOutput($"DLL and PDB Copied to {pluginGameLocation}");
+        _processService.AddStringToOutput($"DLL and PDB Copied to {modGameLocation}");
         _appNotificationService.SendNotification($"DLL and PDB Copied to Game directory");
     }
 
