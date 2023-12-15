@@ -36,7 +36,7 @@ namespace SatisfactoryModdingHelper.Controls
         private long lastFileLocation = 0;
         public async void UpdateOutput()
         {
-            var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+            var path = Path.GetDirectoryName(Environment.ProcessPath) + StringHelper.ProcessLogFileName;
 
             while (RunUpdateOutput)
             {
@@ -77,7 +77,7 @@ namespace SatisfactoryModdingHelper.Controls
         public ICommand ClearOutput => clearOutput ??= new AsyncRelayCommand(PerformClearOutput);
         private async Task PerformClearOutput()
         {
-            var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+            var path = Path.GetDirectoryName(Environment.ProcessPath) + StringHelper.ProcessLogFileName;
             File.WriteAllText(path, "");
             OutputText.Clear();
         }

@@ -22,7 +22,7 @@ public class ProcessService : ObservableRecipient, IProcessService
         processRunning = false;
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-        var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+        var path = Path.GetDirectoryName(Environment.ProcessPath) + StringHelper.ProcessLogFileName;
         if (!File.Exists(path))
         {
             File.Create(path).Close();
@@ -116,7 +116,7 @@ public class ProcessService : ObservableRecipient, IProcessService
 
     private void Cmd_DataReceived(object sender, DataReceivedEventArgs e)
     {
-        var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+        var path = Path.GetDirectoryName(Environment.ProcessPath) + StringHelper.ProcessLogFileName;
         File.AppendAllText(path, (e.Data ?? "") + Environment.NewLine);
     }
 
@@ -158,13 +158,13 @@ public class ProcessService : ObservableRecipient, IProcessService
 
     public void AddStringToOutput(string outputText)
     {
-        var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+        var path = Path.GetDirectoryName(Environment.ProcessPath) + StringHelper.ProcessLogFileName;
         File.AppendAllText(path, (outputText ?? "") + Environment.NewLine);
     }
 
     public void AddExceptionToOutput(string message, Exception exception)
     {
-        var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+        var path = Path.GetDirectoryName(Environment.ProcessPath) + StringHelper.ProcessLogFileName;
         File.AppendAllText(path, (message ?? "") + Environment.NewLine);
         File.AppendAllText(path, (exception.ToString() ?? "") + Environment.NewLine);
     }

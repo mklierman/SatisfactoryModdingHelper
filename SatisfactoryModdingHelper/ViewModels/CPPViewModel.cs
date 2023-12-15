@@ -1,29 +1,14 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Reflection;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
-using System.Xml.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.UI.Controls;
-using Microsoft.Toolkit.Uwp.Notifications;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.ApplicationModel.Resources;
-using Microsoft.Windows.AppNotifications;
 using Newtonsoft.Json;
 using SatisfactoryModdingHelper.Contracts.Services;
 using SatisfactoryModdingHelper.Contracts.ViewModels;
 using SatisfactoryModdingHelper.Core.Contracts.Services;
-using SatisfactoryModdingHelper.Core.Services;
-using SatisfactoryModdingHelper.Dialogs;
-using SatisfactoryModdingHelper.Extensions;
 using SatisfactoryModdingHelper.Helpers;
 using SatisfactoryModdingHelper.Models;
-using SatisfactoryModdingHelper.Services;
-using Windows.Storage;
 
 namespace SatisfactoryModdingHelper.ViewModels;
 
@@ -34,12 +19,14 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     private readonly IFileService _fileService;
     private readonly IAppNotificationService _appNotificationService;
     public readonly IProcessService _processService;
-    //private string projectLocation;
-    //private string gameLocation;
-    private string sourceDir;
-    private string publicDir;
-    private string privateDir;
-  //  private string engineLocation = "";
+    private string? projectFolderPath;
+    private string? gameLocation;
+    private string? sourceDir;
+    private string? publicDir;
+    private string? privateDir;
+    private string? engineFolderPath;
+    private string? buildToolFilePath;
+    private string? projectFilePath;
 
     public CPPViewModel(IModService modService, IFileService fileService, ILocalSettingsService settingsService, IAppNotificationService appNotificationService, IProcessService processService)
     {
@@ -50,26 +37,29 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         _processService = processService;
     }
 
-    private object selectedMod;
     public object SelectedMod
     {
-        get => selectedMod;
+        get => _modService.SelectedMod;
         set
         {
-            if (SetProperty(ref selectedMod, value))
+            if (value != null)
             {
-
+                _modService.SelectedMod = value;
+                _settingsService.Settings.CurrentMod = value.ToString();
+                _settingsService.PersistData();
             }
         }
     }
 
     public void OnNavigatedTo(object parameter)
     {
-        //projectLocation = _settingsService.Settings.UProjectFolderPath;
+        projectFolderPath = _settingsService.Settings.UProjectFolderPath;
+        projectFilePath = _settingsService.Settings.UProjectFilePath;
         SelectedMod = _modService.SelectedMod;
-        // engineLocation = _settingsService.Settings.UnrealEngineFolderPath;
-        // gameLocation = _settingsService.Settings.SatisfactoryFolderPath;
+        engineFolderPath = _settingsService.Settings.UnrealEngineFolderPath;
+        gameLocation = _settingsService.Settings.SatisfactoryFolderPath;
         copyDLLAfterBuildShipping = _settingsService.Settings.CopyDLLAfterBuildShipping;
+        buildToolFilePath = _settingsService.Settings.UnrealBuildToolFilePath;
         RunUpdateOutput = true;
         UpdateOutput();
 
@@ -114,7 +104,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
 
     private async Task PerformGenerateVSFiles()
     {
-        await _processService.GenerateVSFiles(_settingsService.Settings.UnrealBuildToolFilePath, _settingsService.Settings.UProjectFilePath);
+        await _processService.GenerateVSFiles(buildToolFilePath, projectFilePath);
         _appNotificationService.SendNotification(StringHelper.GenVSFilesComplete);
     }
 
@@ -124,7 +114,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     public async Task PerformGenerateModuleFiles(string showNotification = "True")
     {
         //Make Directory Structure
-        var modDirectoryLocation = StringHelper.GetModFolderPath(_settingsService.Settings.UProjectFolderPath, SelectedMod.ToString());
+        var modDirectoryLocation = StringHelper.GetModFolderPath(projectFolderPath, SelectedMod.ToString());
         sourceDir = Directory.CreateDirectory(StringHelper.GetModSourceFolderPath(modDirectoryLocation, SelectedMod.ToString())).FullName;
         publicDir = Directory.CreateDirectory(StringHelper.GetModPublicFolderPath(modDirectoryLocation, SelectedMod.ToString())).FullName;
         privateDir = Directory.CreateDirectory(StringHelper.GetModPrivateFolderPath(modDirectoryLocation, SelectedMod.ToString())).FullName;
@@ -167,23 +157,23 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
 
         await PerformGenerateModuleFiles("False"); //Should probably do some sort of checks
 
-        var hFile = await ResourceHelpers.GetTemplateResourceAndReplace("BPFL.h.txt", "[ClassName]", className);
-        var cppFile = await ResourceHelpers.GetTemplateResourceAndReplace("BPFL.cpp.txt", "[ClassName]", className);
+        var hFile = await ResourceHelpers.GetTemplateResourceAndReplace(StringHelper.BPFLhTemplateName, StringHelper.TemplateClassNamePlaceholder, className);
+        var cppFile = await ResourceHelpers.GetTemplateResourceAndReplace(StringHelper.BPFLcppTemplateName, StringHelper.TemplateClassNamePlaceholder, className);
 
-        hFile = hFile.Replace("[ModReferenceUC]", SelectedMod.ToString().ToUpper());
+        hFile = hFile.Replace(StringHelper.TemplateModReferenceUCPlaceholder, SelectedMod.ToString().ToUpper());
 
         var headerCreated = _fileService.WriteAllTextIfNew($"{publicDir}//{className}.h", hFile);
         var cppCreated = _fileService.WriteAllTextIfNew($"{privateDir}//{className}.cpp", cppFile);
 
         if (headerCreated && cppCreated)
         {
-            _appNotificationService.SendNotification($"BPFL {className} has been created");
-            _processService.AddStringToOutput($"BPFL {className} created");
+            _appNotificationService.SendNotification(StringHelper.GetBPFLClassCreated(className));
+            _processService.AddStringToOutput(StringHelper.GetBPFLClassCreated(className));
         }
         else
         {
-            _appNotificationService.SendNotification($"Unable to create BPFL {className}. Class already exists");
-            _processService.AddStringToOutput($"Unable to create BPFL {className}. Class already exists");
+            _appNotificationService.SendNotification(StringHelper.GetBPFLClassExists(className));
+            _processService.AddStringToOutput(StringHelper.GetBPFLClassExists(className));
         }
     }
 
@@ -191,23 +181,23 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     {
         await PerformGenerateModuleFiles("False"); //Should probably do some sort of checks
 
-        var hFile = await ResourceHelpers.GetTemplateResourceAndReplace("Subsystem.h.txt", "[ClassName]", className);
-        var cppFile = await ResourceHelpers.GetTemplateResourceAndReplace("Subsystem.cpp.txt", "[ClassName]", className);
+        var hFile = await ResourceHelpers.GetTemplateResourceAndReplace(StringHelper.SubsystemhTemplateName, StringHelper.TemplateClassNamePlaceholder, className);
+        var cppFile = await ResourceHelpers.GetTemplateResourceAndReplace(StringHelper.SubsystemcppTemplateName, StringHelper.TemplateClassNamePlaceholder, className);
 
-        hFile = hFile.Replace("[ModReferenceUC]", SelectedMod.ToString().ToUpper());
+        hFile = hFile.Replace(StringHelper.TemplateModReferenceUCPlaceholder, SelectedMod.ToString().ToUpper());
 
         var headerCreated = _fileService.WriteAllTextIfNew($"{publicDir}//{className}.h", hFile);
         var cppCreated = _fileService.WriteAllTextIfNew($"{privateDir}//{className}.cpp", cppFile);
 
         if (headerCreated && cppCreated)
         {
-            _appNotificationService.SendNotification($"Subsystem {className} has been created");
-            _processService.AddStringToOutput($"Subsystem {className} created");
+            _appNotificationService.SendNotification(StringHelper.GetSubsystemCreated(className));
+            _processService.AddStringToOutput(StringHelper.GetSubsystemCreated(className));
         }
         else
         {
-            _appNotificationService.SendNotification($"Unable to create Subsystem {className}. Class already exists");
-            _processService.AddStringToOutput($"Unable to create Subsystem {className}. Class already exists");
+            _appNotificationService.SendNotification(StringHelper.GetSubsystemExists(className));
+            _processService.AddStringToOutput(StringHelper.GetSubsystemExists(className));
         }
     }
 
@@ -215,8 +205,8 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     {
         await PerformGenerateModuleFiles("False"); //Should probably do some sort of checks
 
-        var hFile = await ResourceHelpers.GetTemplateResourceAndReplace("RCO.h.txt", "[ClassName]", className);
-        var cppFile = await ResourceHelpers.GetTemplateResourceAndReplace("RCO.cpp.txt", "[ClassName]", className);
+        var hFile = await ResourceHelpers.GetTemplateResourceAndReplace(StringHelper.RCOhTemplateName, StringHelper.TemplateClassNamePlaceholder, className);
+        var cppFile = await ResourceHelpers.GetTemplateResourceAndReplace(StringHelper.RCOcppTemplateName, StringHelper.TemplateClassNamePlaceholder, className);
 
         hFile = hFile.Replace("[ModReferenceUC]", SelectedMod.ToString().ToUpper());
 
@@ -225,13 +215,13 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
 
         if (headerCreated && cppCreated)
         {
-            _appNotificationService.SendNotification($"RCO {className} has been created");
-            _processService.AddStringToOutput($"RCO {className} created");
+            _appNotificationService.SendNotification(StringHelper.GetRCOCreated(className));
+            _processService.AddStringToOutput(StringHelper.GetRCOCreated(className));
         }
         else
         {
-            _appNotificationService.SendNotification($"Unable to create RCO {className}. Class already exists");
-            _processService.AddStringToOutput($"Unable to create RCO {className}. Class already exists");
+            _appNotificationService.SendNotification(StringHelper.GetRCOExists(className));
+            _processService.AddStringToOutput(StringHelper.GetRCOExists(className));
         }
     }
 
@@ -239,7 +229,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     public ICommand BuildForDevelopmentEditor => buildForDevelopmentEditor ??= new AsyncRelayCommand(PerformBuildForDevelopmentEditor);
     private async Task PerformBuildForDevelopmentEditor()
     {
-        await _processService.RunBuild(false, _settingsService.Settings.UnrealEngineFolderPath, _settingsService.Settings.UProjectFilePath);
+        await _processService.RunBuild(false, engineFolderPath, projectFilePath);
         _appNotificationService.SendNotification(StringHelper.BuildDevComplete);
     }
 
@@ -247,7 +237,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     public ICommand BuildForShipping => buildForShipping ??= new AsyncRelayCommand(PerformBuildForShipping);
     private async Task PerformBuildForShipping()
     {
-        await _processService.RunBuild(true, _settingsService.Settings.UnrealEngineFolderPath, _settingsService.Settings.UProjectFilePath);
+        await _processService.RunBuild(true, engineFolderPath, projectFilePath);
         _appNotificationService.SendNotification(StringHelper.BuildShippingComplete);
 
         if (CopyDLLAfterBuildShipping)
@@ -265,15 +255,16 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         //FactoryGame-CounterLimiter-Win64-Shipping.pdb
         //FactoryGame-Win64-Shipping.modules
         //F:\Games\SteamLibrary\steamapps\common\Satisfactory\FactoryGame\Mods\CounterLimiter\Binaries\Win64
-        var modBinariesLocation = $"{_settingsService.Settings.UProjectFolderPath}\\Mods\\{SelectedMod}\\Binaries\\Win64";
 
-        var dllFileName = $"FactoryGame-{SelectedMod}-Win64-Shipping.dll";
-        var pdbFileName = $"FactoryGame-{SelectedMod}-Win64-Shipping.pdb";
+        var modBinariesLocation = StringHelper.GetModBinariesPath(projectFolderPath ,SelectedMod.ToString());
+
+        var dllFileName = StringHelper.GetModDLLName(SelectedMod.ToString());
+        var pdbFileName = StringHelper.GetModPDBName(SelectedMod.ToString());
 
         var dllSource = Path.Combine(modBinariesLocation, dllFileName);
         var pdbSource = Path.Combine(modBinariesLocation, pdbFileName);
 
-        var modGameLocation = $"{_settingsService.Settings.SatisfactoryFolderPath}\\FactoryGame\\Mods\\{SelectedMod}\\Binaries\\Win64";
+        var modGameLocation = StringHelper.GetGameModBinariesPath(gameLocation, SelectedMod.ToString());
 
         var dllDest = Path.Combine(modGameLocation, dllFileName);
         var pdbDest = Path.Combine(modGameLocation, pdbFileName);
@@ -286,8 +277,8 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         {
             File.Copy(pdbSource, pdbDest, overwrite: true);
         }
-        _processService.AddStringToOutput($"DLL and PDB Copied to {modGameLocation}");
-        _appNotificationService.SendNotification($"DLL and PDB Copied to Game directory");
+        _processService.AddStringToOutput(StringHelper.GetDLLPDBCopied(modGameLocation));
+        _appNotificationService.SendNotification(StringHelper.GetDLLPDBCopied(modGameLocation));
     }
 
     public DataGrid OutputDataGrid;
@@ -296,7 +287,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
     public ICommand ClearOutput => clearOutput ??= new AsyncRelayCommand(PerformClearOutput);
     private async Task PerformClearOutput()
     {
-        var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+        var path = Path.GetDirectoryName(Environment.ProcessPath) + StringHelper.ProcessLogFileName;
         File.WriteAllText(path, "");
         OutputText.Clear();
     }
@@ -312,13 +303,13 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
 
     public async void UpdateOutput()
     {
-        var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+        var path = Path.GetDirectoryName(Environment.ProcessPath) + StringHelper.ProcessLogFileName;
 
         while (RunUpdateOutput)
         {
-            using (FileStream fs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var fs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                StreamReader sr = new StreamReader(fs);
+                var sr = new StreamReader(fs);
                 
                 var initialFileSize = fs.Length;
                 var newLength = initialFileSize - lastFileLocation;
@@ -336,6 +327,7 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
                      lastFileLocation = fs.Position;
                 }
             }
+
             //InputsEnabled = !_processService.ProcessRunning;
             await Task.Delay(500);
 

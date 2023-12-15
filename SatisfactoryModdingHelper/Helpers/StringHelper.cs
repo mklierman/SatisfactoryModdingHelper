@@ -38,9 +38,12 @@ namespace SatisfactoryModdingHelper.Helpers
         public const string SubsystemcppTemplateName = "Subsystem.cpp.txt";
         public const string TemplateModReferencePlaceholder = "[ModReference]";
         public const string TemplateModReferenceUCPlaceholder = "[ModReferenceUC]";
+        public const string TemplateClassNamePlaceholder = "[ClassName]";
         public const string Buildcs = "Build.cs";
         public const string Moduleh = "Module.h";
         public const string Modulecpp = "Module.cpp";
+        public const string ModuleFilesGenerated = "CPP Module Files have been created and UPlugin has been updated";
+        public const string ProcessLogFileName = "\\ProcessLog.txt";
 
         public static string GetAlpakitArgs(bool shouldCopyMod, string? satisfactoryFolderPath, string? uprojectFilePath, string? modName)
         {
@@ -88,6 +91,7 @@ namespace SatisfactoryModdingHelper.Helpers
         {
             return $"{modFolderPath}//Source//{modName}//Private";
         }
+
         public static string GetModSourceFolderPath(string? modFolderPath, string? modName)
         {
             return $"{modFolderPath}//Source//{modName}";
@@ -102,10 +106,12 @@ namespace SatisfactoryModdingHelper.Helpers
         {
             return $"{modFolderPath}//Source//{modName}//{modName}.{Buildcs}";
         }
+
         public static string GetModulehFilePath(string? modFolderPath, string? modName)
         {
             return $"{modFolderPath}//Source//{modName}//{modName}{Moduleh}";
         }
+
         public static string GetModulecppFilePath(string? modFolderPath, string? modName)
         {
             return $"{modFolderPath}//Source//{modName}//{modName}{Modulecpp}";
@@ -114,6 +120,61 @@ namespace SatisfactoryModdingHelper.Helpers
         public static string GetUpluginFilePath(string? modFolderPath, string? modName)
         {
             return $"{modFolderPath}//{modName}.uplugin";
+        }
+
+        public static string GetBPFLClassCreated(string className)
+        {
+            return $"BPFL {className} created";
+        }
+
+        public static string GetBPFLClassExists(string className)
+        {
+            return $"Unable to create BPFL {className}. Class already exists";
+        }
+
+        public static string GetSubsystemCreated(string className)
+        {
+            return $"Subsystem {className} created";
+        }
+
+        public static string GetSubsystemExists(string className)
+        {
+            return $"Unable to create Subsystem {className}. Class already exists";
+        }
+
+        public static string GetRCOCreated(string className)
+        {
+            return $"RCO {className} created";
+        }
+
+        public static string GetRCOExists(string className)
+        {
+            return $"Unable to create RCO {className}. Class already exists";
+        }
+
+        public static string GetModBinariesPath(string? projectFolderPath, string? modName)
+        {
+            return $"{projectFolderPath}\\Mods\\{modName}\\Binaries\\Win64";
+        }
+
+        public static string GetModDLLName(string? modName)
+        {
+            return $"FactoryGame-{modName}-Win64-Shipping.dll";
+        }
+
+        public static string GetModPDBName(string? modName)
+        {
+            return $"FactoryGame-{modName}-Win64-Shipping.pdb";
+        }
+
+        public static string GetGameModBinariesPath(string? gameFolderPath, string? modName)
+        {
+            return $"{gameFolderPath}\\FactoryGame\\Mods\\{modName}\\Binaries\\Win64";
+        }
+
+        public static string GetDLLPDBCopied(string? modGamePath)
+        {
+            return $"DLL and PDB Copied to {modGamePath}";
         }
     }
 }

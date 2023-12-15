@@ -101,7 +101,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
 
     public async void UpdateOutput()
     {
-        var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+        var path = Path.GetDirectoryName(Environment.ProcessPath) + StringHelper.ProcessLogFileName;
 
         while (RunUpdateOutput)
         {
@@ -315,7 +315,7 @@ public class MainViewModel : ObservableRecipient, INavigationAware
     public ICommand ClearOutput => clearOutput ??= new AsyncRelayCommand(PerformClearOutput);
     private async Task PerformClearOutput()
     {
-        var path = Path.GetDirectoryName(Environment.ProcessPath) + "\\ProcessLog.txt";
+        var path = Path.GetDirectoryName(Environment.ProcessPath) + StringHelper.ProcessLogFileName;
         File.WriteAllText(path, "");
         OutputText.Clear();
     }
