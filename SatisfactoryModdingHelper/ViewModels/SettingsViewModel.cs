@@ -25,7 +25,7 @@ public class SettingsViewModel : ObservableRecipient, INavigationAware
     private ElementTheme _elementTheme;
     private string _versionDescription;
     private FolderPicker folderPicker = new();
-    private FileOpenPicker filePicker = new FileOpenPicker();
+    private FileOpenPicker filePicker = new();
 
     public ElementTheme ElementTheme
     {

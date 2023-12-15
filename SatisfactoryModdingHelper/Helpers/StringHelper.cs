@@ -44,6 +44,8 @@ namespace SatisfactoryModdingHelper.Helpers
         public const string Modulecpp = "Module.cpp";
         public const string ModuleFilesGenerated = "CPP Module Files have been created and UPlugin has been updated";
         public const string ProcessLogFileName = "\\ProcessLog.txt";
+        public const string NewPluginDependency = "New Plugin Depedency";
+        public const string ErrorGettingUpluginFile = "Error getting .uplugin file";
 
         public static string GetAlpakitArgs(bool shouldCopyMod, string? satisfactoryFolderPath, string? uprojectFilePath, string? modName)
         {
@@ -175,6 +177,16 @@ namespace SatisfactoryModdingHelper.Helpers
         public static string GetDLLPDBCopied(string? modGamePath)
         {
             return $"DLL and PDB Copied to {modGamePath}";
+        }
+
+        public static string GetModUpluginPath(string? projectPath, string? modName)
+        {
+            return $"{projectPath}\\Mods\\{modName}\\{modName}.uplugin";
+        }
+
+        public static string GetModUpluginFileName(string? modName)
+        {
+            return $"{modName}.uplugin";
         }
     }
 }

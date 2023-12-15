@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using SatisfactoryModdingHelper.Contracts.Services;
 using SatisfactoryModdingHelper.Contracts.ViewModels;
 using SatisfactoryModdingHelper.Core.Contracts.Services;
+using SatisfactoryModdingHelper.Helpers;
 using SatisfactoryModdingHelper.Models;
 using SatisfactoryModdingHelper.Services;
 
@@ -56,12 +57,12 @@ public class UPluginViewModel : ObservableObject, INavigationAware
             {
                 return new UPluginModel();
             }
-            string upluginText = File.ReadAllText(@$"{projectDirectory}/Mods/{SelectedMod}/{SelectedMod}.uplugin");
+            var upluginText = File.ReadAllText(StringHelper.GetModUpluginPath(projectDirectory, SelectedMod.ToString()));
             return JsonConvert.DeserializeObject<UPluginModel>(upluginText);
         }
         catch (Exception ex)
         {
-            _processService.AddExceptionToOutput("Error getting .uplugin file", ex);
+            _processService.AddExceptionToOutput(StringHelper.ErrorGettingUpluginFile, ex);
             return null;
         }
     }
@@ -341,8 +342,9 @@ public class UPluginViewModel : ObservableObject, INavigationAware
         {
             return;
         }
-        string folderPath = @$"{projectDirectory}/Mods/{SelectedMod}/";
-        string fileName = $@"{SelectedMod}.uplugin";
+
+        var folderPath = StringHelper.GetModFolderPath(projectDirectory, SelectedMod.ToString());
+        var fileName = StringHelper.GetModUpluginFileName(SelectedMod.ToString());
         UPluginModel uPlugin = new()
         {
             FileVersion = int.Parse(FileVersion),
@@ -384,11 +386,8 @@ public class UPluginViewModel : ObservableObject, INavigationAware
 
     private void PerformAddPlugin()
     {
-        if (Plugins == null)
-        {
-            Plugins = new ObservableCollection<PluginModel>();
-        }
-        Plugins.Add(new PluginModel("New Plugin Dependency", "1.0.0", true));
+        Plugins ??= new ObservableCollection<PluginModel>();
+        Plugins.Add(new PluginModel(StringHelper.NewPluginDependency, "1.0.0", true));
         SelectedDepPlugin = Plugins[^1];
         CheckIfNeedsSave();
     }
@@ -409,23 +408,12 @@ public class UPluginViewModel : ObservableObject, INavigationAware
 
     private void CheckIfNeedsSave()
     {
-        if (PluginModified())
-        {
-            UnsavedChanges = true;
-        }
-        else
-        {
-            UnsavedChanges = false;
-        }
+        UnsavedChanges = PluginModified();
     }
 
     private bool PluginModified()
     {
-        if (!GetSelectedModModel().Equals(loadedUPlugin))
-        {
-            return true;
-        }
-        return false;
+        return !GetSelectedModModel().Equals(loadedUPlugin);
     }
 
     private RelayCommand addModule;
@@ -433,10 +421,7 @@ public class UPluginViewModel : ObservableObject, INavigationAware
 
     private void PerformAddModule()
     {
-        if (Modules == null)
-        {
-            Modules = new ObservableCollection<ModuleModel>();
-        }
+        Modules ??= new ObservableCollection<ModuleModel>();
         Modules.Add(new ModuleModel());
         CheckIfNeedsSave();
     }
