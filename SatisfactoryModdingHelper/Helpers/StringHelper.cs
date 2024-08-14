@@ -46,6 +46,7 @@ namespace SatisfactoryModdingHelper.Helpers
         public const string ProcessLogFileName = "\\ProcessLog.txt";
         public const string NewPluginDependency = "New Plugin Depedency";
         public const string ErrorGettingUpluginFile = "Error getting .uplugin file";
+        public const string AccessTransformersini = "AccessTransformers.ini";
 
         public static string GetAlpakitArgs(bool shouldCopyMod, string? satisfactoryFolderPath, string? uprojectFilePath, string? modName)
         {
@@ -187,6 +188,16 @@ namespace SatisfactoryModdingHelper.Helpers
         public static string GetModUpluginFileName(string? modName)
         {
             return $"{modName}.uplugin";
+        }
+
+        public static string GetAccessTransformersFilePath(string? projectPath, string? modName)
+        {
+            return $"{projectPath}\\Mods\\{modName}\\Config\\AccessTransformers.ini";
+        }
+
+        public static string GetConfigFolderPath(string? projectPath, string? modName)
+        {
+            return $"{projectPath}\\Plugins\\{modName}\\Config\\";
         }
     }
 }

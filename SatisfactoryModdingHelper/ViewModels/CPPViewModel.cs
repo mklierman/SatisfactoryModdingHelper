@@ -124,9 +124,9 @@ public class CPPViewModel : ObservableRecipient, INavigationAware
         var moduleH = await ResourceHelpers.GetTemplateResourceAndReplace(StringHelper.ModulehTemplateName, StringHelper.TemplateModReferencePlaceholder, SelectedMod.ToString());
         var moduleCPP = await ResourceHelpers.GetTemplateResourceAndReplace(StringHelper.ModulecppTemplateName, StringHelper.TemplateModReferencePlaceholder, SelectedMod.ToString());
         
-        _fileService.WriteAllTextIfNew(StringHelper.GetBuildcsFilePath(sourceDir, SelectedMod.ToString()), buildCS);
-        _fileService.WriteAllTextIfNew(StringHelper.GetModulehFilePath(sourceDir, SelectedMod.ToString()), moduleH);
-        _fileService.WriteAllTextIfNew(StringHelper.GetModulecppFilePath(sourceDir, SelectedMod.ToString()), moduleCPP);
+        _fileService.WriteAllTextIfNew(StringHelper.GetBuildcsFilePath(modDirectoryLocation, SelectedMod.ToString()), buildCS);
+        _fileService.WriteAllTextIfNew(StringHelper.GetModulehFilePath(modDirectoryLocation, SelectedMod.ToString()), moduleH);
+        _fileService.WriteAllTextIfNew(StringHelper.GetModulecppFilePath(modDirectoryLocation, SelectedMod.ToString()), moduleCPP);
 
         //OutputText = "Base C++ Directories and Files Created";
 

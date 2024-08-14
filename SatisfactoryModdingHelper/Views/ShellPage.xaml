@@ -75,7 +75,7 @@
                         <Grid
                             Grid.Column="1"
                             Margin="{StaticResource PluginSelectorMargin}"
-                            Visibility="{x:Bind ViewModel.PluginSelectorVisibility}">
+                            Visibility="{x:Bind ViewModel.ModSelectorVisibility}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
@@ -89,7 +89,7 @@
                                 Grid.Column="1"
                                 Height="40"
                                 HorizontalAlignment="Stretch"
-                                ItemsSource="{x:Bind ViewModel.PluginList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                ItemsSource="{x:Bind ViewModel.ModList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 SelectedValue="{x:Bind ViewModel.SelectedMod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Button
                                 Grid.Column="2"
@@ -128,7 +128,7 @@
                     </Grid.ColumnDefinitions>
                     <Frame x:Name="NavigationFrame" Grid.Column="0" />
 
-                    <controls:GridSplitter
+                    <!--<controls:GridSplitter
                         Grid.Column="1"
                         Width="11"
                         Background="Gray"
@@ -154,7 +154,7 @@
                         Grid.Column="2"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
-                        Content="Hi" />
+                        Content="Hi" />-->
                 </Grid>
             </NavigationView>
         </Grid>

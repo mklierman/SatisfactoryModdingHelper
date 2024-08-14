@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 using SatisfactoryModdingHelper.Contracts.Services;
 using SatisfactoryModdingHelper.Contracts.ViewModels;
 using SatisfactoryModdingHelper.Core.Contracts.Services;
+using SatisfactoryModdingHelper.Helpers;
 using SatisfactoryModdingHelper.Models;
 
 namespace SatisfactoryModdingHelper.ViewModels;
@@ -121,7 +122,7 @@ public class AccessTransformersViewModel : ObservableRecipient, INavigationAware
             return returnModel;
         }
 
-        string filePath = @$"{projectDirectory}\Mods\{SelectedMod}\Config\AccessTransformers.ini";
+        var filePath = StringHelper.GetAccessTransformersFilePath(projectDirectory, SelectedMod.ToString());
         if (!File.Exists(filePath))
         {
             return returnModel;
@@ -228,8 +229,8 @@ public class AccessTransformersViewModel : ObservableRecipient, INavigationAware
             return;
         }
 
-        var folderPath = @$"{projectDirectory}\Plugins\{SelectedMod}\Config\";
-        var fileName = $@"AccessTransformers.ini";
+        var folderPath = StringHelper.GetConfigFolderPath(projectDirectory, SelectedMod.ToString());
+        var fileName = StringHelper.AccessTransformersini; ;
 
         AccessTransformersModel accessTransformers = new AccessTransformersModel()
         {

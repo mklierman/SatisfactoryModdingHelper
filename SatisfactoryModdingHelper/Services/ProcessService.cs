@@ -193,4 +193,10 @@ public class ProcessService : ObservableRecipient, IProcessService
         AddStringToOutput(StringHelper.GenVSFilesComplete);
         return result;
     }
+
+    public void WriteToOutput(string text)
+    {
+        var newText = DateTime.Now.ToString() + " - " + text;
+        OutputText += newText;
+    }
 }
